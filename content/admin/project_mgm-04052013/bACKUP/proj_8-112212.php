@@ -1,0 +1,239 @@
+<?php
+require('Application.php');
+require($JSONLIB.'jsonwrapper.php');
+$error = "";
+$msg = "";
+$html = "";
+$return_arr = array();
+extract($_POST);
+$return_arr['error'] = "";
+$return_arr['name'] = "";
+$return_arr['html'] = "";
+$isEdit =0;
+$is_session =0;
+$emp_type ="";
+$emp_id= "";
+if(isset($_SESSION['employee_type_id']) AND ($_SESSION['employeeType'] >0 && $_SESSION['employeeType'] == 1))
+{
+	$emp_type = $_SESSION['employeeType'] ;
+	$emp_id =  $_SESSION['employee_type_id'];
+	$is_session = 1;
+	$style_price = ' style="visibility:hidden"';
+}
+else if(isset($_SESSION['employee_type_id']) AND ($_SESSION['employeeType'] >0 && $_SESSION['employeeType'] == 2))
+{
+	$emp_type = $_SESSION['employeeType'] ;
+	$emp_id =$_SESSION['employee_type_id'];
+	$is_session = 1;
+	$style_price = ' disabled="disabled"';
+}
+
+if(isset($_POST['pid']) && $_POST['pid']!=0)
+{
+	$isEdit=1;
+	$sql = "Select * from tbl_newproject where $status_query and pid = $pid";
+	//echo $sql;
+	if(!($result=pg_query($connection,$sql))){
+		print("Failed query1: " . pg_last_error($connection));
+		exit;
+	}
+	while($row = pg_fetch_array($result)){
+		$data_prj=$row;
+	}
+	pg_free_result($result);
+	$sql = "select tbl_prjorder_shipping.*,tbl_carriers.weblink from  tbl_prjorder_shipping left join tbl_carriers on tbl_carriers.carrier_id = tbl_prjorder_shipping.carrier_id where tbl_prjorder_shipping.status=1 and pid = $pid";
+	//echo $sql;
+	if(!($result=pg_query($connection,$sql))){
+		print("Failed query1: " . pg_last_error($connection));
+		exit;
+	}
+	while($row = pg_fetch_array($result)){
+		$data_order_shipping[]=$row;
+	}
+	pg_free_result($result);
+}
+	
+	$sql = "select carrier_id,carrier_name  from  tbl_carriers where status=1";
+if(!($result=pg_query($connection,$sql))){
+	print("Failed query1: " . pg_last_error($connection));
+	exit;
+}
+while($row = pg_fetch_array($result)){
+	$data_carrier[]=$row;
+}
+pg_free_result($result);	
+
+
+	$sql = "select shiponclient  from  tbl_prj_sample where pid = $pid";
+        $result=pg_query($connection,$sql);$row = pg_fetch_array($result);
+        $shipon=$row['shiponclient'];
+
+$html = '<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center" scope="col"><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td colspan="3" align="center"><table id="tbl_carrier" width="80%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="50%" height="25" align="right">Order Placed On:</td>
+              <td>&nbsp;</td>
+              <td width="49%" align="left" valign="top"><input type="text" id="order_on" onclick="javascript:showDate(this);" ';
+if($emp_type >0){$html .= 'disabled="disabled"';}
+$html .= 'name="order_on" value="'.$data_prj['order_placeon']. '"/></td>
+              <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
+            </tr>
+             <tr>
+              <td width="50%" height="25" align="right">Confirmation Number:</td>
+              <td width="1%">&nbsp;</td>
+              <td width="49%" align="left" valign="top"><input type="text"';
+if($emp_type >0){$html .= 'disabled="disabled"'; }
+$html .= 'name="confirmation_number" value="';
+$html .= htmlspecialchars($data_prj['confirmation_number']);
+$html .= '"/></td>
+              <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
+            </tr>
+             <tr>
+              <td width="50%" height="25" align="right">Bid Number:</td>
+              <td width="1%">&nbsp;</td>
+              <td width="49%" align="left" valign="top"><input type="text"';
+if($emp_type >0){$html .= 'disabled="disabled"'; }
+$html .= 'name="bid_number" value="';
+$html .= $data_prj['bid_number'];
+$html .= '"/></td>
+              <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
+            </tr>
+             <tr>
+              <td width="50%" height="25" align="right">Project Budget:</td>
+              <td width="1%">&nbsp;</td>
+              <td width="49%" align="left" valign="top"><input type="text"';
+if($emp_type >0){$html .= 'disabled="disabled"'; }
+$html .= 'name="project_budget" value="';
+$html .= $data_prj['project_budget'];
+$html .= '"/></td>
+              <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
+            </tr>
+            <tr>
+             <td width="50%" height="25" align="right">Shipped On Clients Carrier Account:
+             
+             </td><td width="1%">&nbsp;</td>
+            <td ><input type="checkbox" name="shippedonclient" id="shipped_on_client" value="1" onclick="javascript:shippingOn()" ';
+if(isset($data_prj['shiponclient'])&&$data_prj['shiponclient']==1) $html .= ' checked="checked" ';
+
+$html .= '"/></td>
+             <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
+            </tr>
+          </table></td>
+        </tr>
+        <tr>
+          <td align="center">
+          <table width="80%" border="0" align="center" cellpadding="0" cellspacing="0" id="dataTable">';
+		  if($isEdit)
+		  {
+			  for($i=0; $i<count($data_order_shipping); $i++)
+			  {
+$html .= '<tr><td>
+            <table width="100%">
+            <tr style="bottom:10px">
+              <td width="50%" height="25" align="right" >Carrier:</td>
+              <td align="left" valign="top" height="25px">&nbsp;</td>
+              <td width="49%"><select ';
+if($emp_type >0){$html .= 'disabled="disabled"'; }
+$html .= 'name="carrier_shipping_select[]" onchange="javascript:show_weblink(this, ';
+$html .= $i;
+$html .= ');">
+                <option value="0">----- select -----</option>';
+				for($index=0; $index<count($data_carrier); $index++)
+				{
+					if($data_carrier[$index]['carrier_id'] == $data_order_shipping[$i]['carrier_id'])
+					{
+						$html .= '<option value="';
+						$html .= $data_carrier[$index]['carrier_id'];
+						$html .= '" selected="selected">';
+						$html .= $data_carrier[$index]['carrier_name'];
+						$html .= '</option>'; 
+					}
+					else
+					{
+						$html .= '<option value="';
+						$html .= $data_carrier[$index]['carrier_id'];
+						$html .= '">';
+						$html .= $data_carrier[$index]['carrier_name'];
+						$html .= '</option>';
+					}
+				}
+$html .= '</select></td>
+              <td align="left" valign="top" height="25px">&nbsp;</td>
+            </tr>
+            <tr style="bottom:10px">
+              <td width="50%" height="25" align="right" >Tracking Number:</td>
+              <td align="left" valign="top" height="25px">&nbsp;</td>
+              <td width="49%"><input type="hidden" name="hdn_shipping_id[]" value="';
+$html .= $data_order_shipping[$i]['shipping_id'];
+$html .= '"/>
+                <input type="text"';
+if($emp_type >0){$html .= 'disabled="disabled"'; }
+$html .= 'name="track_shipping[]" id="track_num';
+$html .= $i;
+$html .= '" value="';
+$html .= $data_order_shipping[$i]['tracking_number'];
+$html .= '"/></td>
+              <td valign="top" height="25px" align="center"><div id="weblink_id';
+$html .= $i;
+$html .= '"><a href="javascript:void(0);" onclick="javascript:popupWindow(\'';
+$html .= $data_order_shipping[$i]['weblink'].$data_order_shipping[$i]['tracking_number'];
+$html .= '\');"><img src="';
+$html .= $mydirectory;
+$html .= '/images/courier_man.jpg" width="50"/></a></div></td>
+            </tr>
+            <tr style="bottom:10px">
+              <td width="50%" height="25" align="right" >Shipped On:</td>
+              <td align="left" valign="top" height="25px">&nbsp;</td>
+              <td width="49%"><input type="text"';
+if($emp_type >0){$html .= 'disabled="disabled"'; }
+$html .= 'name="shipon[]" onclick="javascript:showDate(this);" value="';
+$html .= $data_order_shipping[$i]['shippedon'];
+$html .= '"/></td>
+              <td align="left" valign="top" height="25px">&nbsp;</td>
+            </tr>
+            <tr style="bottom:10px">
+              <td width="50%" height="25" align="right" >Shipping Notes:</td>
+              <td align="left" valign="top" height="25px">&nbsp;</td>
+              <td width="49%"><textarea name="order_shipping_notes[]" ';
+if($emp_type >0){$html .= 'disabled="disabled"'; }
+$html .= 'cols="25" rows="5">';
+$html .= $data_order_shipping[$i]['shipping_notes'];
+$html .= '</textarea></td>
+              <td align="center" valign="top" height="25px">';
+			  if($emp_type >0){
+$html .= '&nbsp;';
+               } else {
+$html .= '<input type="image" src="';
+$html .= $mydirectory;
+$html .= '/images/delete.png" onclick="javascript:DeleteRows(\'';
+$html .= $data_order_shipping[$i]['shipping_id'];
+$html .= '\',\'';
+$html .= $data_order_shipping[$i]['pid'];
+$html .= '\',\'order_shipping\')" />';
+ } 
+$html .= '</td>
+            </tr>
+            </table></td></tr>'; 					  
+				  }
+			  }
+$html .= '</table>
+            <table width="80%" align="center">
+              <tr>
+                <td width="49%" align="center" valign="top"><input type="button" value="Add new tracking info" onclick="javascript:addRow(\'dataTable\');"';
+if($emp_type >0){$html .= ' disabled="disabled"'; }
+$html .= ' /></td>
+              </tr>
+            </table></td>
+        </tr>
+      </table></td>
+    </tr>
+    </table>';
+//echo $html;
+
+$return_arr['html'] =$html;
+echo json_encode($return_arr);
+return;
+?>

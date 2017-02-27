@@ -1,0 +1,477 @@
+<?php
+require('Application.php');
+require('../../header.php');
+$upload_dir			= "../../projectimages/";
+$image_path = $server_URL."/content/projectimages/";
+$query1=("SELECT \"ID\", \"clientID\", \"client\", \"active\" ".
+		 "FROM \"clientDB\" ".
+		 "WHERE \"active\" = 'yes' ".
+		 "ORDER BY \"client\" ASC");
+if(!($result1=pg_query($connection,$query1))){
+	print("Failed query1: " . pg_last_error($connection));
+	exit;
+}
+while($row1 = pg_fetch_array($result1)){
+	$data1[]=$row1;
+}
+$error="";
+$success="";
+if(isset($_REQUEST['act']) && $_REQUEST['act']=="delete")	 {
+	//print '<pre>';print_r($_POST);print '</pre>';
+	if(isset($_REQUEST['chksreq']) && count($_REQUEST['chksreq'])) {
+		$strSreq=implode(",",$_REQUEST['chksreq']);
+		$upSql='update"tbl_sampleRequest" set "status"=0 , "modifiedDate"='.date('U').' where "id" in ('.$strSreq.')';
+		//echo ( $upSql);die();
+		if(!($result4=pg_query($connection,$upSql))){
+			print("Failed upSql: " . pg_last_error($connection));
+			exit;
+		}
+		$success="Selected  Sample request deleted";
+	}  else {
+		$error="Please Select atleast one check box to delete Sample request";
+	}
+}
+
+$search_sql="";
+$limit="";
+$search_uri="";
+if(isset($_REQUEST['cid']) && $_REQUEST['cid']!="") 
+{
+	$search_sql=' and s."cid" ='.$_REQUEST['cid'].' ';
+	$search_uri="?cid=".$_REQUEST['cid'];
+}
+
+$mainQuery='select s.*,c."client" from "tbl_sampleRequest" s inner join "clientDB" c on s."cid"=c."ID"'.$search_sql.' where s."status"=1 order by s."id"  desc ';
+$sql = $mainQuery;
+
+if(!($resultp=pg_query($connection,$sql))){
+	print("Failed queryd: " . pg_last_error($connection));
+	exit;
+}
+$items= pg_num_rows($resultp);
+if($items > 0) {
+	include('../../pagination.class.php');
+	$p = new pagination;
+	$p->items($items);
+	$p->limit(10); // Limit entries per page
+	//$uri=strstr($_SERVER['REQUEST_URI'], '&paging', true);
+	//die($_SERVER['REQUEST_URI']);
+	$uri= substr($_SERVER['REQUEST_URI'], 0,strpos($_SERVER['REQUEST_URI'], '&paging'));
+	if(!$uri) {
+		$uri=$_SERVER['REQUEST_URI'].$search_uri;
+	}
+	$p->target($uri);
+	$p->currentPage($_GET[$p->paging]); // Gets and validates the current page
+	$p->calculate(); // Calculates what to show
+	$p->parameterName('paging');
+	$p->adjacents(1); //No. of page away from the current page
+	
+	if(!isset($_GET['paging'])) {
+	$p->page = 1;
+	} else {
+	$p->page = $_GET['paging'];
+	}
+	//Query for limit paging
+	$limit = "LIMIT " . $p->limit." OFFSET ".($p->page - 1) * $p->limit;
+}
+$sql = $sql. " ". $limit;
+if(!($resultp=pg_query($connection,$sql))){
+	print("Failed queryd: " . pg_last_error($connection));
+	exit;
+}
+while($rowd = pg_fetch_array($resultp)){
+	$datalist[]=$rowd;
+}
+?>
+<center>
+            <table width="100%" id="tblsamplerequest">
+                <tr>
+                  <td align="center" valign="top"><font face="arial">
+                      <font size="5">View S</font><font size="5">ample Request form <br />
+                      <br>
+                      </font>
+                      <table width="95%" border="0">
+					   <?php if($success) {
+					   ?>
+					   <tr><td colspan="4" align="center" style="color:Red;"><h3><?php echo $success;?></h3></td></tr>
+					   <?php
+					   }?>
+					   <?php if($error) {
+					   ?>
+					   <tr><td colspan="4" align="center"  style="color:Red;"><h3><?php echo $error;?></h3></td></tr>
+					   <?php
+					   }?>
+					   <?php if(isset($_GET['msg'])) {
+					  	 $msg="";
+					   	if($_GET['msg']=='s') {
+							$msg="The updation was successfull";
+						} elseif($_GET['msg']=='c') {
+							$msg="The edit cannot be done";
+						}
+					   ?>
+					   <tr><td colspan="4" align="center"  style="color:Red;"><h3><?php echo $msg;?></h3></td></tr>
+					   <?php
+					   }?>
+                        <tr>
+                          <td align="left" valign="top"><p>
+                            <input name="btnBack" type="button" onclick="javascript:location.href='../../index.php'"  onmouseover="this.style.cursor = 'pointer';" value="Back" />
+                          </p></td>
+                          <td align="center">&nbsp;</td>
+                          <td align="center">&nbsp;</td>
+                          <td align="right" valign="top"><input name="btnAdd" type="button" onclick="javascript:location.href='samplerequest.add.php'"  onmouseover="this.style.cursor = 'pointer';" value="Add Sample Request" /></td>
+                        </tr>
+                    </table>
+					<form name="frmsamplerequestSearch" method="post" action="">
+					<table width="100%" cellspacing="1" cellpadding="1" border="0">
+                    <tr>
+                      <td height="35" colspan="5" ><strong>Search Projects </strong></td>
+                    </tr>
+                    <tr>
+                      <td width="11%" class="grid001">Client Name: </td>
+                      <td width="62%" class="grid001"><select name="cid" id="cid" style="width:250px">
+                          <option value="">Select</option>
+                          <?php for($i=0; $i < count($data1); $i++){?>
+                          <option value="<?php echo $data1[$i]['ID'];?>"><?php echo $data1[$i]['client'];?></option>
+                          <?php }?>
+                      </select></td>
+                      <td width="8%" class="grid001"><input type="submit" value="Search" onmouseover="this.style.cursor = 'pointer';" name="Search" onclick="javascript: document.frmsamplerequestlist.submit();" /></td>
+                      <td width="8%" class="grid001"><input type="reset" value="Cancel" onmouseover=
+						"this.style.cursor = 'pointer';" name="button2" /></td>
+                      <td width="11%" class="grid001">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td colspan="5" align="right"></td>
+                    </tr>
+                  </table>
+				  </form>
+					<form name="frmsamplerequest" method="post" action="">
+                    <table width="98%" border="0">
+                        <tr>
+                          <td colspan="3" rowspan="2" align="left" valign="top">
+						  <table width="100%" border="0" cellspacing="1" cellpadding="1">
+                            <tr>
+                              <td height="25">Final Customer : </td>
+                              <td height="25" colspan="3"><input name="finalCustomer" id="finalCustomer" type="text" class="textBox" /></td>
+                            </tr>
+                            <tr>
+                              <td height="25">Sales Executive : </td>
+                              <td height="25" colspan="3"><input name="salesExecutive" id="salesExecutive" type="text" class="textBox" /></td>
+                            </tr>
+                            <tr>
+                              <td height="25">Quantity of people Required : </td>
+                              <td><input name="quanPeople" id="quanPeople" type="text" class="textBox" /></td>
+                              <td>Costing Required: </td>
+                              <td><input name="costing" id="costing" type="text" class="textBox" /></td>
+                            </tr>
+                          </table>                            
+                          </td>
+                          <td width="150" height="25" align="right" valign="top">Date of request:</td>
+                          <td width="100" align="right" valign="top"><input  name="requestDate" id="requestDate"type="text" class="textBox" value="" readonly="readonly" /></td>
+                        </tr>
+                        <tr>
+                          <td height="25" align="right" valign="top">Requested Delivery Date: </td>
+                          <td align="right" valign="top"><input name="deliveryDate" id="deliveryDate" readonly="readonly" type="text" class="textBox" value="" /></td>
+                        </tr>
+                        <tr>
+                          <td width="100" height="25" align="left" class="headerblack">Reference Article </td>
+                          <td align="left">&nbsp;</td>
+                          <td align="center">&nbsp;</td>
+                          <td align="right">&nbsp;</td>
+                          <td align="right" valign="top"><input name="btnDelete" type="button" onmouseover="this.style.cursor = 'pointer';" value="Delete Record" onclick="javascript: if(confirm('Do you want to delete selected records')) { document.frmsamplerequestlist.submit(); } else { return false; }" /></td>
+                        </tr>
+                    </table>
+					</form>
+					<?php
+					if(count($datalist)) {
+					?>
+					<form name="frmsamplerequestlist" method="post" action="samplerequest.list.php">
+                      <table width="95%" border="0" cellspacing="1" cellpadding="1"  id="tblsamplerequest">
+                      <tr>
+                        <td align="left" valign="middle" class="headerblack">Select</td>
+                        <td height="25" align="left" valign="middle" class="headerblack">Sample ID </td>						
+			<td align="left" valign="middle" class="headerblack">Client Name</td>
+                        <td align="left" valign="middle" class="headerblack">GARMENT</td>
+                        <td align="left" valign="middle" class="headerblack">SIZE</td>
+                        <td align="left" valign="middle" class="headerblack">Picture</td>
+                        <td align="left" valign="middle" class="headerblack">Sample
+                        Garment</td>
+                        <td align="left" valign="middle" class="headerblack">STYLE</td>
+                        <td align="left" valign="middle" class="headerblack">COLOR</td>
+                        <td align="left" valign="middle" class="headerblack">Type of Fabric</td>
+                        <td align="left" valign="middle" class="headerblack">Fabric code</td>
+                        <td align="left" valign="middle" class="headerblack">EMBROIDERY</td>
+                        <td align="left" valign="middle" class="headerblack">Customer
+                          Target
+                        Price</td>
+                        <td align="left" valign="middle" class="headerblack">Position</td>
+                        <td align="left" valign="middle" class="headerblack">In Stock </td>
+                        <td align="left" valign="middle" class="headerblack">COMMENTS</td>
+                      </tr>
+					  <?php
+					  	$count=0;
+					  	for($i=0; $i < count($datalist); $i++){
+					  ?>
+                      <tr>
+                        <td align="right" valign="top" class="grey"><input type="checkbox" id="chksreq<?php echo $count;?>" name="chksreq[<?php echo $count;?>]" value="<?php echo $datalist[$i]['id'];?>" /></td>
+                        <td height="25" align="right" valign="top" class="grey"><a href="samplerequest.edit.php?id=<?php echo $datalist[$i]['id'];?>"><?php echo $datalist[$i]['srID'];?></a></td>					
+						<td class="green"><?php echo $datalist[$i]['client'];?></td>
+                        <td class="green"><?php echo $datalist[$i]['garment'];?></td>
+                        <td align="left" valign="top" class="yellow"><?php echo $datalist[$i]['size'];?></td>
+                        <td align="center" valign="top" class="yellow">
+						<?php if($datalist[$i]['picture1'] && file_exists($upload_dir.$datalist[$i]['picture1'])) echo '<img style="width:130px;height:100px;" border="0" alt="" src="'.$upload_dir.$datalist[$i]['picture1'].'" /> '; ?><?php if($datalist[$i]['picture2'] && file_exists($upload_dir.$datalist[$i]['picture2'])) echo '<img style="width:130px;height:100px;" border="0" alt="" src="'.$upload_dir.$datalist[$i]['picture2'].'" /> '; ?>
+						</td>
+                        <td align="left" valign="top" class="green"><?php echo $datalist[$i]['sampleGarment'];?></td>
+                        <td align="left" valign="top" class="green"><?php echo $datalist[$i]['styleNo'];?></td>
+                        <td align="left" valign="top" class="grey"><?php echo $datalist[$i]['color'];?></td>
+                        <td align="left" valign="top" class="green"><?php echo $datalist[$i]['fabricType'];?></td>
+                        <td align="left" valign="top" class="green"><?php echo $datalist[$i]['fabricCode'];?></td>
+                        <td align="left" valign="top" class="grey"><?php echo $datalist[$i]['embroidery'];?></td>
+                        <td align="left" valign="top" class="green">$<?php echo $datalist[$i]['customerTargetprice'];?></td>
+                        <td align="left" valign="top" class="green"><?php echo $datalist[$i]['position'];?></td>
+                        <td align="left" valign="top" class="green"><?php if($datalist[$i]['inStock']) { echo 'YES'; } else { echo 'NO'; };?></td>
+                        <td align="left" valign="top" class="green"><?php echo $datalist[$i]['comments'];?> </td>
+                      </tr> 
+					  <?php
+					  	 $count++;
+					  	}
+					  ?>                     
+                      <tr>
+                        <td align="right">&nbsp;</td>
+                        <td height="25" align="center" colspan="4"><strong>QUANTITY OF
+                        GARMENTS:</strong></td>
+                        <td>&nbsp;<?php echo count($datalist);?></td>
+                        <td align="left">&nbsp;</td>
+                        <td align="left">&nbsp;</td>
+                        <td align="left" colspan="7"><?php $p->show(); ?></td>                        
+                      </tr>					  
+                  </table>	
+				  <input type="hidden" value="delete" name="act" id="act" />			  
+				  </form>
+				  <?php
+				  	}else {
+				  ?>
+				  	<table width="95%" border="0">
+                        <tr>
+                          <td align="center"><p style="color:red; font-weight:bold;">There is no sample request available.</p></td>                         
+                        </tr>
+                      </table>
+				  <?php
+					}
+					if($count) {
+				  ?>
+                      <table width="95%" border="0">
+                        <tr>
+                          <td align="center"><p></p></td>
+                          <td align="center">&nbsp;</td>
+                          <td align="center">&nbsp;</td>
+                          <script>var val = 'samplerequest.print.php?query=<?php echo $search_sql;?>';</script>
+                          <td align="right" valign="top"><input name="btnSubmitEmail" type="button" id="send-email" onmouseover="this.style.cursor = 'pointer';fnsetval();" value="Submit by Email"  />
+                              <input name="btnPrint" id="btnPrint" type="button" value="Print Preview" onclick="javascript:return window.open(val);" /></td>
+                        </tr>
+                      </table>
+			  <?php
+			  	 } 			  
+			  ?>
+			  	</td>
+                </tr>
+              </table>
+			  
+              <p></p>
+          </center>		  	 
+		  <div id="dialog-form" title="Submit By Email">
+			<p class="validateTips">All form fields are required.</p>		
+			<form id="frmmailsendform" method="POST">
+			<fieldset>				
+				<label for="email">Email</label>
+				<input type="text" name="email" id="email"  value="" class="text ui-widget-content ui-corner-all" />
+				<label for="subject">Subject:</label>
+				<input type="text" name="subject" id="subject" class="text ui-widget-content ui-corner-all" />				
+			</fieldset>
+			<input type="hidden" name="finalCustomer2" id="finalCustomer2" />
+			<input type="hidden" name="salesExecutive2" id="salesExecutive2" />
+			<input type="hidden" name="quanPeople2" id="quanPeople2" />
+			<input type="hidden" name="costing2" id="costing2" />
+			<input type="hidden" name="requestDate2" id="requestDate2" />
+			<input type="hidden" name="deliveryDate2" id="deliveryDate2" />
+			</form>
+		</div>
+        
+<?php
+$cust="";
+$sale="";
+$quan="";
+$cost="";
+$reDate='';
+$delDate='';
+if(isset($_REQUEST['finalCustomer2']) && $_REQUEST['finalCustomer2'] !="")  $cust=$_REQUEST['finalCustomer2'];
+if(isset($_REQUEST['salesExecutive2']) && $_REQUEST['salesExecutive2'] !="")  $sale=$_REQUEST['salesExecutive2'];
+if(isset($_REQUEST['quanPeople2']) && $_REQUEST['quanPeople2'] !="")  $quan=$_REQUEST['quanPeople2'];
+if(isset($_REQUEST['finalCustomer2']) && $_REQUEST['costing2'] !="")  $cost=$_REQUEST['costing2'];
+if(isset($_REQUEST['finalCustomer2']) && $_REQUEST['requestDate2'] !="")  $reDate=$_REQUEST['requestDate2'];
+if(isset($_REQUEST['finalCustomer2']) && $_REQUEST['deliveryDate2'] !="")  $delDate=$_REQUEST['deliveryDate2'];
+$print='<table width="100%" border="0">
+			<tr>
+			  <td align="center"><p></p></td>
+			  <td align="center">&nbsp;</td>
+			  <td align="center">&nbsp;</td>
+			  <td valign="top" align="right"><input type="button" value="Print " onmouseover="this.style.cursor = \'pointer\';" onclick="javascript:window.print();" id="btnpopprint" style="cursor: pointer;"></td>
+			</tr>
+			<tr>
+			  <td colspan="3" rowspan="2" align="left" valign="top">
+			  <table width="100%" border="0" cellspacing="1" cellpadding="1">
+				<tr>
+				  <td height="25">Final Customer : </td>
+				  <td height="25" colspan="3"><input name="finalCustomer1" id="finalCustomer1" type="text" class="textBox" readonly="readonly" value="'.$cust.'" /></td>
+				</tr>
+				<tr>
+				  <td height="25">Sales Executive : </td>
+				  <td height="25" colspan="3"><input name="salesExecutiv1e" id="salesExecutive1" type="text" class="textBox" readonly="readonly" value="'.$sale.'"  /></td>
+				</tr>
+				<tr>
+				  <td height="25">Quantity of people Required : </td>
+				  <td><input name="quanPeople1" id="quanPeople1" type="text" class="textBox" readonly="readonly" value="'.$quan.'"  /></td>
+				  <td>Costing Required: </td>
+				  <td><input name="costing1" id="costing1" type="text" class="textBox" readonly="readonly" value="'.$cost.'"  /></td>
+				</tr>
+			  </table>                            
+			  </td>
+			  <td width="150" height="25" align="right" valign="top">Date of request:</td>
+			  <td width="100" align="right" valign="top"><input  name="requestDate1" id="requestDate1" type="text" class="textBox"  readonly="readonly" value="'.$reDate.'"  /></td>
+			</tr>
+			<tr>
+			  <td height="25" align="right" valign="top">Requested Delivery Date: </td>
+			  <td align="right" valign="top"><input name="deliveryDate1" id="deliveryDate1" readonly="readonly" type="text" class="textBox"  value="'.$delDate.'"  /></td>
+			</tr>
+			<tr>
+			  <td width="100" height="25" align="left" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">Reference Article </td>
+			  <td align="left">&nbsp;</td>
+			  <td align="center">&nbsp;</td>
+			  <td align="right">&nbsp;</td>
+			  <td align="right" valign="top"></td>
+			</tr>
+		</table>';
+	$datalist;unset($datalist);
+	//$sql='select * from "tbl_sampleRequest" s where "status" = 1 '.$search_sql.' order by "id"  desc ';
+	if(!($resultp=pg_query($connection,$mainQuery))){
+		print("Failed queryd: " . pg_last_error($connection));
+		exit;
+	}
+	while($rowd = pg_fetch_array($resultp)){
+		$datalist[]=$rowd;
+	}
+	$message="";
+	if(count($datalist)) {
+		$message='<table width="100%" border="0" cellspacing="1" cellpadding="1">
+                      <tr>                       
+                        <td height="25" align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">ID </td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">GARMENT</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">SIZE</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">Picture</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">Sample
+                        Garment</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">STYLE No.</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">COLOR</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">Type of Fabric</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">Fabric code</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">EMBROIDERY</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">Customer
+                          Target
+                        Price</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">Position</td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">In Stock </td>
+                        <td align="left" valign="middle" style="background-color:#000000;
+font-family:Tahoma, Verdana, Arial, Helvetica; font-size:11px; line-height:20px; color:#FFFFFF; padding-left:5px;">COMMENTS</td>
+                      </tr>';
+
+		$cnt=0;
+		for($i=0; $i < count($datalist); $i++){
+			$message .='<tr>                        
+                        <td height="25" align="right" valign="top" style="background-color:#DDE4FF;text-align:left; padding-left:5px;">'.$datalist[$i]['srID'].'</td>
+                        <td style="background-color:#DCE0AC;text-align:left;padding-left:5px;">'.$datalist[$i]['garment'].'</td>
+                        <td align="left" valign="top" style="background-color:#FCF305;text-align:left;padding-left:5px;">'.$datalist[$i]['size'].'</td>
+                        <td width="142px" align="center" valign="top" style="background-color:#FCF305;text-align:left;padding-left:5px;">';
+			if($datalist[$i]['picture1'] && file_exists($upload_dir.$datalist[$i]['picture1'])) 
+				$message .='<img border="0" style="width:130px;height:100px;" alt="" src="'.$image_path.$datalist[$i]['picture1'].'" /> ';
+			if($datalist[$i]['picture2'] && file_exists($upload_dir.$datalist[$i]['picture2'])) 
+				$message .='<img border="0" alt="" style="width:130px;height:100px;" src="'.$image_path.$datalist[$i]['picture2'].'" /> ';
+			$message .='</td>
+                        <td align="left" valign="top" style="background-color:#DCE0AC;text-align:left;padding-left:5px;">'.$datalist[$i]['sampleGarment'].'</td>
+                        <td align="left" valign="top" style="background-color:#DCE0AC;text-align:left;padding-left:5px;">'.$datalist[$i]['styleNo'].'</td>
+                        <td align="left" valign="top" style="background-color:#DDE4FF;text-align:left; padding-left:5px;">'.$datalist[$i]['color'].'</td>
+                        <td align="left" valign="top" style="background-color:#DCE0AC;text-align:left;padding-left:5px;">'.$datalist[$i]['fabricType'].'</td>
+                        <td align="left" valign="top" style="background-color:#DCE0AC;text-align:left;padding-left:5px;">'.$datalist[$i]['fabricCode'].'</td>
+                        <td align="left" valign="top" style="background-color:#DDE4FF;text-align:left; padding-left:5px;">'.$datalist[$i]['embroidery'].'</td>
+                        <td align="left" valign="top" style="background-color:#DCE0AC;text-align:left;padding-left:5px;">$'.$datalist[$i]['customerTargetprice'].'</td>
+                        <td align="left" valign="top" style="background-color:#DCE0AC;text-align:left;padding-left:5px;">'.$datalist[$i]['position'].'</td>
+                        <td align="left" valign="top" style="background-color:#DCE0AC;text-align:left;padding-left:5px;">';
+			if($datalist[$i]['inStock']) { $message .= 'YES'; } else { $message .= 'NO'; }
+			$message .= '</td>
+                        <td align="left" valign="top" style="background-color:#DCE0AC;text-align:left;padding-left:5px;">'.$datalist[$i]['comments'].'</td>
+                      </tr> ';  	 
+		}                    
+		$message .='<tr>                        
+                        <td height="25" align="center" colspan="4"><strong>QUANTITY OF
+                        GARMENTS:</strong></td>
+                        <td>&nbsp;'.count($datalist).'</td>
+                        <td align="left">&nbsp;</td>
+                        <td align="left">&nbsp;</td>
+                        <td align="left" colspan="7"></td>                        
+                      </tr>					  
+                  </table>';
+	} else {
+		$message = '<table width="95%" border="0">
+                        <tr>
+                          <td align="center"><p style="color:red; font-weight:bold;">There is no sample request available.</p></td>                         
+                        </tr>
+                      </table>';
+	}
+if(isset($_REQUEST['email']) && isset($_REQUEST['subject']))	 {
+	//print '<pre>';print_r($_POST);print '</pre>';
+	require($PHPLIBDIR.'mailfunctions.php');
+	extract($_POST);	
+	/*// To send HTML mail, the Content-type header must be set
+	$headers  = 'MIME-Version: 1.0' . "\r\n";
+	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";	
+	$headers .= 'X-Mailer: PHP/' . phpversion();
+	// Additional headers
+	$headers .= 'From: Sample Request <donotreply@pdf-imagewear.com>' . "\r\n";
+	// Mail it
+	$body='There are no sample request made yet..';
+	if($message) { $body=$print.$message; }
+	@ mail($email, $subject, $body, $headers);
+	*/
+	$body='There are no sample request made yet..';
+	if($message) { $body=$print.$message; }
+	$headers=create_smtp_headers($subject, "samplerequest@i2net.com", $email, $subject,"","text/html");
+	$data=$headers. "<html>".$body."</html>";
+	if((send_smtp("mail.i2net.com","samplerequest@i2net.com",$email, $data)) == false){
+		global $last_output;
+		echo "ERROR sending message d00d. $last_output<br>";
+		exit;
+	}	
+	foreach ($_REQUEST as $i => $value) 
+	{
+		unset($_REQUEST[$i]);
+	}
+}
+?><!--
+<div id="dialog-print" title="">
+	<?php /*echo $print; echo $message;*/ ?>		
+</div>-->
+<?php
+require('../../trailer.php');
+?>

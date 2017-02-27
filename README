@@ -1,0 +1,5 @@
+changelog
+V1.1
+core Application.php changed to get DB, DBusername, and DB password from master intranet DB based on the $_SERVER['HTTP_HOST'] variable. That way entire intranet can be moved and turned on with no code changes.
+
+moving all DB queries to sql_class.php

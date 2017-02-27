@@ -1,0 +1,48 @@
+@media only screen and ( max-width: 981px ) {
+
+
+	/* Set the slider height */
+	.et_pb_container {
+		background: #7f7f7f;
+		background: rgba(0,0,0,0.2);
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		border-radius: 10px;
+	}
+
+	.et_pb_slider, .et_pb_slider .et_pb_container { 
+	    	height: 200px !important;
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+			border-radius: 10px;
+		}
+	.et_pb_slider, .et_pb_slider .et_pb_slide { 
+	    	max-height: 200px; 
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		border-radius: 10px;
+	}
+	.et_pb_slider .et_pb_slide_description { 
+	    position: relative; 
+	    top: 25%; 
+	    padding-top: 0 !important; 
+	    padding-bottom:0 !important; 
+	height:auto !important;
+	}
+	.et_pb_slide_description h2 {
+		text-align: center;
+		color: #333;
+		font-size: 50px;
+		font-weight: bold;
+		text-shadow: 2px 2px #111111;
+	}
+	.et_pb_slide_content {
+		text-align: center;
+		color: #333;
+		font-size: 20px;
+		font-weight: regular;
+		text-shadow: 2px 2px #111111;
+	}
+}
+
+

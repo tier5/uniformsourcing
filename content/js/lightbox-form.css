@@ -1,0 +1,78 @@
+html,body{
+      margin:0;
+      padding:0;
+      height:100%;
+      border:none
+   }
+
+#filter
+{
+	display: none;
+	position: absolute;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	background-color: #000000;
+	z-index:10;
+	opacity:0.5;
+	filter: alpha(opacity=80);
+}
+
+
+#box 
+{
+	display: none;
+	position: absolute;
+	top: 20%;
+	left: 20%;
+	width: 640px;
+	height: 480px;
+	padding: 48px;
+	margin:0;
+	border: 1px solid black;
+	background-color: Black;
+	z-index:101;
+	overflow: none;
+}
+
+#box2
+{
+	display: none;
+	position: absolute;
+	top: 20%;
+	width: 100%;	
+	margin:0;
+	border: 1px solid black;
+	background-color: white;
+	z-index:101;
+	overflow: none;
+}
+
+#boxtitle
+{
+	position:absolute;
+	float:center;
+	top:0;
+	left:0;
+	width:746px;
+	height:24px;
+	padding:0;
+	padding-top:4px;
+	left-padding:8px;
+	margin:0;
+	border-bottom:4px solid #3CF;
+	background-color: #09c;
+	color:white;
+	text-align:center;
+}
+
+#dialog-form .label, #dialog-form .input { display:block; }
+#email,#subject { margin-bottom:12px; width:95%; padding: .4em; }
+#dialog-form .fieldset { padding:0; border:0; margin-top:25px; }
+#dialog-form .h1 { font-size: 1.2em; margin: .6em 0; }
+div#users-contain { width: 350px; margin: 20px 0; }
+div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+#dialog-form .ui-dialog .ui-state-error { padding: .3em; }
+#dialog-form .validateTips { border: 1px solid transparent; padding: 0.3em; }

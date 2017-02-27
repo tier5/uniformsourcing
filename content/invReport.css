@@ -1,0 +1,139 @@
+div#wn	{ 
+    position:relative; 
+    width:600px; 
+	height:150px; 
+    overflow:hidden;
+	float:left;	
+	}
+div#wn2	{ 
+    position:relative; 
+    width:600px; 
+	height:500px; 
+    overflow:hidden;
+	float:left;	
+	}
+div#wn3	{ 
+    position:relative; 
+    width:870px; 
+	height:250px; 
+    overflow:hidden;
+	float:left;	
+	}
+div#wn4	{ 
+    position:relative; 
+    width:600px; 
+	height:70px; 
+    overflow:hidden;
+	float:left;	
+	}
+.gridHeaderReport{
+background-color:#333333;
+height:25px;
+width:100px;
+text-align:center;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:12px;
+color:#FFFFFF;
+padding-left:3px;
+line-height:25px;}
+
+.gridHeaderReportGrids{
+background-color:#cccccc;
+height:25px;
+width:100px;
+text-align:center;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:12px;
+color:#ffffff;
+
+}
+
+.gridHeaderReportGrids2{
+background-color:#ffffff;
+height:25px;
+width:100px;
+text-align:center;
+vertical-align:top;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:12px;
+color:#000000;
+padding-left:3px;
+}
+
+.gridHeaderReportBlue{
+background-color:#0099CC;
+height:25px;
+width:100px;
+text-align:center;
+vertical-align:top;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:12px;
+color:#000000;
+padding-left:3px;
+}
+
+.gridHeaderReportGrids3{
+background-color:#ffffff;
+width:150px;
+text-align:left;
+vertical-align:top;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:12px;
+color:#000000;
+padding-left:3px;
+}
+.gridHeaderReportGrids4{
+background-color:#ffffff;
+height:25px;
+text-align:right;
+vertical-align:top;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:11px;
+color:#000000;
+padding-right:10px;
+line-height:25px;}
+.txBxWhite{
+background-color:#ffffff;
+height:20px;
+padding:0px;
+margin:0px;
+width:80px;
+text-align:center;
+vertical-align:top;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:12px;
+color:#000000;
+border:#ffffff solid 1px;
+}
+
+.txBxGrey{
+background-color:#cccccc;
+height:20px;
+width:83px;
+padding:0px;
+margin:0px;
+text-align:center;
+vertical-align:top;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:12px;
+color:#000000;
+border:#cccccc solid 1px;
+float:left;
+}
+
+.gridHeaderReportalt{
+background-color:#333333;
+height:25px;
+width:100px;
+text-align:center;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:12px;
+color:#FFFFFF;
+padding-left:3px;
+}
+
+.imgRght{
+ width:10px;
+ height:10px;
+ float:right;
+ vertical-align:top;}

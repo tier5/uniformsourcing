@@ -1,0 +1,35 @@
+<?php
+require('Application.php');
+require('../header.php');
+echo "<FONT FACE=\"ARIAL\">";
+echo "<BLOCKQUOTE>";
+echo "<CENTER><FONT SIZE=\"5\">GENERAL OFFICE INFORMATION - Closing Procedures</FONT>";
+echo "</center>";
+echo "<P>";
+echo "<B>Below is a list of things that are to be done each night before you leave.</B>";
+echo "<P>";
+echo "1.)  Company phone system MUST be forwarded to Voice Mail.";
+echo "<P>";
+echo "2.)  ALL lights must be turned off. ";
+echo "<P>";
+echo "3.)  ALL monitors must be turned off.";
+echo "<P>";
+echo "4.)  The air conditioning MUST be turned off.";
+echo "<P>";
+echo "5.)  The copier MUST be turned off.";
+echo "<P>";
+echo "6.)  Your daily cleaning must be done.";
+echo "<P>";
+echo "7.)  All doors must be locked.";
+echo "<br>";
+echo "<br>";
+echo "<br>";
+echo "<br>";
+echo "<SCRIPT LANGUAGE=\"JAVASCRIPT\">";
+echo "<!--";
+echo "document.write(\"This page last modified on: \")";
+echo "document.write(document.lastModified)";
+echo "// -->";
+echo "</SCRIPT>";
+require('../trailer.php');
+?>
