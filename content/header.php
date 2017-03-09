@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <?php
+
 echo "<title>$compname Internal Intranet</title>";
 echo "<head>";
 $page="";
@@ -65,6 +66,8 @@ switch($page)
 		break;
 	}
 }
+
+
 echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"$mydirectory/style.css\" media=\"all\"></link>";
 echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"$mydirectory/js/jquery-ui.css\" media=\"all\"></link>";
 echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"$mydirectory/js/jquery-ui-1.8.2.css\" media=\"all\"></link>";
@@ -77,6 +80,7 @@ echo "<table border=0 cellpadding=0 cellspacing=0>";
 echo "<tr>";
 echo "<td><img src=\"$mydirectory/images/logo.gif\" width=\"425\" height=\"79\" border=0></td><td>";
 //<!---------------------------- top --------------------------------------->
+
 $querytime=("SELECT * ".
 		 "FROM \"timeclock\" ".
 		 "WHERE \"firstname\" = '$_SESSION[firstname]' AND \"lastname\" = '$_SESSION[lastname]' AND \"status\" = 'in'");
@@ -87,6 +91,7 @@ if(!($resulttime=pg_query($connection,$querytime))){
 while($rowtime=pg_fetch_array($resulttime)) {
 	$datatime[]=$rowtime;
 }
+
 echo "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" id=\"topitems\">";
 echo "<tr>";
 echo "<td>";
@@ -95,17 +100,25 @@ $date=date("g:i A l, F jS, Y");
 echo "<b>$date</b></font><br>";
 echo "<font face=\"arial\" size=\"-1\">You are logged in as <b>". $_SESSION['firstname']." ". $_SESSION['lastname']."</b><br>";
 if(count($datatime) != 0) {
-	$timesnow=mktime();
+	//$timesnow=mktime();
+	$timesnow=time();
 	$times=$datatime[0]['clockin'];
 	$times1=date("m/d/Y", $times);
 	$times2=date("g:i A", $times);
 	echo "You have been clocked in since <b>$times2</b> on <b>$times1</b><br>";
-	if(bcsub("$timesnow", "$times") > 86400){
+
+	if($timesnow-$times > 86400)
+	{
 		echo "<font color=\"red\">You have been clocked in for more than 24 hours</font>";
 	}
+
+	// if(bcsub("$timesnow", "$times") > 86400){
+	// 	echo "<font color=\"red\">You have been clocked in for more than 24 hours</font>";
+	// }
 }else{
 	echo "You are not clocked in.";
 }
+
 echo "</font>";
 echo "</td>";
 echo "</tr>";
@@ -171,4 +184,6 @@ echo "<td align=\"center\"><a href=\"$mydirectory/logout.php\"><img src=\"$mydir
 echo "<td align=\"center\"><a href=\"$mydirectory/help.php\"><img src=\"$mydirectory/images/top04.gif\" border=\"0\"></a></td>";
 echo "</tr></table>";
 echo "<table width=\"100%\"><tr><td>";
+
+
 ?>

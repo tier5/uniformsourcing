@@ -4,20 +4,24 @@ require(${appdir}.'../Application.php');
      $mydirectory=".";
 // start the session immediatly so $_SESSION variables can be used
 session_start();
-if(isset($_POST['username']) OR $_POST['username'] != ""){
-	$username=$_POST['username'];
-}elseif(isset($_SESSION['username']) OR $_SESSION['username'] != ""){
-	$username=$_SESSION['username'];
-}else{
-	$username="";
-}
-if(isset($_POST['password']) OR $_POST['password'] != ""){
-	$password=$_POST['password'];
-}elseif(isset($_SESSION['password']) OR $_SESSION['password'] != ""){
-	$password=$_SESSION['password'];
-}else{
-	$password="";
-}
+
+
+	if(isset($_POST['username']) AND $_POST['username'] != ""){
+		$username=$_POST['username'];
+	}elseif(isset($_SESSION['username']) OR $_SESSION['username'] != ""){
+		$username=$_SESSION['username'];
+	}else{
+		$username="";
+	}
+	if(isset($_POST['password']) OR $_POST['password'] != ""){
+		$password=$_POST['password'];
+	}elseif(isset($_SESSION['password']) OR $_SESSION['password'] != ""){
+		$password=$_SESSION['password'];
+	}else{
+		$password="";
+	}
+
+
 $USERNAME = $username;
 // set errors catch for non set password and username
 if($username == "" AND $password == ""){

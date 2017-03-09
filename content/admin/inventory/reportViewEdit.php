@@ -285,7 +285,7 @@ for($i=0; $i < count($data_color); $i++){
     </select>&nbsp;&nbsp;&nbsp;</div></td>
     <td>
 Box #:&nbsp;<select name="box_num" id="box_num">
-                  <option value="0">---- Select Box # ----</option>
+                  <option value="0">---- All Boxes # ----</option>
                    <?php 
                   for($i=0; $i < count($data_storage); $i++){
                     if($data_storage[$i]['box']!="")  
@@ -323,11 +323,24 @@ Box #:&nbsp;<select name="box_num" id="box_num">
             <td height="100">&nbsp;</td>
             </tr>
             <?php if(isset($_SESSION['employeeType']) && $_SESSION['employeeType']<4){?>
-          <tr>
-            <td><input width="117" height="98" type="image" src="<?php echo $mydirectory;?>/images/updtInvbutton.jpg" alt="Submit button"/></td>
-            </tr>
-            <?php }?>
           
+            <?php
+            if(!isset($_GET['boxId']) || $_GET['boxId'] != '0')
+            {	
+            	?>
+
+          	<tr>
+	            <td>
+	            	<input id="update_inventory" width="117" height="98" type="image" src="<?php echo $mydirectory;?>/images/updtInvbutton.jpg" alt="Submit button"/>
+	            </td>
+            </tr>
+            <?php 
+            	}
+            ?>
+
+            
+
+          <?php }?>
         </table></td>
 	<td width="10"></td>
         <td><div id="header" style="float:left; width:100%;">      
@@ -650,12 +663,18 @@ function StoreInitialValues(locIndex,rowIndex,txtValue, newQty)
 	
 }
 function QtyDblClick(inventoryId)
-{ 
+{
 	$(location).attr('href',"storage.php?styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&invId="+inventoryId+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");
 }
 </script>
 <script type="text/javascript">	   
 $(document).ready(function(){
+
+
+if($('#box_num').val() == 0 || $('#box_num').val() == 'undefined')
+{
+	$('#update_inventory').hide();
+}
 <?php
 if($data_style['scaleNameId']!="")
 {
@@ -869,7 +888,7 @@ if ( dw_scrollObj.isSupported() ) {
 }
 </script>
 <script type="text/javascript">
-$(function(){$("#inventoryForm").submit(function(){$("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");dataString = $("#inventoryForm").serialize();dataString += "&type=e";$.ajax({type: "POST",url: "invReportSubmit.php",data: dataString,dataType: "json",success:function(data){if(data!=null){	if(data[0].name || data[0].error){$("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error +"</strong></div>"); if(data[0].flag){$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");} } else {if(data[0].flag){$("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");}else{$("#message").html("<div class='successMessage'><strong> All inventorys are uptodate...</strong></div>");}}}else{$("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");}}});return false;});});
+$(function(){$("#inventoryForm").submit(function(){$("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");dataString = $("#inventoryForm").serialize();dataString += "&type=e";$.ajax({type: "POST",url: "invReportSubmit.php",data: dataString,dataType: "json",success:function(data){if(data!=null){	if(data[0].name || data[0].error){$("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error +"</strong></div>"); if(data[0].flag){$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");} } else {if(data[0].flag){$("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");}else{$("#message").html("<div class='successMessage'><strong> All inventorys are up to date...</strong></div>");}}}else{$("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");}}});return false;});});
 
 
 function delAllQnts()

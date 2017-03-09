@@ -3,3 +3,10 @@ V1.1
 core Application.php changed to get DB, DBusername, and DB password from master intranet DB based on the $_SERVER['HTTP_HOST'] variable. That way entire intranet can be moved and turned on with no code changes.
 
 moving all DB queries to sql_class.php
+
+******* run these commands to initialize the vagrant box*********
+sudo vagrant up
+sudo vagrant ssh
+sudo /vagrant/postgres-setup/./second.sh
+sudo su - globaluniformuser
+gunzip -c /vagrant/php_intranet_uniformsourcing.gz | psql -U globaluniformuser -d php_intranet_uniformsourcing

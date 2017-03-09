@@ -1,10 +1,12 @@
 <?php
 	require('Application.php');
-	/*if($_SESSION['employeeType']==1)
-	{
-	header('Location:admin/vendor/projectReportVendor.php');
-	}*/
+
+	// if($_SESSION['employeeType']==1)
+	// {
+	// header('Location:admin/vendor/projectReportVendor.php');
+	// }
 	require('header.php');
+
 	if($debug == "on"){
 		echo "count resultapp1 IS ".count($resultapp1)."<br>";
 		echo "count dataapp1 IS ".count($dataapp1)."<br>";
@@ -20,9 +22,9 @@
 	//echo "_SESSION lastname IS ".$_SESSION['employeeType']."<br>";	
 ?>
 <?php
+
 				if(!(isset($_SESSION['employeeType']) && $_SESSION['employeeType'] >0))
 				{
-				
 				?>
                 <table width="50%">
                   <tr valign="top">

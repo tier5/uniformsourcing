@@ -1,5 +1,6 @@
 <?php
-$server_URL = "http://internal.uniformsourcing.com";  //Server address needed for sending sample request email 
+//error_reporting(E_ALL); ini_set('display_errors', '1'); 
+$server_URL = "http://127.0.0.1:4569";  //Server address needed for sending sample request email 
 $db_server = "localhost";
 $db_name = "php_intranet_uniformsourcing";                          // database name
 $db_uname= "globaluniformuser";                              // username to connect to database
@@ -16,10 +17,18 @@ $JSONLIB=$PHPLIBDIR."jsonwrapper/";
 $isMailServer ="false";
 $mailServerAddress = "colomx.i2net.com";// if isMailServer is false please specify the mail server address (ex. mail.i2net.com)
 $account_emailid="accounting@uniforms.net";
-$connection = pg_connect("host = $db_server ".
+try{
+	$connection = pg_connect("host = $db_server ".
 						 "dbname = $db_name ".
 						 "user = $db_uname ".
 						 "password = $db_pass");
+
+}
+catch(\Exception $e)
+{
+	var_dump($e->getMessage());
+}
+
 // Central variables for entire module
 $compquery=("SELECT \"ID\", \"client\" ".
 			"FROM \"clientDB\" ".

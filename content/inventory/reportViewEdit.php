@@ -267,8 +267,12 @@ for($i=0; $i < count($data_color); $i++){
             <td height="100">&nbsp;</td>
             </tr>
           <tr>
+          
             <td><input width="117" height="98" type="image" src="<?php echo $mydirectory;?>/images/updtInvbutton.jpg" alt="Submit button"/></td>
             </tr>
+
+           
+
           
         </table></td>
 	<td width="10"></td>
