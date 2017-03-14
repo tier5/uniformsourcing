@@ -139,29 +139,20 @@ if($data_style['scaleNameId']!="" )
        {
       	$sql.=' and "colorId"='.$_GET['colorId'];       
        }
-       else if(count($data_color)>0)
-       {
- 		$sql.=' and "colorId"='.$data_color[0]['colorId'];       
-       }
-       $sql.=' order by box asc';
-	   if(!($result_cnt9=pg_query($connection,$sql)))
-	   {
-			print("Failed InvData: " . pg_last_error($connection));
-			exit;
-	   }
-	   while($row_cnt9 = pg_fetch_array($result_cnt9))
-	   {
-			$data_storage[]=$row_cnt9;
-	   }
-	   
-	  
-	   //echo "<pre>"; print_r($data_storage);
-	   //echo "<pre>"; var_dump($data_loc);
-	   
-	  //exit();
 
-	
-pg_free_result($result_cnt9); 
+        else if(count($data_color)>0){
+     $sql.=' and "colorId"='.$data_color[0]['colorId'];       
+        }
+        $sql.=' order by box asc';
+	if(!($result_cnt9=pg_query($connection,$sql))){
+		print("Failed InvData: " . pg_last_error($connection));
+		exit;
+	}
+	while($row_cnt9 = pg_fetch_array($result_cnt9)){
+		$data_storage[]=$row_cnt9;
+	}
+pg_free_result($result_cnt9);
+
 }
 
 $totalScale = count($data_mainSize);
@@ -259,8 +250,22 @@ if($data_style['locationIds'] != "")
 {
 	$locArr = explode(",",$data_style['locationIds']);
 }
-// var_dump($locArr);
-// exit();
+
+
+if(!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
+	$query = 'select * from "tbl_invStorage" WHERE box='."'".$_GET['boxId']."'";
+
+	if (!($resultProduct = pg_query($connection, $query))) {
+		print("Failed invQuery: " . pg_last_error($connection));
+		exit;
+	}
+	while ($rowProduct = pg_fetch_array($resultProduct)) {
+		$data_product[] = $rowProduct;
+	}
+	pg_free_result($rowProduct);
+
+}
+
 ?>
 <script type="text/javascript" src="<?php echo $mydirectory;?>/js/jquery-ui.min-1.8.2.js"></script>
 <script type="text/javascript" src="<?php echo $mydirectory;?>/js/samplerequest.js"></script>
@@ -284,14 +289,7 @@ if($data_style['locationIds'] != "")
   </font>
   <fieldset style="margin:10px;">
   <table width="95%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-       <td>&nbsp;</td>
-       <td>&nbsp;</td>
-    
-    </tr>
+
     <tr>
 
 
@@ -351,15 +349,56 @@ Box #:&nbsp;<select name="box_num" id="box_num">
     <!--<td>&nbsp;<input  type="button" name="del_qnt" id="del_qnt" value="Delete All Quantities" 
                  onclick="javascript:delAllQnts();" class="ui-button ui-widget ui-state-default ui-corner-all"/></td>-->
                  </form>
-    </tr>
-  <tr><td><input type="button" value="Main Inventory" onclick="main_inv();"/></td></tr>  
+    <td><input type="button" value="Main Inventory" onclick="main_inv();"/></td></tr>
     <tr>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
-      <td>&nbsp;
+      <td>&nbsp;</td>
   </tr>
+       <tr>
+		<?php
+        if(!isset($_GET['boxId']) || $_GET['boxId'] != '0')
+        {
+        ?>
+	  <tr id="view_details">
+		  <td>Room: <strong><?php echo $data_product[0]['room']; ?></strong> </td>
+		  <td>Row: <strong><?php echo $data_product[0]['row']; ?></strong></td>
+		  <td>Rack: <strong><?php echo $data_product[0]['rack']; ?></strong></td>
+		  <td>Shelf:<strong> <?php echo $data_product[0]['shelf']; ?></strong></td>
+		  <td><button type="button" onclick="Update()" class="btn btn-success" style="color: #0c00d2">Update</button>
+              <button type="button" onclick="Delete()" class="btn btn-danger" style="color: #cd0a0a">Delete</button> </td>
+	  </tr>
+      <?php
+      } else {
+          ?>
+          <tr>
+              <td><!--button type="button" id="newInventory" class="btn btn-success">Add new Inventory</button--> </td>
+              <td>&nbsp; </td>
+              <td>&nbsp;</td>
+              <td>&nbsp; </td>
+              <td>&nbsp;</td>
+          </tr>
+      <?php } ?>
+      <tr id="hide">
+          <td><button type="button" id="newInventory" onclick="addInventory()" class="btn btn-success">Add new Inventory</button> </td>
+          <td>&nbsp; </td>
+          <td>&nbsp;</td>
+          <td>&nbsp; </td>
+          <td>&nbsp;</td>
+      </tr>
+      <tr id="inventoryDetails" style="display: none">
+          <td>Box Name: <input type="text" id="newBox"></td>
+          <td>Room: <input type="text" id="newRoom">  </td>
+          <td>Row: <input type="text" id="newRow"></td>
+          <td>Rack: <input type="text" id="newRack"></td>
+          <td>Shelf: <input type="text" id="newShelf"></td>
+          <td><button type="button" onclick="addNewInventory()" class="btn btn-success" style="color: #0c00d2">Add</button>
+          <td><button type="button" onclick="cancelInventory()" class="btn" style="color: #cd0a0a">Cancel</button>
+      </tr>
+      </tr>
+
 </table>
 </fieldset>
 <form id="inventoryForm">
@@ -376,21 +415,21 @@ Box #:&nbsp;<select name="box_num" id="box_num">
             <td height="100">&nbsp;</td>
             </tr>
             <?php if(isset($_SESSION['employeeType']) && $_SESSION['employeeType']<4){?>
-          
+
             <?php
             if(!isset($_GET['boxId']) || $_GET['boxId'] != '0')
-            {	
+            {
             	?>
           	<tr>
 	            <td>
 	            	<input id="update_inventory" width="117" height="98" type="image" src="<?php echo $mydirectory;?>/images/updtInvbutton.jpg" alt="Submit button"/>
 	            </td>
             </tr>
-            <?php 
+            <?php
             	}
             ?>
 
-            
+
 
           <?php }?>
         </table></td>
@@ -613,7 +652,37 @@ if($locArr[0] > 0 && $locArr[0] != "")
                                   <input type="hidden" name="boxId" id="boxid_mail" value="<?php echo $_GET['boxId'];?>"/>
                                   <input type="hidden" name="styleId" id="styleId_mail" value="<?php echo $_GET['styleId'];?>"/>
 		</form>
-		</div>        
+		</div>
+    <script>
+        function Update() {
+            $(location).attr('href',"updateInventory.php?styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");
+        }
+        function Delete() {
+            if (confirm("Are you Sure you want to delete this box") == true) {
+                $.ajax({
+                    url: "deleteInventory.php",
+                    type: "post",
+                    data: {
+                        styleId: document.getElementById('styleId').value,
+                        colorId: document.getElementById('styleId').value,
+                        boxId: "<?php echo $_REQUEST['boxId'];?>"
+                    },
+                    success: function (response) {
+                       // console.log(response);
+                        if(response == 1) {
+                            alert("Box Deleted SuccessFully");
+                            location.reload();
+                        } else {
+                            alert("Box Not Deleted Please Empty the box first");
+                        }
+                    }
+                });
+            } else {
+                console.log('cancel');
+            }
+        }
+
+</script>
 <script type="text/javascript">
 
 var unique_id = 0;
@@ -736,19 +805,19 @@ function AddQty(trId,type,cellId,locIndex,rowIndex,qty,invIdValue)
 			txtBox.name = "invId["+locIndex+"]["+rowIndex+"][]";
 			txtBox.value = invIdValue;
 			cell.appendChild(txtBox);	
-			if(invIdValue > 0 && qty > 0)
+			/*if(invIdValue > 0 && qty > 0)
 			{
 				a = document.createElement("a");
 				a.setAttribute("href", "#");
 				img = document.createElement("img");
 				img.width="15px";
 				img. height="14px";
-				img.className = "imgRght";
-				img.src="<?php echo $mydirectory;?>/images/Btn_edit.gif";				
-				img.setAttribute("onclick",'QtyDblClick('+invIdValue+');');						
+				img.className = "imgRght";*/
+				//img.src="<?php// echo $mydirectory;?>/images/Btn_edit.gif";
+				/*img.setAttribute("onclick",'QtyDblClick('+invIdValue+');');
 				a.appendChild(img);
 				cell.appendChild(a);
-			}
+			}*/
 			break;
 		}
 		case 'qtyDummy':
@@ -791,6 +860,13 @@ if($('#box_num').val() == 0 || $('#box_num').val() == 'undefined')
 {
 	$('#update_inventory').hide();
 	$('#print').hide();
+}
+if($('#box_num').val() == 0 || $('#box_num').val() == 'undefined')
+{
+	$('#view_details').hide();
+    $("#hide").css("display", "block");
+} else {
+    $("#hide").css("display", "none");
 }
 <?php
 if($data_style['scaleNameId']!="")
@@ -1027,71 +1103,174 @@ if ( dw_scrollObj.isSupported() ) {
     dw_Event.add( window, 'load', init_dw_Scroll);
 }
 </script>
-<script type="text/javascript">
-	$(function(){
 
-	$("#inventoryForm").submit(function(){
-	$("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");
-		dataString = $("#inventoryForm").serialize();
-		dataString += "&type=e";
-		$.ajax({
-			type: "POST",
-			url: "invReportSubmit.php",
-			data: dataString,
-			dataType: "json",
-			success:function(data)
-			{
-				if(data!=null)
-					{	if(data[0].name || data[0].error)
-						{
-							$("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error +"</strong></div>"); 
-							if(data[0].flag)
-							{
-								$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");
-							} 
-						} 
-						else 
-						{
-							if(data[0].flag)
-							{
-								$("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");
-								$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");
+	<script type="text/javascript">
+		$(function(){
+			$("#inventoryForm").submit(function(){
+				var boxId = 0;
+				if($("#box_num").val() != undefined)
+				{
+					boxId = $("#box_num").val();
+				}
+				var row = "<?php echo $data_product[0]['row']; ?>";
+                var room = "<?php echo $data_product[0]['room']; ?>";
+                var shelf = "<?php echo $data_product[0]['shelf']; ?>";
+                var rack = "<?php echo $data_product[0]['rack']; ?>";
+				$("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");
+				dataString = $("#inventoryForm").serialize();
+				dataString += "&type=e";
+				dataString += "&boxId="+boxId;
+				$.ajax({
+					type: "POST",
+					url: "invReportSubmit.php",
+					data: dataString,
+					dataType: "json",
+					success:function(data){
+						if(data!=null){
+							if(data[0].name || data[0].error){
+								$("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error +"</strong></div>");
+								if(data[0].flag){
+									//console.log('first');
+                                    $.ajax({
+                                       url: "newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&boxId="+boxId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf,
+                                        type: "GET",
+                                        success: function (data) {
+                                            if(data!=null)
+                                            {
+                                                if(data.name || data.error)
+                                                {
+                                                    $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error +"</strong></div>");
+                                                }
+                                                else
+                                                {
+                                                    location.reload(true);
+                                                    $("#message").html("<div class='successMessage'><strong>Storage Updated. Thank you.</strong></div>");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+                                            }
+                                        }
+                                    });
+									//$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&boxId="+boxId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
+								}
+							} else {
+								if(data[0].flag){
+								    $("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");
+                                    $.ajax({
+                                        url: "newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&boxId="+boxId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf,
+                                        type: "GET",
+                                        success: function (data) {
+                                            if(data!=null)
+                                            {
+                                                if(data.name || data.error)
+                                                {
+                                                    $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error +"</strong></div>");
+                                                }
+                                                else
+                                                {
+                                                    location.reload(true);
+                                                    $("#message").html("<div class='successMessage'><strong>Storage Updated. Thank you.</strong></div>");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+                                            }
+                                        }
+                                    });
+                                    //$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&boxId="+boxId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
+								}else{
+									$("#message").html("<div class='successMessage'><strong> All inventorys are up to date...</strong></div>");
+								}
 							}
-							else
-							{
-								$("#message").html("<div class='successMessage'><strong> All inventorys are up to date...</strong></div>");
-							}
+						}else{
+							$("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
 						}
 					}
-					else
-					{
-						$("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
-					}
-			}
-
+				});
+				return false;
 			});
-		return false;
 		});
-	});
 
 
-function delAllQnts()
-{
-  var url=location.href;
-  if(!url.contains("colorId"))
-  	url+="&colorId="+$("#color").val();
-  if(!url.contains("del"))
-  	url+="&del=true";  
- 
- 	location.href=url;
-}
+		function delAllQnts()
+		{
+			var url=location.href;
+			if(!url.contains("colorId"))
+				url+="&colorId="+$("#color").val();
+			if(!url.contains("del"))
+				url+="&del=true";
+			location.href=url;
+		}
 
 
 
-function main_inv()
-{
-    location.href='./reportViewEdit.php?styleId='+$('#styleId_mail').val()+'&colorId='+$('#colorid_mail').val();
-}
+		function main_inv()
+		{
+			location.href='./reportViewEdit.php?styleId='+$('#styleId_mail').val()+'&colorId='+$('#colorid_mail').val();
+		}
+		function addInventory() {
+            $('#inventoryDetails').show();
+            $('#hide').hide();
+        }
+        function cancelInventory() {
+            $('#hide').show();
+            $('#inventoryDetails').hide();
+        }
+        function addNewInventory() {
+            var boxId = $("#newBox").val();
+            if(boxId == '') {
+                alert("Please Provide a box name");
+                return false;
+            }
+            var room =$('#newRoom').val();
+            if(room == '') {
+                alert("Please Provide a room");
+                return false;
+            }
+            var rack = $('#newRack').val();
+            if(rack == '') {
+                alert("Please provide a Rack");
+                return false;
+            }
+            var row = $('#newRow').val();
+            if(row == '') {
+                alert("Please provide a Row");
+                return false;
+            }
+            var shelf = $("#newShelf").val();
+            if( shelf == '') {
+                alert("Please provide a Shelf");
+                return false;
+            }
+            var styleId = document.getElementById('styleId').value;
+            var colorId = document.getElementById('colorId').value;
+            $.ajax({
+                url: "addNewInventory.php",
+                type: "POST",
+                data: {
+                  box: boxId,
+                  room: room,
+                  row: row,
+                  shelf: shelf,
+                  rack: rack,
+                  styleId: styleId,
+                  colorId: colorId
+                },
+                success: function (data) {
+                    if(data == 1) {
+                        $(location).attr('href',"reportViewEdit.php?styleId="+styleId+"&colorId="+colorId+"&boxId="+boxId);
+                        $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+                    } else {
+                        $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+                    }
+                }
+            })
 
-</script>
+        }
+
+	</script>
+
 <?php require('../../trailer.php');?>

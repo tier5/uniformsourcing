@@ -146,7 +146,7 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 							$query .=" ,'".$_SESSION['employeeID']."' ";
 							$query .=" ,'".date('U')."' ";
 							$query .=" ,'".date('U')."' ";							
-							$query .=" )";	
+							$query .=" )";
 						}
 						else if(is_numeric($qty[$i][$j][$k]) && $invId[$i][$j][$k] > 0)
 						{								
