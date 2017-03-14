@@ -79,7 +79,7 @@ if(!($result=pg_query($connection,$sql)))
 $row = pg_fetch_array($result);
 $data_style=$row; //--------------------------- data style----------------
 
-echo "<pre>";print_r($data_style['sex']);
+//echo "<pre>";print_r($data_style['sex']);
 
 pg_free_result($result); 
 $query2='Select * from "tbl_invColor" where "styleId"='.$data_style['styleId'];
