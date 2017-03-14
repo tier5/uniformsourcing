@@ -513,8 +513,14 @@ if(count($datalist))
 		echo '<td class="grid001">'.$datalist[$i]['garmentName'].'</td>';
 		echo '<td class="grid001">'.$datalist[$i]['scaleName'].'</td>';
 		echo '<td class="grid001">'.$datalist[$i]['notes'].'</td>';
+
 		?>
-		<td class="grid001"><a href="reportViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>"><img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0"></a></td><?php 
+		<td class="grid001">
+			<a href="reportViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">
+			<img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0">
+			</a>
+		</td>
+<?php 
 		echo '<td class="grid001"><a href="styleAdd.php?ID='.$datalist[$i]['styleId'].'&type=e"><img src="'.$mydirectory.'/images/styleedit.png" border="0"></a></td>';
 		if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType']<4){
 ?>		<td class="grid001">
