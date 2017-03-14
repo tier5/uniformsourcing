@@ -315,7 +315,7 @@ Box #:&nbsp;<select name="box_num" id="box_num">
   </tr>
        <tr>
 		<?php
-        if(!(isset($_GET['boxId'])) || $_GET['boxId'] != '0')
+        if(!isset($_GET['boxId']) || $_GET['boxId'] != '0')
         {
         ?>
 	  <tr id="view_details">
@@ -330,14 +330,31 @@ Box #:&nbsp;<select name="box_num" id="box_num">
       } else {
           ?>
           <tr>
-              <td><button type="button" id="newInventory" class="btn btn-success">Add new Inventory</button> </td>
+              <td><!--button type="button" id="newInventory" class="btn btn-success">Add new Inventory</button--> </td>
               <td>&nbsp; </td>
               <td>&nbsp;</td>
               <td>&nbsp; </td>
               <td>&nbsp;</td>
           </tr>
       <?php } ?>
+      <tr id="hide">
+          <td><button type="button" id="newInventory" onclick="addInventory()" class="btn btn-success">Add new Inventory</button> </td>
+          <td>&nbsp; </td>
+          <td>&nbsp;</td>
+          <td>&nbsp; </td>
+          <td>&nbsp;</td>
       </tr>
+      <tr id="inventoryDetails" style="display: none">
+          <td>Box Name: <input type="text" id="newBox"></td>
+          <td>Room: <input type="text" id="newRoom">  </td>
+          <td>Row: <input type="text" id="newRow"></td>
+          <td>Rack: <input type="text" id="newRack"></td>
+          <td>Shelf: <input type="text" id="newShelf"></td>
+          <td><button type="button" onclick="addNewInventory()" class="btn btn-success" style="color: #0c00d2">Add</button>
+          <td><button type="button" onclick="cancelInventory()" class="btn" style="color: #cd0a0a">Cancel</button>
+      </tr>
+      </tr>
+
 </table>
 </fieldset>
 <form id="inventoryForm">
@@ -739,6 +756,9 @@ if($('#box_num').val() == 0 || $('#box_num').val() == 'undefined')
 if($('#box_num').val() == 0 || $('#box_num').val() == 'undefined')
 {
 	$('#view_details').hide();
+    $("#hide").css("display", "block");
+} else {
+    $("#hide").css("display", "none");
 }
 <?php
 if($data_style['scaleNameId']!="")
@@ -1059,6 +1079,56 @@ if ( dw_scrollObj.isSupported() ) {
 		{
 			location.href='./reportViewEdit.php?styleId='+$('#styleId_mail').val()+'&colorId='+$('#colorid_mail').val();
 		}
+		function addInventory() {
+            $('#inventoryDetails').show();
+            $('#hide').hide();
+        }
+        function cancelInventory() {
+            $('#hide').show();
+            $('#inventoryDetails').hide();
+        }
+        function addNewInventory() {
+            var boxId = $("#newBox").val();
+            if(boxId == '') {
+                alert("Please Provide a box name");
+                return false;
+            }
+            var room =$('#newRoom').val();
+            if(room == '') {
+                alert("Please Provide a room");
+                return false;
+            }
+            var rack = $('#newRack').val();
+            if(rack == '') {
+                alert("Please provide a Rack");
+                return false;
+            }
+            var row = $('#newRow').val();
+            if(row == '') {
+                alert("Please provide a Row");
+                return false;
+            }
+            var shelf = $("#newShelf").val();
+            if( shelf == '') {
+                alert("Please provide a Shelf");
+                return false;
+            }
+            $.ajax({
+                url: "addNewInventory.php",
+                type: "POST",
+                data: {
+                  box: boxId,
+                  room: room,
+                  row: row,
+                  shelf: shelf,
+                  rack: rack,
+                },
+                success: function (data) {
+                    console.log('data')
+                }
+            })
+
+        }
 
 	</script>
 

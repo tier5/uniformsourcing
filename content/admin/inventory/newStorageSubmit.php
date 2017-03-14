@@ -82,7 +82,7 @@ if (isset($data_inv1[0]['inventoryId'])) {
             $qty = $data_inv['newQty'] - $data_inv['quantity'];
         else
             $qty = $data_inv['newQty'];
-        for (; $i < count($data_storage); $i++) {
+        for ($i=0; $i < count($data_storage); $i++) {
             if ($data_storage[$i]['wareHouseQty'] == "" || $data_storage[$i]['wareHouseQty'] == 0) {
                 $found = 1;
                 break;
