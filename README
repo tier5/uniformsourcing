@@ -5,6 +5,7 @@ core Application.php changed to get DB, DBusername, and DB password from master 
 moving all DB queries to sql_class.php
 
 ******* run these commands to initialize the vagrant box*********
+sudo vagrant init centos/7
 sudo vagrant up
 sudo vagrant ssh
 sudo /vagrant/postgres-setup/./second.sh
