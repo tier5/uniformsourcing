@@ -1113,6 +1113,8 @@ if ( dw_scrollObj.isSupported() ) {
                 alert("Please provide a Shelf");
                 return false;
             }
+            var styleId = document.getElementById('styleId').value;
+            var colorId = document.getElementById('colorId').value;
             $.ajax({
                 url: "addNewInventory.php",
                 type: "POST",
@@ -1122,9 +1124,16 @@ if ( dw_scrollObj.isSupported() ) {
                   row: row,
                   shelf: shelf,
                   rack: rack,
+                  styleId: styleId,
+                  colorId: colorId
                 },
                 success: function (data) {
-                    console.log('data')
+                    if(data == 1) {
+                        $(location).attr('href',"reportViewEdit.php?styleId="+styleId+"&colorId="+colorId+"&boxId="+boxId);
+                        $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+                    } else {
+                        $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+                    }
                 }
             })
 
