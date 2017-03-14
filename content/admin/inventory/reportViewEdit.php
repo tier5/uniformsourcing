@@ -3,29 +3,33 @@ require('Application.php');
 require('../../header.php');
 //$sql='select st."styleId" st."styleNumber",st."scaleNameId",st."scaleNameId" from "tbl_invStyle" st left join tbl_inventory inv on st."styleId"=inv."styleId" where st."styleId"='.$_GET['StyleId'];
 
+$loc_identity=0;
 
 if(isset($_GET["del"])&&$_GET["del"]=="true")
 {
    $sql ='select "inventoryId" from "tbl_inventory" as inv where inv."styleId"='.$_GET['styleId'].' and inv."colorId"='.$_GET['colorId'];
-   if(!($result2=pg_query($connection,$sql))){
-	print("Failed StyleQuery: " . pg_last_error($connection));
-	exit;
-}
+   if(!($result2=pg_query($connection,$sql)))
+   {
+	 print("Failed StyleQuery: " . pg_last_error($connection));
+	 exit;
+   }
 
-while($row2 = pg_fetch_array($result2)){
-  $sql ='delete  from "tbl_invStorage"  where "invId"='.$row2["inventoryId"];
-  //$sql .=';update "tbl_inventory" set quantity=0 where "inventoryId"='.$row2["inventoryId"];
-  $sql .=';delete from "tbl_inventory" where "inventoryId"='.$row2["inventoryId"];
- //echo $sql;
-if(!($result=pg_query($connection,$sql))){
-	print("Failed StyleQuery: " . pg_last_error($connection));
-	exit;
-}  
-pg_free_result($result);
-}
-pg_free_result($result2);
-  unset($row2);
-$sp=split("&del",$_SERVER['REQUEST_URI']);  ?>
+	while($row2 = pg_fetch_array($result2))
+	{
+	  $sql ='delete  from "tbl_invStorage"  where "invId"='.$row2["inventoryId"];
+	  //$sql .=';update "tbl_inventory" set quantity=0 where "inventoryId"='.$row2["inventoryId"];
+	  $sql .=';delete from "tbl_inventory" where "inventoryId"='.$row2["inventoryId"];
+	 //echo $sql;
+		if(!($result=pg_query($connection,$sql)))
+		{
+			print("Failed StyleQuery: " . pg_last_error($connection));
+			exit;
+		}  
+	pg_free_result($result);
+	}
+	pg_free_result($result2);
+  	unset($row2);
+	$sp=split("&del",$_SERVER['REQUEST_URI']);  ?>
 <script type="text/javascript">location.href="<?php echo $sp[0];?>"</script>
 <?php 
 }
@@ -35,6 +39,7 @@ $sp=split("&del",$_SERVER['REQUEST_URI']);  ?>
 $search = "";
 if(isset($_GET['styleId']))
 {
+
 	$styleId 	= $_GET['styleId'];
         $search = "";	
 	if(isset($_GET['colorId']))
@@ -50,7 +55,7 @@ if(isset($_GET['styleId']))
 		$opt2Id 	= 0;
 	}
 	if($clrId > 0)
-	 {
+	{
 		$search = " and inv.\"colorId\"=$clrId ";
 		if($opt1Id > 0)
 		 	$search .= "and \"opt1ScaleId\"=$opt1Id ";
@@ -60,31 +65,34 @@ if(isset($_GET['styleId']))
 	
         if(isset($_GET['boxId'])&&$_GET['boxId']!='0')
         {
-      $search .= " and st.\"box\"='".$_GET['boxId']."'";      
+      		$search .= " and st.\"box\"='".$_GET['boxId']."'";      
         }
         
 		
 }
 $sql ='select "styleId","barcode", "styleNumber", "scaleNameId", price, "locationIds" from "tbl_invStyle" where "styleId"='.$styleId;
-if(!($result=pg_query($connection,$sql))){
+if(!($result=pg_query($connection,$sql)))
+{
 	print("Failed StyleQuery: " . pg_last_error($connection));
 	exit;
 }
 $row = pg_fetch_array($result);
-$data_style=$row;
-pg_free_result($result);
+$data_style=$row; //--------------------------- data style----------------
+
+pg_free_result($result); 
 $query2='Select * from "tbl_invColor" where "styleId"='.$data_style['styleId'];
 if(!($result2=pg_query($connection,$query2))){
 	print("Failed OptionQuery: " . pg_last_error($connection));
 	exit;
 }
-while($row2 = pg_fetch_array($result2)){
-	$data_color[]=$row2;}
+while($row2 = pg_fetch_array($result2))
+{
+	$data_color[]=$row2; // -------------------------- data_color ---------
+}
 pg_free_result($result2);
 if($data_style['scaleNameId']!="" )
 {	
-
-	$query2='Select "opt1Name","opt2Name" from "tbl_invScaleName" where "scaleId"='.$data_style['scaleNameId'];
+	$query2='Select * from "tbl_invScaleName" where "scaleId"='.$data_style['scaleNameId'];
 	if(!($result=pg_query($connection,$query2))){
 		print("Failed OptionQuery: " . pg_last_error($connection));
 		exit;
@@ -99,7 +107,8 @@ if($data_style['scaleNameId']!="" )
 		exit;
 	}
 	while($row2 = pg_fetch_array($result2)){
-		$data_mainSize[]=$row2;}
+		$data_mainSize[]=$row2;
+	}//---------------------------data_mainSize-----------------------------
 	pg_free_result($result2);
 	
 	$query2='Select "sizeScaleId" as "opt1SizeId", "opt1Size" from "tbl_invScaleSize" where "scaleId"='.$data_style['scaleNameId'].' and "opt1Size" IS NOT NULL  and "opt1Size" <>\'\' order by "opt1Order","sizeScaleId"';
@@ -108,40 +117,57 @@ if($data_style['scaleNameId']!="" )
 		exit;
 	}
 	while($row2 = pg_fetch_array($result2)){
-		$data_opt1Size[]=$row2;}
+		$data_opt1Size[]=$row2;
+		}//------------------------data_opt1Size----------------------------
 	pg_free_result($result2);
 	
 	$query2='Select "sizeScaleId" as "opt2SizeId", "opt2Size" from "tbl_invScaleSize" where "scaleId"='.$data_style['scaleNameId'].' and "opt2Size" IS NOT NULL and "opt2Size" <>\'\' order by "opt2Order","sizeScaleId"';
-	if(!($result2=pg_query($connection,$query2))){
+	if(!($result2=pg_query($connection,$query2)))
+	{
 		print("Failed OptionQuery: " . pg_last_error($connection));
 		exit;
 	}
-	while($row2 = pg_fetch_array($result2)){
-		$data_opt2Size[]=$row2;}
+	while($row2 = pg_fetch_array($result2))
+	{
+		$data_opt2Size[]=$row2;
+	}
 	pg_free_result($result2);
         
         
-       $sql='select  distinct box from "tbl_invStorage" where "styleId"='.$_GET['styleId'];
+       $sql='select distinct box from "tbl_invStorage" where "styleId"='.$_GET['styleId'];
        if($_GET['colorId']>0)
        {
-      $sql.=' and "colorId"='.$_GET['colorId'];       
+      	$sql.=' and "colorId"='.$_GET['colorId'];       
        }
-        else if(count($data_color)>0){
-     $sql.=' and "colorId"='.$data_color[0]['colorId'];       
-        }
-        $sql.=' order by box asc';
-	if(!($result_cnt9=pg_query($connection,$sql))){
-		print("Failed InvData: " . pg_last_error($connection));
-		exit;
-	}
-	while($row_cnt9 = pg_fetch_array($result_cnt9)){
-		$data_storage[]=$row_cnt9;
-	}
+       else if(count($data_color)>0)
+       {
+ 		$sql.=' and "colorId"='.$data_color[0]['colorId'];       
+       }
+       $sql.=' order by box asc';
+	   if(!($result_cnt9=pg_query($connection,$sql)))
+	   {
+			print("Failed InvData: " . pg_last_error($connection));
+			exit;
+	   }
+	   while($row_cnt9 = pg_fetch_array($result_cnt9))
+	   {
+			$data_storage[]=$row_cnt9;
+	   }
+	   
+	  
+	   //echo "<pre>"; print_r($data_storage);
+	   //echo "<pre>"; var_dump($data_loc);
+	   
+	  //exit();
+
+	
 pg_free_result($result_cnt9); 
 }
 
 $totalScale = count($data_mainSize);
 $tableWidth = 0;
+//echo "<pre>"; print_r($data_mainSize);
+
 
 $tableWidth = $totalScale * 100;
 
@@ -150,8 +176,12 @@ if(!($result=pg_query($connection,$sql))){
 		print("Failed invQuery: " . pg_last_error($connection));
 		exit;
 	}
-	while($row = pg_fetch_array($result)){
-		$data_inv[]=$row;}
+	while($row = pg_fetch_array($result))
+	{
+		$data_inv[]=$row;
+	}
+		// echo "<pre>";print_r($data_inv);
+		// exit();
 		for($i=0; $i<count($data_inv); $i++)
 		{
 			if($data_inv[$i]['newQty']>0)
@@ -219,14 +249,18 @@ if(!($result=pg_query($connection,$query))){
 	print("Failed invQuery: " . pg_last_error($connection));
 	exit;
 }
-while($row = pg_fetch_array($result)){
-	$data_loc[]=$row;}
+while($row = pg_fetch_array($result))
+{
+	$data_loc[]=$row;
+}
 pg_free_result($result);
 $locArr = array();
 if($data_style['locationIds'] != "")
 {
 	$locArr = explode(",",$data_style['locationIds']);
 }
+// var_dump($locArr);
+// exit();
 ?>
 <script type="text/javascript" src="<?php echo $mydirectory;?>/js/jquery-ui.min-1.8.2.js"></script>
 <script type="text/javascript" src="<?php echo $mydirectory;?>/js/samplerequest.js"></script>
@@ -259,29 +293,48 @@ if($data_style['locationIds'] != "")
     
     </tr>
     <tr>
+
+
+    <!-- print functionality -->
+    <button class="pull-right" id="print" 
+		onclick="print_content('<?php echo $_GET['styleId']; ?>'
+							  ,'<?php echo $data_loc[$loc_identity]['name'] ?>'	
+							  ,'<?php if(isset($_GET['boxId']))echo $_GET['boxId'];
+							  		  else echo 'null' ?>')" 
+							  class="pull-right">print</button>
+
+
     <form id="optForm" method="post">
       <td>Style:</td>
-     <td><h1><?php echo $data_style['styleNumber'];?></h1></td>
-     <?php if($data_style['barcode']!=""){ ?>
+      
+      <td><h1><?php echo $data_style['styleNumber']; ?></h1></td>
+     
+     	<?php if($data_style['barcode']!=""){ ?>
+      
       <td width="60">Barcode:</td>
-    <td><h1><img width="100" height="100" src="../../uploadFiles/inventory/images/<?php echo $data_style['barcode'];?>"></h1></td>
+    
+      <td><h1><img width="100" height="100" src="../../uploadFiles/inventory/images/<?php echo $data_style['barcode'];?>"></h1></td>
       <?php } ?>
       <td width="100px">
       <div class="color">Color:&nbsp;
-          <select name="color" id="color">               
- <?php 
-for($i=0; $i < count($data_color); $i++){
-	if($data_color[$i]['name']!="")
-	{
-		if($data_color[$i]['colorId'] == $clrId)
+          <select class="color-option" name="color" id="color">               
+ 		
+
+ 		<?php 
+		for($i=0; $i < count($data_color); $i++)
 		{
-			$imageName = $data_color[$i]['image'];
-			echo '<option selected="selected" value="'.$data_color[$i]['colorId'].'">'.$data_color[$i]['name'].'</option>';
-			continue;
+			if($data_color[$i]['name']!="")
+			{
+				if($data_color[$i]['colorId'] == $clrId)
+				{
+					$imageName = $data_color[$i]['image'];
+					echo '<option selected="selected" data-color="'.$data_color[$i]['name'].'" value="'.$data_color[$i]['colorId'].'">'.$data_color[$i]['name'].'</option>';
+					continue;
+				}
+			  echo '<option value="'.$data_color[$i]['colorId'].'">'.$data_color[$i]['name'].'</option>';
+			}
 		}
-	  echo '<option value="'.$data_color[$i]['colorId'].'">'.$data_color[$i]['name'].'</option>';
-	}
-}?>
+		?>
     </select>&nbsp;&nbsp;&nbsp;</div></td>
     <td>
 Box #:&nbsp;<select name="box_num" id="box_num">
@@ -328,7 +381,6 @@ Box #:&nbsp;<select name="box_num" id="box_num">
             if(!isset($_GET['boxId']) || $_GET['boxId'] != '0')
             {	
             	?>
-
           	<tr>
 	            <td>
 	            	<input id="update_inventory" width="117" height="98" type="image" src="<?php echo $mydirectory;?>/images/updtInvbutton.jpg" alt="Submit button"/>
@@ -411,7 +463,7 @@ if($locArr[0] > 0 && $locArr[0] != "")
 		}
 ?>
     <tr>
-      <td class="gridHeaderReportGrids3"><?php echo $data_loc[$loc_i]['name'];?></td>
+      <td class="gridHeaderReportGrids3"><?php echo $data_loc[$loc_i]['name']; $loc_identity = $loc_i;?></td>
 			<?php
 		if(count($data_opt1Size) > 0)
 		{
@@ -460,35 +512,54 @@ if($locArr[0] > 0 && $locArr[0] != "")
 <div id="wn2" style="position:relative; width:600px; height:<?php echo (count($locArr) * 64);?>px;  overflow:hidden; float:left;">
 <?php }?>
   <div id="lyr2">
-    <div id="values" >
+    <div id="values_" >
+      
       <table id="values" width="<?php echo $tableWidth."px";?>" border="0" cellspacing="1" cellpadding="1">
-<?php
-if($locArr[0] > 0 && $locArr[0] != "")
-{		
-	for($i=0;$i<count($locArr);$i++)
-	{		
-		$rowIndex=0;
-		if(count($data_opt1Size) > 0)
-		{
-			for($j=0; $j < count($data_opt1Size); $j++)
-			{
-				echo '<tr id="qty_'.$i.'_'.$rowIndex.'"></tr>';				
-				$rowIndex++;
+		
+		<?php
+		// print_r($data_opt1Size); ------------ size1 ------------
+		// exit;
+
+		//$data_mainSize,$data_inv,$data_opt1Size[$j]['opt1SizeId'],$locArr[$i],$locIndex,$rowIndex
+		// print_r($data_mainSize);
+		// exit();
+
+		// print_r($data_inv);
+		// exit();
+		if($locArr[0] > 0 && $locArr[0] != "")
+		{		
+			for($i=0;$i<count($locArr);$i++)
+			{		
+				$rowIndex=0;
+				if(count($data_opt1Size) > 0)
+				{
+					for($j=0; $j < count($data_opt1Size); $j++)
+					{
+						echo '<tr id="qty_'.$i.'_'.$rowIndex.'"></tr>';				
+						$rowIndex++;
+					}
+				}
+				else
+				{
+					echo '<tr id="qty_'.$i.'_'.$rowIndex.'"></tr>';		
+				}
+				echo '<tr id="qtyDummy'.$i.'"></tr>';	
 			}
 		}
-		else
-		{
-			echo '<tr id="qty_'.$i.'_'.$rowIndex.'"></tr>';		
-		}		
-		echo '<tr id="qtyDummy'.$i.'"></tr>';	
-	}	
-}?>
-</table>
+		?>
+	</table>
+
     </div>
+
   </div>
+
 </div>
+
 </div>
+
 </div>
+
+
 <div id="footer" style="width:100%; float:left;">
     <table class="HD001" style="float:left; width:250px;" border="0" cellspacing="1" cellpadding="1">
       <tr>
@@ -520,6 +591,10 @@ if($locArr[0] > 0 && $locArr[0] != "")
 <br />
 </fieldset> 
 </div></form>
+<!-- form print -->
+
+
+
 </td>
 </tr>
 </table>
@@ -540,6 +615,42 @@ if($locArr[0] > 0 && $locArr[0] != "")
 		</form>
 		</div>        
 <script type="text/javascript">
+
+var unique_id = 0;
+
+function print_content(stylId,loc,boxId)
+{
+	//alert($('#unique_0').val());
+	//alert($('#unique_30').val());
+
+	var data_ = "";
+	for(i = 0 ; ; i++)
+	{
+		var data = $('#unique_'+i).val();
+		if(typeof(data) != "undefined" && data !== null) {
+			if(i>0) data_ += ",";
+    		data_ += data;
+		}
+		else
+		{
+			break;
+		}
+	}
+	// alert(data_);
+	
+	if(stylId == 'null' || boxId == 'null')
+	{
+		alert('error');
+	}
+	else
+	{
+		//alert(window.location);
+		var clrId = $('#color option[selected="selected"]').attr('data-color');
+		
+		location.assign("print.php"+'?styleId='+stylId+'&colorId='+clrId+'&boxId='+boxId+'&location='+loc+'&all_data='+data_);	
+	}
+}
+
 function AddRow(type,cellId,value)
 {
 	switch(type)
@@ -602,6 +713,9 @@ function AddRow(type,cellId,value)
 }
 function AddQty(trId,type,cellId,locIndex,rowIndex,qty,invIdValue)
 {
+	console.log(trId,type,cellId,locIndex,rowIndex,qty,invIdValue);
+	//salert(qty);
+	//alert(invIdValue);
 	switch(type)
 	{
 		case 'qty':
@@ -612,8 +726,9 @@ function AddQty(trId,type,cellId,locIndex,rowIndex,qty,invIdValue)
 			cell.className = 'gridHeaderReportGrids';
 			txtBox.type = "text";
 			txtBox.name = "qty["+locIndex+"]["+rowIndex+"][]";
-			txtBox.className = "txBxGrey";			
-			txtBox.value = qty;
+			txtBox.className = "txBxGrey";	
+			txtBox.id = 'unique_'+unique_id++;		
+			txtBox.value = qty ;
 			cell.appendChild(txtBox);
 			
 			txtBox = document.createElement("input");			
@@ -664,6 +779,7 @@ function StoreInitialValues(locIndex,rowIndex,txtValue, newQty)
 }
 function QtyDblClick(inventoryId)
 {
+
 	$(location).attr('href',"storage.php?styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&invId="+inventoryId+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");
 }
 </script>
@@ -674,6 +790,7 @@ $(document).ready(function(){
 if($('#box_num').val() == 0 || $('#box_num').val() == 'undefined')
 {
 	$('#update_inventory').hide();
+	$('#print').hide();
 }
 <?php
 if($data_style['scaleNameId']!="")
@@ -702,7 +819,7 @@ if($data_style['scaleNameId']!="")
 		if(!$invPrice)
 		{
 			echo 'AddRow("price",'.$sizeIndex.',"'.$data_style['price'].'");';
-		}			
+		}
 		if($i < count($data_opt2Size))
 		{
 			echo 'AddRow("column",'.$columnSize++.',"'.$data_opt2Size[$i]['opt2Size'].'");';
@@ -718,21 +835,23 @@ $rowIndex = 0;
 $mainIndex = 0;
 if($locArr[0] > 0 && $locArr[0] != "")
 {	
+	// var_dump(count($locArr));
+	// exit();
 	for($i=0;$i<count($locArr);$i++,$locIndex++)
-	{ 
+	{
 		$rowIndex = 0;
 		if(count($data_opt1Size) > 0)
 		{
 			for($j=0; $j < count($data_opt1Size); $j++)
-			{			
+			{	
 				InsertQty($data_mainSize,$data_inv,$data_opt1Size[$j]['opt1SizeId'],$locArr[$i],$locIndex,$rowIndex);			
 				$rowIndex++;
-			}		
+			}
 		}
 		else
 		{
 			InsertQty($data_mainSize,$data_inv,0,$locArr[$i],$locIndex,$rowIndex);			
-			$rowIndex++;		
+			$rowIndex++;
 		}
 		echo 'AddQty("dummy","qtyDummy",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
 	}
@@ -743,6 +862,10 @@ if($rowIndex)
 	echo "document.getElementById('rowCount').value = $rowIndex;";
 function InsertQty($data_mainsize,$data_inv,$rowSizeId,$locId,$locIndex, $rowIndex)
 {
+
+	// var_dump(count($data_inv));
+	// exit();
+	
 	$mainIndex = 0;
 	for($i=0;$i < count($data_mainsize);$i++)
 	{
@@ -760,6 +883,8 @@ function InsertQty($data_mainsize,$data_inv,$rowSizeId,$locId,$locIndex, $rowInd
 						{
 							echo "StoreInitialValues($locIndex,$rowIndex,'".$data_inv[$j]['quantity']."','".$data_inv[$j]['newQty']."');";
 							echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',"'.$data_inv[$j]['quantity'].'",'.$data_inv[$j]['inventoryId'].');';
+
+							
 						}
 						else
 						{
@@ -772,6 +897,7 @@ function InsertQty($data_mainsize,$data_inv,$rowSizeId,$locId,$locIndex, $rowInd
 					{
 						echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
 						echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
+						
 					}
 					break;
 				}
@@ -787,11 +913,15 @@ function InsertQty($data_mainsize,$data_inv,$rowSizeId,$locId,$locIndex, $rowInd
 						{
 							echo "StoreInitialValues($locIndex,$rowIndex,'".$data_inv[$j]['quantity']."','".$data_inv[$j]['newQty']."');";
 							echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',"'.$data_inv[$j]['quantity'].'",'.$data_inv[$j]['inventoryId'].');';
+
+							
 						}
 						else
 						{
 							echo "StoreInitialValues($locIndex,$rowIndex,0,'".$data_inv[$j]['newQty']."');";
 							echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,'.$data_inv[$j]['inventoryId'].');';
+
+							
 						}
 						
 					}
@@ -799,6 +929,8 @@ function InsertQty($data_mainsize,$data_inv,$rowSizeId,$locId,$locIndex, $rowInd
 					{
 						echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
 						echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
+
+						
 					}
 					break;
 				}
@@ -808,15 +940,21 @@ function InsertQty($data_mainsize,$data_inv,$rowSizeId,$locId,$locIndex, $rowInd
 		{
 			echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
 			echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
+
+			
 		}
+
+
+		//var_dump($xx);
+
 		$mainIndex++;
-	}		
+	}
 }
 ?> 
 $("#color").change(function()
 	{
             
-            $("#colorid_mail").val($("#color").val());
+        $("#colorid_mail").val($("#color").val());
 		PostRequest();
 		
 });
@@ -830,6 +968,7 @@ $("#box_num").change(function()
 });
 function PostRequest()
 {
+	//alert('PostRequest');
 	var stylId = document.getElementById('styleId').value;
 	var clrId = 0;	
 	if($("#color").val() != undefined)
@@ -837,7 +976,7 @@ function PostRequest()
 		clrId = $("#color").val();
 	}
 
-var boxId = 0;	
+	var boxId = 0;	
 	if($("#box_num").val() != undefined)
 	{
 		boxId = $("#box_num").val();
@@ -852,6 +991,7 @@ var boxId = 0;
 		dataType: "json",
 		success: function(data)
 		{
+			console.log(data);
 			if(data!=null){	
 				if(data.styleId != null){$(location).attr('href','reportViewEdit.php?'+dataString);}
 				else
@@ -888,17 +1028,62 @@ if ( dw_scrollObj.isSupported() ) {
 }
 </script>
 <script type="text/javascript">
-$(function(){$("#inventoryForm").submit(function(){$("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");dataString = $("#inventoryForm").serialize();dataString += "&type=e";$.ajax({type: "POST",url: "invReportSubmit.php",data: dataString,dataType: "json",success:function(data){if(data!=null){	if(data[0].name || data[0].error){$("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error +"</strong></div>"); if(data[0].flag){$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");} } else {if(data[0].flag){$("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");}else{$("#message").html("<div class='successMessage'><strong> All inventorys are up to date...</strong></div>");}}}else{$("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");}}});return false;});});
+	$(function(){
+
+	$("#inventoryForm").submit(function(){
+	$("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");
+		dataString = $("#inventoryForm").serialize();
+		dataString += "&type=e";
+		$.ajax({
+			type: "POST",
+			url: "invReportSubmit.php",
+			data: dataString,
+			dataType: "json",
+			success:function(data)
+			{
+				if(data!=null)
+					{	if(data[0].name || data[0].error)
+						{
+							$("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error +"</strong></div>"); 
+							if(data[0].flag)
+							{
+								$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");
+							} 
+						} 
+						else 
+						{
+							if(data[0].flag)
+							{
+								$("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");
+								$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");
+							}
+							else
+							{
+								$("#message").html("<div class='successMessage'><strong> All inventorys are up to date...</strong></div>");
+							}
+						}
+					}
+					else
+					{
+						$("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+					}
+			}
+
+			});
+		return false;
+		});
+	});
 
 
 function delAllQnts()
 {
   var url=location.href;
   if(!url.contains("colorId"))
-  url+="&colorId="+$("#color").val();
-if(!url.contains("del"))
-  url+="&del=true";  
- location.href=url;
+  	url+="&colorId="+$("#color").val();
+  if(!url.contains("del"))
+  	url+="&del=true";  
+ 
+ 	location.href=url;
 }
 
 
