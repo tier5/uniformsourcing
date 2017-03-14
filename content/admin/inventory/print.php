@@ -53,7 +53,7 @@ require('Application.php');
 			
 	}
 
-	$sql ='select "styleId","barcode", "styleNumber", "scaleNameId", price, "locationIds" from "tbl_invStyle" where "styleId"='.$styleId;
+	$sql ='select "styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds" from "tbl_invStyle" where "styleId"='.$styleId;
 	if(!($result=pg_query($connection,$sql)))
 	{
 		print("Failed StyleQuery: " . pg_last_error($connection));
@@ -61,6 +61,21 @@ require('Application.php');
 	}
 	$row = pg_fetch_array($result);
 	$data_style=$row; //--------------------------- data style----------------
+
+	// echo "<pre>";print_r($data_style);
+	// exit();
+
+	$sql = 'select * from "tbl_garment" where "garmentID"='.$data_style["garmentId"];
+	if(!($result=pg_query($connection,$sql)))
+	{
+		print("Failed StyleQuery: " . pg_last_error($connection));
+		exit;
+	}
+	$row = pg_fetch_array($result);
+	$data_garment=$row;
+	// echo "<pre>";print_r($data_garment);
+	// exit();
+
 
 	pg_free_result($result); 
 	$query2='Select * from "tbl_invColor" where "styleId"='.$data_style['styleId'];
@@ -291,9 +306,9 @@ require('Application.php');
 				<td style="width: 35%">Date Entered:</td>
 			</tr>
 			<tr>
-				<td style="width: 30%">Garment Type:</td>
+				<td style="width: 30%">Garment Type: <?php echo $data_garment["garmentName"]; ?></td>
 				<td style="width: 35%">Color: <?php echo $_GET['colorId']; ?> </td>
-				<td style="width: 35%">Gender: M F U </td>
+				<td style="width: 35%">Gender :<?php echo (" ".$data_style['sex']); ?></td>
 			</tr>
 			<tr>
 				<td>Client: </td>
