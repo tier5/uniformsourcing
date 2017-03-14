@@ -315,7 +315,7 @@ Box #:&nbsp;<select name="box_num" id="box_num">
   </tr>
        <tr>
 		<?php
-        if(!isset($_GET['boxId']) || $_GET['boxId'] != '0')
+        if(!(isset($_GET['boxId'])) || $_GET['boxId'] != '0')
         {
         ?>
 	  <tr id="view_details">
@@ -329,11 +329,13 @@ Box #:&nbsp;<select name="box_num" id="box_num">
       <?php
       } else {
           ?>
-          <td>&nbsp; </td>
-          <td>&nbsp; </td>
-          <td>&nbsp;</td>
-          <td>&nbsp; </td>
-          <td>&nbsp;</td>
+          <tr>
+              <td><button type="button" id="newInventory" class="btn btn-success">Add new Inventory</button> </td>
+              <td>&nbsp; </td>
+              <td>&nbsp;</td>
+              <td>&nbsp; </td>
+              <td>&nbsp;</td>
+          </tr>
       <?php } ?>
       </tr>
 </table>
@@ -352,10 +354,10 @@ Box #:&nbsp;<select name="box_num" id="box_num">
             <td height="100">&nbsp;</td>
             </tr>
             <?php if(isset($_SESSION['employeeType']) && $_SESSION['employeeType']<4){?>
-          
+
             <?php
             if(!isset($_GET['boxId']) || $_GET['boxId'] != '0')
-            {	
+            {
             	?>
 
           	<tr>
@@ -363,11 +365,11 @@ Box #:&nbsp;<select name="box_num" id="box_num">
 	            	<input id="update_inventory" width="117" height="98" type="image" src="<?php echo $mydirectory;?>/images/updtInvbutton.jpg" alt="Submit button"/>
 	            </td>
             </tr>
-            <?php 
+            <?php
             	}
             ?>
 
-            
+
 
           <?php }?>
         </table></td>
@@ -958,6 +960,10 @@ if ( dw_scrollObj.isSupported() ) {
 				{
 					boxId = $("#box_num").val();
 				}
+				var row = "<?php echo $data_product[0]['row']; ?>";
+                var room = "<?php echo $data_product[0]['room']; ?>";
+                var shelf = "<?php echo $data_product[0]['shelf']; ?>";
+                var rack = "<?php echo $data_product[0]['rack']; ?>";
 				$("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");
 				dataString = $("#inventoryForm").serialize();
 				dataString += "&type=e";
@@ -973,11 +979,56 @@ if ( dw_scrollObj.isSupported() ) {
 								$("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error +"</strong></div>");
 								if(data[0].flag){
 									//console.log('first');
-									$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");
+                                    $.ajax({
+                                       url: "newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&boxId="+boxId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf,
+                                        type: "GET",
+                                        success: function (data) {
+                                            if(data!=null)
+                                            {
+                                                if(data.name || data.error)
+                                                {
+                                                    $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error +"</strong></div>");
+                                                }
+                                                else
+                                                {
+                                                    location.reload(true);
+                                                    $("#message").html("<div class='successMessage'><strong>Storage Updated. Thank you.</strong></div>");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+                                            }
+                                        }
+                                    });
+									//$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&boxId="+boxId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
 								}
 							} else {
-								if(data[0].flag){$("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");
-									$(location).attr('href',"storage.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"<?php if(isset($_REQUEST['boxId']) && $_REQUEST['boxId']!='') echo '&boxId='.$_REQUEST['boxId'];?>");
+								if(data[0].flag){
+								    $("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");
+                                    $.ajax({
+                                        url: "newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&boxId="+boxId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf,
+                                        type: "GET",
+                                        success: function (data) {
+                                            if(data!=null)
+                                            {
+                                                if(data.name || data.error)
+                                                {
+                                                    $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error +"</strong></div>");
+                                                }
+                                                else
+                                                {
+                                                    location.reload(true);
+                                                    $("#message").html("<div class='successMessage'><strong>Storage Updated. Thank you.</strong></div>");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+                                            }
+                                        }
+                                    });
+                                    //$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&boxId="+boxId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
 								}else{
 									$("#message").html("<div class='successMessage'><strong> All inventorys are up to date...</strong></div>");
 								}

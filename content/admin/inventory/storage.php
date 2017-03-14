@@ -134,22 +134,22 @@ $query='select * from "tbl_invLocation" order by "locationId"';
 		}
 </style>
 <!--Styles needed for the ShowHide Feature of the Storage Forms -->
-<script language="javascript" type="text/javascript">    
-function showHideDiv(objectId)    {        
-var divstyle = new String(); 
-divstyle = document.getElementById(objectId).style.display;        
-if(divstyle.toLowerCase()=="none" || divstyle == "")        
-{document.getElementById(objectId).style.display = "block";}       
+<script language="javascript" type="text/javascript">
+function showHideDiv(objectId)    {
+var divstyle = new String();
+divstyle = document.getElementById(objectId).style.display;
+if(divstyle.toLowerCase()=="none" || divstyle == "")
+{document.getElementById(objectId).style.display = "block";}
  else{document.getElementById(objectId).style.display = "none";}
-}  
+}
 
-function showHideMB(objectId)    {        
-var divstyle = new String(); 
-divstyle = document.getElementById(objectId).style.display;        
-if(divstyle.toLowerCase()=="block" || divstyle == "")        
-{document.getElementById(objectId).style.display = "none";}       
+function showHideMB(objectId)    {
+var divstyle = new String();
+divstyle = document.getElementById(objectId).style.display;
+if(divstyle.toLowerCase()=="block" || divstyle == "")
+{document.getElementById(objectId).style.display = "none";}
 else{document.getElementById(objectId).style.display = "block";}
-}      
+}
  </script>
 
 
@@ -162,13 +162,13 @@ else{document.getElementById(objectId).style.display = "block";}
                   <td align="center"><font size="5"><br>
                       <br>
                     </font>
-			
-					
+
+
 	<div id="light" class="white_content">
 <div id="forms"><!--All the forms like Conveyor form, Warehouse form, Other comes inside this DIV-->
 <?php
 if(($isCellRequest==0) && (count($data_inv) > 0))
-{	
+{
 ?>
 <div style="overflow-x:scroll; overflow-y:hidden; width:700px; height:40px;" >
 <!--the width generated in for the ul should be dynamic and it should be in the logic (no of item x 90)-->
@@ -181,7 +181,7 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
 ?>
 </ul></div>
 <fieldset style="padding:10px; border: 1px solid gray;">
-<center><table><tr><td>  
+<center><table><tr><td>
     <div align="center" id="message"></div>
     </td></tr></table></center>
 <?php
@@ -211,7 +211,7 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
 	<tr>
     <td align="center"><strong>Select Conveyor, Warehouse or Other </strong></td>
   </tr>
- 			
+
   <tr>
     <td height="30" align="center"><a href="javascript:showHideDiv('cf<?php echo ($i+1);?>'); showHideMB('mb<?php echo ($i+1);?>');">Conveyor Form</a></td>
   </tr>
@@ -219,7 +219,7 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
     <td height="30" align="center"><a href="javascript:showHideDiv('wf<?php echo ($i+1);?>'); showHideMB('mb<?php echo ($i+1);?>');">Warehouse Form</a></td>
   </tr>
   <tr>
-    <td height="30" align="center"><a href="javascript:showHideDiv('of<?php echo ($i+1);?>'); showHideMB('mb<?php echo ($i+1);?>');">Other Form</a> </td>   
+    <td height="30" align="center"><a href="javascript:showHideDiv('of<?php echo ($i+1);?>'); showHideMB('mb<?php echo ($i+1);?>');">Other Form</a> </td>
   </tr>
 </table>
 <!--Conveyor Table starts here  -->
@@ -235,7 +235,7 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
     <td height="30" align="right"><a href="javascript:showHideDiv('cf<?php echo ($i+1);?>'); showHideMB('mb<?php echo ($i+1);?>');ClearMessage();">Go Back</a> </td>
     <td width="10">&nbsp;</td>
   </tr>
-<?php 
+<?php
   		for($j=0;$j < $storageQty; $j++)
 		{
 ?>
@@ -248,14 +248,14 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
   </tr>
 <?php
 		}
-?>  
+?>
 </table>
 </div>
 <div style="padding:10px;">
     <input name="invId" type="hidden" value="<?php echo $data_inv[$i]['inventoryId'];?>"/>
     <input type="button" id="cfSubmit<?php echo ($i+1);?>" name="cfSubmit<?php echo ($i+1);?>" value="Save" />
       <input type="button" name="cfCancel<?php echo ($i+1);?>" value="Cancel" onclick="javascript:showHideDiv('cf<?php echo ($i+1);?>'); showHideMB('mb<?php echo ($i+1);?>');ClearMessage();" />
- </div>  
+ </div>
 </div>
 <!--Conveyor Table ends here  -->
 </form>
@@ -363,16 +363,16 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
 </td>
 <!-- second td starts here-->
     <td width="300px" valign="top">
-    
+
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
-<?php 
+<?php
 	if($data_inv[$i]['styleNumber'] !="")
 	{
 ?>
   <tr>
     <td height="30">Style Number:<strong><?php echo $data_inv[$i]['styleNumber'];?></strong></td>
   </tr>
-<?php 
+<?php
 	}
 	if($data_inv[$i]['name']!="")
 	{
@@ -380,7 +380,7 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
   <tr>
     <td height="30">Color Name:<strong><?php echo $data_inv[$i]['name'];?></strong></td>
   </tr>
-<?php 
+<?php
   	}
 	if($data_inv[$i]['mainSize'] !="")
 	{
@@ -388,7 +388,7 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
   <tr>
     <td height="30">Main Size:<strong><?php echo $data_inv[$i]['mainSize'];?></strong>
   </tr>
-<?php 
+<?php
 	}
 	if($data_inv[$i]['columnSize']!="")
 	{
@@ -396,7 +396,7 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
   <tr>
    <td height="30">Column Size:<strong><?php echo $data_inv[$i]['columnSize'];?></strong> </td>
   </tr>
-<?php 
+<?php
 	}
 	if($data_inv[$i]['rowSize']!="")
 	{
@@ -412,7 +412,7 @@ if(($isCellRequest==0) && (count($data_inv) > 0))
   <tr>
      <td height="30">Location:<strong><?php echo $location;?> </strong></td>
   </tr>
-<?php 
+<?php
   }
 ?>
 </table>
