@@ -95,7 +95,7 @@ for ($i=0;$i<$totalRow;$i++) {
                 $query .= ",\"rack\" = '" . $rack . "' ";
                 $query .= ",\"shelf\" = '" . $shelf . "' ";
                 $query .= ",\"box\" = '" . $box . "' ";
-                $query .= ",\"wareHouseQty\" = '" . $data_inv1[0]['newQty'] . "' ";
+                $query .= ",\"wareHouseQty\" = '" . $data_inv['newQty'] . "' ";
                 $query .= ",\"updatedBy\" = '" . $_SESSION['employeeID'] . "' ";
                 $query .= ",\"updatedDate\" = '" . date('U') . "' ";
                 $query .= "  where \"storageId\"='" . $data_storage[$j]['storageId'] . "' ";
@@ -133,7 +133,7 @@ for ($i=0;$i<$totalRow;$i++) {
                 if ($rack != "") $query .= " ,'" . $rack . "' ";
                 if ($shelf != "") $query .= " ,'" . $shelf . "' ";
                 if ($box != "") $query .= " ,'" . $box . "' ";
-                $query .= " ,'" . $data_inv1[0]['newQty'] . "' ";
+                $query .= " ,'" . $data_inv['newQty'] . "' ";
                 $query .= " ,'" . $_SESSION['employeeID'] . "' ";
                 $query .= " ,'" . $_SESSION['employeeID'] . "' ";
                 $query .= " ,'" . date('U') . "' ";
