@@ -90,13 +90,13 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 		{
 			$locArr = explode(",",$data_style['locationIds']);
 		}
-		
 		for($i=0;$i<$locCount;$i++)
 		{ 
 			for($j=0; $j < $rowCount; $j++)
 			{
 				for($k = 0; $k < $mainCount; $k++)
 				{
+                   // echo '<pre>';print_r($qty[$i][$j][$k]);
 					if($hdnqty[$i][$j][$k] != $qty[$i][$j][$k])
 					{
 						$query = "";

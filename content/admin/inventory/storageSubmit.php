@@ -53,7 +53,7 @@ if(isset($invId) && isset($formId))
 				$totalOtherQty += $data_storage[$i]['otherQty'];
 		}
 		$totalStorageQty = $totalConveyorQty + $totalWarehouseQty + $totalOtherQty;	
-		$type = substr($formId,0,1);
+		/*$type = substr($formId,0,1);
 		switch($type)
 		{
 			case 'c':
@@ -162,7 +162,7 @@ if(isset($invId) && isset($formId))
 				break;
 			}
 			case 'w':
-			{
+			{*/
 				$found = 0;
 				$query = "";
 				$i = 0;
@@ -269,7 +269,7 @@ if(isset($invId) && isset($formId))
 					pg_free_result($result);
 					$query = "";
 				}
-				break;
+				/*break;
 			}
 			case 'o':
 			{
@@ -369,7 +369,7 @@ if(isset($invId) && isset($formId))
 				}
 				break;
 			}
-		}
+		}*/
 	}
 	else
 	{
