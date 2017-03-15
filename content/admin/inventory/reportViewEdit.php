@@ -195,11 +195,13 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $data_inv[] = $row;
     }
+//    echo '<pre>';
+//    print_r($data_inv);
     pg_free_result($result);
     if (count($data_inv) > 0) {
         for ($l = 0; $l < count($data_inv); $l++) {
-            if (isset($data_inv[$l]['st_quantity']) && $data_inv[$l]['st_quantity'] != '') {
-                $data_inv[$l]['quantity'] = $data_inv[$l]['st_quantity'];
+            if (isset($data_inv[$l]['quantity']) && $data_inv[$l]['quantity'] != '') {
+                $data_inv[$l]['quantity'] = $data_inv[$l]['quantity'];
             }
         }
     }
@@ -795,7 +797,7 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
         }
         function AddQty(trId, type, cellId, locIndex, rowIndex, qty, invIdValue) {
             console.log(trId, type, cellId, locIndex, rowIndex, qty, invIdValue);
-            //salert(qty);
+            console.log('--->'+qty);
             //alert(invIdValue);
             switch (type) {
                 case 'qty': {
@@ -1102,7 +1104,7 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                                         url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&boxId=" + boxId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
                                         type: "GET",
                                         success: function (data) {
-                                           // return false;
+                                            //return false;
                                             if (data != null) {
                                                 if (data.name || data.error) {
                                                     $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");

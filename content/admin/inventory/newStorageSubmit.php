@@ -46,8 +46,9 @@ for ($i=0;$i<$totalRow;$i++) {
         $row = pg_fetch_array($result);
         $data_inv = $row;
         pg_free_result($result);
+        $sql = '';
         if ($data_inv['inventoryId'] != "") {
-            $sql = 'select "storageId", "invId", "sizeScaleId", "opt1ScaleId", "opt2ScaleId", "locationId", "conveyorSlotId", "conveyorQty", room, "row", rack, shelf, box, "wareHouseQty", "location", "otherQty" from "tbl_invStorage" where "invId"=' . $data_inv1[$i]['inventoryId'] . ' order by "storageId"';
+            $sql = 'select "storageId", "invId", "sizeScaleId", "opt1ScaleId", "opt2ScaleId", "locationId", "conveyorSlotId", "conveyorQty", room, "row", rack, shelf, box, "wareHouseQty", "location", "otherQty" from "tbl_invStorage" where "invId"=' . $data_inv['inventoryId'] . ' order by "storageId"';
 
             if (!($result = pg_query($connection, $sql))) {
                 print("Failed Data_invQuery: " . pg_last_error($connection));
@@ -152,7 +153,7 @@ for ($i=0;$i<$totalRow;$i++) {
                 pg_free_result($result);
                 $query = "";
             }
-            if ($qty > 0) {
+            if ($qty >= 0) {
                 $query = "UPDATE \"tbl_inventory\" SET ";
                 $query .= "\"quantity\" = '" . $qty . "' ";
                 $query .= ",\"newQty\" = '0' ";

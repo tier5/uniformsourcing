@@ -96,57 +96,82 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 			{
 				for($k = 0; $k < $mainCount; $k++)
 				{
-                   // echo '<pre>';print_r($qty[$i][$j][$k]);
 					if($hdnqty[$i][$j][$k] != $qty[$i][$j][$k])
 					{
 						$query = "";
 						if((is_numeric($qty[$i][$j][$k])) && ($hdnqty[$i][$j][$k] == 0 && $hdnNewQty[$i][$j][$k] == 0 ))
 						{
-							$notes = 'auto inventory';
-							$query = "INSERT INTO \"tbl_inventory\" (";
-							$query .=" \"styleId\" ";
-							$query .=" ,\"styleNumber\" ";
-							$query .=" ,\"scaleId\" ";
-							if($price[$k] != "") $query .=", \"price\" ";
-							$query .=", \"locationId\" ";	
-							$query .=", \"quantity\" ";		
-							$query .=", \"newQty\" ";							
-							if($k < count($data_mainSize))$query .=", \"sizeScaleId\" ";	
-							$query .=", \"colorId\" ";
-							if($j < count($data_opt1Size))$query .=", \"opt1ScaleId\" ";							
-							if($k < count($data_opt2Size))$query .=", \"opt2ScaleId\" ";							
-							$query .=", \"notes\" ";
-							if($k < count($data_mainSize))$query .=", \"mainSize\" ";
-							if($j < count($data_opt1Size)) $query .=", \"rowSize\" ";
-							if($k < count($data_opt2Size))$query .=", \"columnSize\" ";
-							$query .=", \"isStorage\" ";
-							$query .=", \"createdBy\" ";
-							$query .=", \"updatedBy\" ";
-							$query .=", \"createdDate\" ";
-							$query .=", \"updatedDate\" ";
-							$query .=")";
-							$query .=" VALUES (";
-							$query .=" '".$data_style['styleId']."' ";
-							$query .=" ,'".$data_style['styleNumber']."' ";
-							$query .=", '".$data_style['scaleNameId']."' ";							
-							if($price[$k] != "") $query .=" ,'".$price[$k]."' ";
-							$query .=" ,'".$locArr[$i]."' ";	
-							$query .=" ,0 ";
-							$query .=" ,'".$qty[$i][$j][$k]."' ";
-							if($k < count($data_mainSize))$query .=", '".$data_mainSize[$k]['mainSizeId']."' ";
-							$query .=", '$colorId' ";
-							if($j < count($data_opt1Size))$query .=", '".$data_opt1Size[$j]['opt1SizeId']."' ";
-							if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2SizeId']."' ";
-							$query .=" ,'$notes' ";
-							if($k < count($data_mainSize))$query .=", '".$data_mainSize[$k]['scaleSize']."' ";
-							if($j < count($data_opt1Size))$query .=", '".$data_opt1Size[$j]['opt1Size']."' ";
-							if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2Size']."' ";
-							$query .=" ,0 ";
-							$query .=" ,'".$_SESSION['employeeID']."' ";
-							$query .=" ,'".$_SESSION['employeeID']."' ";
-							$query .=" ,'".date('U')."' ";
-							$query .=" ,'".date('U')."' ";							
-							$query .=" )";
+						    $sql = '';
+                            $sql = 'SELECT * from "tbl_inventory" WHERE ';
+                            $sql .= "\"styleId\"='".$data_style['styleId']."'";
+                            $sql .= " and \"styleNumber\" = '".$data_style['styleNumber']."'";
+                            $sql .= " and \"scaleId\" = '".$data_style['scaleNameId']."'";
+                            $sql .= " and \"colorId\"='".$colorId."'";
+                            $sql .= " and \"mainSize\"='".$data_mainSize[$k]['scaleSize']."'";
+                            $sql .= " and \"rowSize\"='".$data_opt1Size[$j]['opt1Size']."'";
+                            if(!($result=pg_query($connection,$sql))){
+                                $return_arr[0]['error'] = pg_last_error($connection);
+                                echo json_encode($return_arr);
+                                return;
+                            }
+                            while($previous = pg_fetch_array($result)){
+                                $previous_data[]=$previous;
+                            }
+                            pg_free_result($result);
+                            if($previous_data){
+                                $query = "UPDATE \"tbl_inventory\" SET ";
+                                $query .="\"newQty\" = '".$qty[$i][$j][$k]."' ";
+                                $query .=",\"isStorage\" = 0 ";
+                                $query .=",\"updatedBy\" = '".$_SESSION['employeeID']."' ";
+                                $query .=",\"updatedDate\" = '".date('U')."' ";
+                                $query .="  where \"inventoryId\"='".$previous_data[0]['inventoryId']."' ";
+                            } else {
+                                $notes = 'auto inventory';
+                                $query = "INSERT INTO \"tbl_inventory\" (";
+                                $query .=" \"styleId\" ";
+                                $query .=" ,\"styleNumber\" ";
+                                $query .=" ,\"scaleId\" ";
+                                if($price[$k] != "") $query .=", \"price\" ";
+                                $query .=", \"locationId\" ";
+                                $query .=", \"quantity\" ";
+                                $query .=", \"newQty\" ";
+                                if($k < count($data_mainSize))$query .=", \"sizeScaleId\" ";
+                                $query .=", \"colorId\" ";
+                                if($j < count($data_opt1Size))$query .=", \"opt1ScaleId\" ";
+                                if($k < count($data_opt2Size))$query .=", \"opt2ScaleId\" ";
+                                $query .=", \"notes\" ";
+                                if($k < count($data_mainSize))$query .=", \"mainSize\" ";
+                                if($j < count($data_opt1Size)) $query .=", \"rowSize\" ";
+                                if($k < count($data_opt2Size))$query .=", \"columnSize\" ";
+                                $query .=", \"isStorage\" ";
+                                $query .=", \"createdBy\" ";
+                                $query .=", \"updatedBy\" ";
+                                $query .=", \"createdDate\" ";
+                                $query .=", \"updatedDate\" ";
+                                $query .=")";
+                                $query .=" VALUES (";
+                                $query .=" '".$data_style['styleId']."' ";
+                                $query .=" ,'".$data_style['styleNumber']."' ";
+                                $query .=", '".$data_style['scaleNameId']."' ";
+                                if($price[$k] != "") $query .=" ,'".$price[$k]."' ";
+                                $query .=" ,'".$locArr[$i]."' ";
+                                $query .=" ,0 ";
+                                $query .=" ,'".$qty[$i][$j][$k]."' ";
+                                if($k < count($data_mainSize))$query .=", '".$data_mainSize[$k]['mainSizeId']."' ";
+                                $query .=", '$colorId' ";
+                                if($j < count($data_opt1Size))$query .=", '".$data_opt1Size[$j]['opt1SizeId']."' ";
+                                if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2SizeId']."' ";
+                                $query .=" ,'$notes' ";
+                                if($k < count($data_mainSize))$query .=", '".$data_mainSize[$k]['scaleSize']."' ";
+                                if($j < count($data_opt1Size))$query .=", '".$data_opt1Size[$j]['opt1Size']."' ";
+                                if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2Size']."' ";
+                                $query .=" ,0 ";
+                                $query .=" ,'".$_SESSION['employeeID']."' ";
+                                $query .=" ,'".$_SESSION['employeeID']."' ";
+                                $query .=" ,'".date('U')."' ";
+                                $query .=" ,'".date('U')."' ";
+                                $query .=" )";
+                            }
 						}
 						else if(is_numeric($qty[$i][$j][$k]) && $invId[$i][$j][$k] > 0)
 						{								
