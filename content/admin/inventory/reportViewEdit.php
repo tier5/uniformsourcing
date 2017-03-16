@@ -796,8 +796,8 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
             }
         }
         function AddQty(trId, type, cellId, locIndex, rowIndex, qty, invIdValue) {
-            console.log(trId, type, cellId, locIndex, rowIndex, qty, invIdValue);
-            console.log('--->'+qty);
+            //console.log(trId, type, cellId, locIndex, rowIndex, qty, invIdValue);
+           // console.log('--->'+qty);
             //alert(invIdValue);
             switch (type) {
                 case 'qty': {

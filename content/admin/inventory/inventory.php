@@ -13,6 +13,7 @@
                 <td><a href="styleAdd.php"><img src="<?php echo $mydirectory;?>/images/newInventory.jpg" alt="invtry" width="165" height="99" border="0" /></a></td>
                 <?php }?>
                 <td><a href="reports.php"><img src="<?php echo $mydirectory;?>/images/reports.jpg" alt="rprts" width="165" height="99" border="0" /></a></td>
+                <td><a href="location.php"><img src="<?php echo $mydirectory;?>/images/Locations.jpg" alt="location" width="165" height="99" border="0"></a></td>
               </tr>         
           </table></td>
         </tr>
