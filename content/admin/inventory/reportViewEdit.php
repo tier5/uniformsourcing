@@ -235,6 +235,25 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
 
 }
 
+
+    $sql = 'select distinct "box" , "wareHouseQty" as "quantity",
+           "opt1ScaleId",
+           "sizeScaleId" as "mainSizeId",
+           "invId","styleId" from "tbl_invStorage" where "styleId"='.$_GET['styleId'].' ORDER BY box';
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while($row = pg_fetch_array($result))
+    {
+        $_store[]=$row; // -------------------------- data_color ---------
+    }
+    // echo "<pre>";print_r($_store);
+    // exit();
+
+
+
 ?>
     <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/jquery-ui.min-1.8.2.js"></script>
     <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/samplerequest.js"></script>
@@ -795,53 +814,72 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                 }
             }
         }
-        function AddQty(trId, type, cellId, locIndex, rowIndex, qty, invIdValue) {
-            //console.log(trId, type, cellId, locIndex, rowIndex, qty, invIdValue);
-           // console.log('--->'+qty);
+
+        function AddQty(trId,type,cellId,i,j,data,locIndex,rowIndex,qty,invIdValue)
+        {
+            //console.log(cellId,data);
+            //console.log(i,j,qty);
+            //alert(data);
             //alert(invIdValue);
-            switch (type) {
-                case 'qty': {
-                    var tr = document.getElementById(trId);
+            switch(type)
+            {
+                case 'qty':
+                {
+                    var abc="Abc:hfdfh \nBcd:jhyf";
+                    var tr = document.getElementById(trId);     
                     var cell = tr.insertCell(cellId);
                     var txtBox = document.createElement("input");
                     cell.className = 'gridHeaderReportGrids';
                     txtBox.type = "text";
-                    txtBox.name = "qty[" + locIndex + "][" + rowIndex + "][]";
-                    txtBox.className = "txBxGrey";
-                    txtBox.id = 'unique_' + unique_id++;
-                    txtBox.value = qty;
-                    cell.appendChild(txtBox);
+                    txtBox.name = "qty["+locIndex+"]["+rowIndex+"][]";
+                    txtBox.className = "txBxGrey eachcell"; 
+                    txtBox.id = 'unique_'+unique_id++;
 
-                    txtBox = document.createElement("input");
-                    txtBox.type = "hidden";
-                    txtBox.name = "invId[" + locIndex + "][" + rowIndex + "][]";
-                    txtBox.value = invIdValue;
+                    if(data != -1)
+                    {
+                        data = data.replace(/::/g,'\n');
+                        txtBox.title = data;
+                    }
+                    
+                    txtBox.value = qty ;
                     cell.appendChild(txtBox);
+                    
+                    txtBox = document.createElement("input");           
+                    txtBox.type = "hidden";
+                    txtBox.name = "invId["+locIndex+"]["+rowIndex+"][]";
+                    txtBox.value = invIdValue;
+                    cell.appendChild(txtBox);   
                     /*if(invIdValue > 0 && qty > 0)
-                     {
-                     a = document.createElement("a");
-                     a.setAttribute("href", "#");
-                     img = document.createElement("img");
-                     img.width="15px";
-                     img. height="14px";
-                     img.className = "imgRght";*/
-                    //img.src="<?php// echo $mydirectory;?>/images/Btn_edit.gif";
-                    /*img.setAttribute("onclick",'QtyDblClick('+invIdValue+');');
-                     a.appendChild(img);
-                     cell.appendChild(a);
-                     }*/
+                    {
+                        a = document.createElement("a");
+                        a.setAttribute("href", "#");
+                        img = document.createElement("img");
+                        img.width="15px";
+                        img. height="14px";
+                        img.className = "imgRght";*/
+                        //img.src="<?php// echo $mydirectory;?>/images/Btn_edit.gif";
+                        /*img.setAttribute("onclick",'QtyDblClick('+invIdValue+');');
+                        a.appendChild(img);
+                        cell.appendChild(a);
+                    }*/
                     break;
                 }
-                case 'qtyDummy': {
-                    var trd = document.getElementById('qtyDummy' + locIndex);
-                    var cell = trd.insertCell(cellId);
-                    cell.className = 'gridHeaderReportGrids2';
-                    cell.innerHTML = "&nbsp;";
-
+                case 'qtyDummy':
+                {
+                    var trd = document.getElementById('qtyDummy'+locIndex);
+                    if(trd !=null)
+                    {
+                        var cell = trd.insertCell(cellId);
+                        cell.className = 'gridHeaderReportGrids2';
+                        cell.innerHTML="&nbsp;";
+                    }
+                    
+                    
                     break;
                 }
             }
         }
+
         function StoreInitialValues(locIndex, rowIndex, txtValue, newQty) {
             var td = document.getElementById('hdnVar');
             var element1 = document.createElement("input");
@@ -916,11 +954,11 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                     $rowIndex = 0;
                     if (count($data_opt1Size) > 0) {
                         for ($j = 0; $j < count($data_opt1Size); $j++) {
-                            InsertQty($data_mainSize, $data_inv, $data_opt1Size[$j]['opt1SizeId'], $locArr[$i], $locIndex, $rowIndex);
+                            InsertQty($data_mainSize, $data_inv, $data_opt1Size[$j]['opt1SizeId'], $locArr[$i], $locIndex, $rowIndex,$_store);
                             $rowIndex++;
                         }
                     } else {
-                        InsertQty($data_mainSize, $data_inv, 0, $locArr[$i], $locIndex, $rowIndex);
+                        InsertQty($data_mainSize, $data_inv, 0, $locArr[$i], $locIndex, $rowIndex,$_store);
                         $rowIndex++;
                     }
                     echo 'AddQty("dummy","qtyDummy",' . $mainIndex . ',' . $locIndex . ',' . $rowIndex . ',0,0);';
@@ -930,68 +968,198 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                 echo "document.getElementById('locCount').value = $locIndex;";
             if ($rowIndex)
                 echo "document.getElementById('rowCount').value = $rowIndex;";
-            function InsertQty($data_mainsize, $data_inv, $rowSizeId, $locId, $locIndex, $rowIndex)
+
+
+
+            function InsertQty($data_mainsize,$data_inv,$rowSizeId,$locId,$locIndex,$rowIndex,$store)
             {
-
-                // var_dump(count($data_inv));
-                // exit();
-
                 $mainIndex = 0;
-                for ($i = 0; $i < count($data_mainsize); $i++) {
-                    $invFound = 0;
-                    for ($j = 0; $j < count($data_inv); $j++) {
-                        if ($rowSizeId > 0) {
-                            if (($data_inv[$j]['sizeScaleId'] == $data_mainsize[$i]['mainSizeId']) && ($locId == $data_inv[$j]['locationId']) && ($rowSizeId == $data_inv[$j]['opt1ScaleId'])) {
+                for($i=0;$i < count($data_mainsize);$i++)
+                {
+                    $invFound=0;
+                    for($j=0; $j < count($data_inv);$j++)
+                    {
+                        if($rowSizeId > 0)
+                        {
+                            if(($data_inv[$j]['sizeScaleId'] == $data_mainsize[$i]['mainSizeId']) && 
+                                ($locId == $data_inv[$j]['locationId']) && 
+                                ($rowSizeId == $data_inv[$j]['opt1ScaleId']))
+                            {
                                 $invFound = 1;
-                                if ($data_inv[$j]['inventoryId'] != "") {
-                                    if ($data_inv[$j]['quantity'] != "") {
-                                        echo "StoreInitialValues($locIndex,$rowIndex,'" . $data_inv[$j]['quantity'] . "','" . $data_inv[$j]['newQty'] . "');";
-                                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '","qty",' . $mainIndex . ',' . $locIndex . ',' . $rowIndex . ',"' . $data_inv[$j]['quantity'] . '",' . $data_inv[$j]['inventoryId'] . ');';
 
+                                if($data_inv[$j]['inventoryId'] != "")
+                                {
+                                    if($data_inv[$j]['quantity'] != "" )
+                                    {
+                                        echo "StoreInitialValues($locIndex,$rowIndex,'".$data_inv[$j]['quantity']."','".$data_inv[$j]['newQty']."');";
+                                        // echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',"'.$data_inv[$j]['quantity'].'",'.$data_inv[$j]['inventoryId'].');';
 
-                                    } else {
-                                        echo "StoreInitialValues($locIndex,$rowIndex,0,'" . $data_inv[$j]['newQty'] . "');";
-                                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '","qty",' . $mainIndex . ',' . $locIndex . ',' . $rowIndex . ',0,' . $data_inv[$j]['inventoryId'] . ');';
+                                        $data = "";
+                                        if(!isset($_GET['boxId']) || $_GET['boxId']=='0')
+                                        {
+                                            for($ii=0 ; $ii<count($store); $ii++)
+                                            {
+
+                                                //echo($_store['mainSizeId'].",".);
+
+                                                if($store[$ii]['mainSizeId']==$data_mainsize[$i]['mainSizeId'] &&
+                                                   $store[$ii]['opt1ScaleId']==$data_inv[$j]['opt1ScaleId'])
+                                                {
+                                                    $data .= 'box='.$store[$ii]['box']." : ".$store[$ii]['quantity']."::";
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $data = "-1";
+                                        }
+                                        // echo "***************************************************";
+                                        // var_dump($data);
+                                        // //var_dump($data_inv[$j]['quantity']);
+                                        // echo "***************************************************";
+                                        // // exit();
+                                        if($data == '')
+                                            $data = "-1";
+
+                                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                                    "qty",
+                                                    '.$mainIndex.',
+                                                    '.$i.',
+                                                    '.$j.',
+                                                    "'.$data.'",
+                                                    '.$locIndex.',
+                                                    '.$rowIndex.',
+                                                    "'.$data_inv[$j]['quantity'].'",
+                                                    '.$data_inv[$j]['inventoryId'].');';
+
+                                        //echo "*****************************************************";
+                                        
+
                                     }
-
-                                } else {
-                                    echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
-                                    echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '","qty",' . $mainIndex . ',' . $locIndex . ',' . $rowIndex . ',0,0);';
-
+                                    else
+                                    {
+                                        echo "StoreInitialValues($locIndex,$rowIndex,0,'".$data_inv[$j]['newQty']."');";
+                                        // echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,'.$data_inv[$j]['inventoryId'].');';
+                                        $data = "-1";
+                                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                                "qty",
+                                                '.$mainIndex.',
+                                                '.$i.',
+                                                '.$j.',
+                                                "'.$data.'",
+                                                '.$locIndex.',
+                                                '.$rowIndex.',
+                                                0,
+                                                '.$data_inv[$j]['inventoryId'].');';
+                                    }
                                 }
-                                break;
-                            }
-                        } else {
-                            if ($data_inv[$j]['sizeScaleId'] == $data_mainsize[$i]['mainSizeId'] && ($locId == $data_inv[$j]['locationId']) && ("" == $data_inv[$j]['opt1ScaleId'])) {
-                                $invFound = 1;
-                                if ($data_inv[$j]['inventoryId'] != "") {
-                                    if ($data_inv[$j]['quantity'] != "") {
-                                        echo "StoreInitialValues($locIndex,$rowIndex,'" . $data_inv[$j]['quantity'] . "','" . $data_inv[$j]['newQty'] . "');";
-                                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '","qty",' . $mainIndex . ',' . $locIndex . ',' . $rowIndex . ',"' . $data_inv[$j]['quantity'] . '",' . $data_inv[$j]['inventoryId'] . ');';
-
-
-                                    } else {
-                                        echo "StoreInitialValues($locIndex,$rowIndex,0,'" . $data_inv[$j]['newQty'] . "');";
-                                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '","qty",' . $mainIndex . ',' . $locIndex . ',' . $rowIndex . ',0,' . $data_inv[$j]['inventoryId'] . ');';
-
-
-                                    }
-
-                                } else {
+                                else
+                                {
                                     echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
-                                    echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '","qty",' . $mainIndex . ',' . $locIndex . ',' . $rowIndex . ',0,0);';
+                                    // echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
 
-
+                                    $data = "-1";
+                                    echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                            "qty",
+                                            '.$mainIndex.',
+                                            '.$i.',
+                                            '.$j.',
+                                            "'.$data.'",
+                                            '.$locIndex.',
+                                            '.$rowIndex.',
+                                            0,
+                                            0);';
                                 }
                                 break;
                             }
                         }
+                        else
+                        {
+                            if($data_inv[$j]['sizeScaleId'] == $data_mainsize[$i]['mainSizeId'] && ($locId == $data_inv[$j]['locationId']) && ("" == $data_inv[$j]['opt1ScaleId']))
+                            {
+                                $invFound = 1;
+                                if($data_inv[$j]['inventoryId'] != "")
+                                {
+                                    if($data_inv[$j]['quantity'] != "" )
+                                    {
+                                        echo "StoreInitialValues($locIndex,$rowIndex,'".$data_inv[$j]['quantity']."','".$data_inv[$j]['newQty']."');";
+                                        //echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',"'.$data_inv[$j]['quantity'].'",'.$data_inv[$j]['inventoryId'].');';
+
+
+                                        $data = "-1";
+                                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                            "qty",
+                                            '.$mainIndex.',
+                                            '.$i.',
+                                            '.$j.',
+                                            "'.$data.'",
+                                            '.$locIndex.',
+                                            '.$rowIndex.',
+                                            "'.$data_inv[$j]['quantity'].'",
+                                            '.$data_inv[$j]['inventoryId'].');';
+
+                                        
+                                    }
+                                    else
+                                    {
+                                        echo "StoreInitialValues($locIndex,$rowIndex,0,'".$data_inv[$j]['newQty']."');";
+                                        //echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,'.$data_inv[$j]['inventoryId'].');';
+
+                                        $data = "-1";
+                                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                            "qty",
+                                            '.$mainIndex.',
+                                            '.$i.',
+                                            '.$j.',
+                                            "'.$data.'",
+                                            '.$locIndex.',
+                                            '.$rowIndex.',
+                                            0,
+                                            '.$data_inv[$j]['inventoryId'].');';
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
+                                    //echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
+
+                                    $data = "-1";
+                                    echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                            "qty",
+                                            '.$mainIndex.',
+                                            '.$i.',
+                                            '.$j.',
+                                            "'.$data.'",
+                                            '.$locIndex.',
+                                            '.$rowIndex.',
+                                            0,
+                                            0);';
+
+                                    
+                                }
+                                break;
+                            }
+                        }           
                     }
-                    if (!$invFound) {
+                    if(!$invFound)
+                    {
                         echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
-                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '","qty",' . $mainIndex . ',' . $locIndex . ',' . $rowIndex . ',0,0);';
+                        // echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
 
+                        $data = "-1";
+                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                "qty",
+                                '.$mainIndex.',
+                                '.$i.',
+                                '.$j.',
+                                "'.$data.'",
+                                '.$locIndex.',
+                                '.$rowIndex.',
+                                0,
+                                0);';
 
+                        
                     }
 
 
@@ -1000,6 +1168,9 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                     $mainIndex++;
                 }
             }
+
+
+
             ?>
             $("#color").change(function () {
 
