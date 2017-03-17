@@ -209,14 +209,12 @@ if (count($data_color) > 0) {
     {
         for ($l = 0; $l < count($data_inv); $l++) 
         {
-            if (isset($data_inv[$l]['st_quantity']) && $data_inv[$l]['st_quantity'] != '') 
+            if (isset($data_inv[$l]['quantity']) && $data_inv[$l]['quantity'] != '')
             {
-                $data_inv[$l]['quantity'] = $data_inv[$l]['st_quantity'];
+                $data_inv[$l]['quantity'] = $data_inv[$l]['quantity'];
             }
         }
     }
-
-
 }
 $query = 'select * from "tbl_invLocation" order by "locationId"';
 if (!($result = pg_query($connection, $query))) {

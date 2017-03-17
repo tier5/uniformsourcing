@@ -61,6 +61,10 @@ require('../../header.php'); ?>
             alert("please provide a Location Identifier");
             return false;
         }
+        if(identifier.length != 3){
+            alert("Location Identifier Length should be 3");
+            return false;
+        }
         var warehouse = document.getElementById('warehouse').value;
         if(warehouse == ''){
             warehouse = 0;

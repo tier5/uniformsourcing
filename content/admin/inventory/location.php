@@ -23,7 +23,7 @@ pg_free_result($result);
                         <table width="50%" border="0" cellspacing="1" cellpadding="1">
                             <tr>
                                 <td><a href="addLocation.php"><button>Add Location</button></a></td>
-                                <td><a href="editLocation.php"><button>Edit Location</button></a></td>
+                                <!--<td><a href="editLocation.php"><button>Edit Location</button></a></td>-->
                             </tr>
                         </table>
                         <br/><br/>
@@ -35,6 +35,7 @@ pg_free_result($result);
                                 <th>Container</th>
                                 <th>Conveyor</th>
                                 <th>Edit</th>
+                                <th>Delete</th>
                             </thead>
                             <tbody>
                             <?php
@@ -47,7 +48,12 @@ pg_free_result($result);
                                     <td align="center"><?php echo $data_location[$i]['totalContainer'] ?></td>
                                     <td align="center"><?php echo $data_location[$i]['tatalConveyor'] ?></td>
                                     <td align="center">
-                                        <button>Edit</button>
+                                        <a href="editLocation.php?locationId=<?php echo $data_location[$i]['id'] ?>">
+                                            <button>Edit</button>
+                                        </a>
+                                    </td>
+                                    <td align="center">
+                                        <button>Delete</button>
                                     </td>
                                 </tr>
                                 <?php
