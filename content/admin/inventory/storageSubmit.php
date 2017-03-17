@@ -10,7 +10,7 @@ if($debug == "on"){
 $return_arr = array();
 extract($_POST);
 $wareHouseRow = $row;
-print_r(extract($_POST));die();
+print_r(extract($_POST));
 $return_arr['name']="";
 $return_arr['error'] = "";
 $return_arr['type'] = "";

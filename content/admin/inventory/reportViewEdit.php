@@ -201,17 +201,16 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $data_inv[] = $row;
     }
-//    echo '<pre>';
-//    print_r($data_inv);
+
 
     pg_free_result($result);
     if (count($data_inv) > 0) 
     {
         for ($l = 0; $l < count($data_inv); $l++) 
         {
-            if (isset($data_inv[$l]['quantity']) && $data_inv[$l]['quantity'] != '')
+            if (isset($data_inv[$l]['st_quantity']) && $data_inv[$l]['st_quantity'] != '')
             {
-                $data_inv[$l]['quantity'] = $data_inv[$l]['quantity'];
+                $data_inv[$l]['quantity'] = $data_inv[$l]['st_quantity'];
             }
         }
     }
@@ -259,10 +258,6 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
     {
         $_store[]=$row; // -------------------------- data_color ---------
     }
-    // echo "<pre>";print_r($data_inv);
-    // echo "-------------------------";
-    // echo "<pre>";print_r($_store);
-    // exit();
 
 
 
@@ -1286,9 +1281,6 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                     data: dataString,
                     dataType: "json",
                     success: function (data) {
-
-                        console.log(data);
-                        //return false;
                         if (data != null) {
                             if (data[0].name || data[0].error) {
                                 $("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error + "</strong></div>");

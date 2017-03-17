@@ -91,7 +91,7 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 			$locArr = explode(",",$data_style['locationIds']);
 		}
 		for($i=0;$i<$locCount;$i++)
-		{ 
+		{
 			for($j=0; $j < $rowCount; $j++)
 			{
 				for($k = 0; $k < $mainCount; $k++)
@@ -101,30 +101,14 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 						$query = "";
 						if((is_numeric($qty[$i][$j][$k])) && ($hdnqty[$i][$j][$k] == 0 && $hdnNewQty[$i][$j][$k] == 0 ))
 						{
-						    $sql = '';
-                            $sql = 'SELECT * from "tbl_inventory" WHERE ';
-                            $sql .= "\"styleId\"='".$data_style['styleId']."'";
-                            $sql .= " and \"styleNumber\" = '".$data_style['styleNumber']."'";
-                            $sql .= " and \"scaleId\" = '".$data_style['scaleNameId']."'";
-                            $sql .= " and \"colorId\"='".$colorId."'";
-                            $sql .= " and \"mainSize\"='".$data_mainSize[$k]['scaleSize']."'";
-                            $sql .= " and \"rowSize\"='".$data_opt1Size[$j]['opt1Size']."'";
-                            if(!($result=pg_query($connection,$sql))){
-                                $return_arr[0]['error'] = pg_last_error($connection);
-                                echo json_encode($return_arr);
-                                return;
-                            }
-                            while($previous = pg_fetch_array($result)){
-                                $previous_data[]=$previous;
-                            }
-                            pg_free_result($result);
-                            if($previous_data){
+                            if($invId[$i][$j][$k] > 0){
+                                echo "if".$invId[$i][$j][$k];
                                 $query = "UPDATE \"tbl_inventory\" SET ";
                                 $query .="\"newQty\" = '".$qty[$i][$j][$k]."' ";
                                 $query .=",\"isStorage\" = 0 ";
                                 $query .=",\"updatedBy\" = '".$_SESSION['employeeID']."' ";
                                 $query .=",\"updatedDate\" = '".date('U')."' ";
-                                $query .="  where \"inventoryId\"='".$previous_data[0]['inventoryId']."' ";
+                                $query .="  where \"inventoryId\"='".$invId[$i][$j][$k]."' ";
                             } else {
                                 $notes = 'auto inventory';
                                 $query = "INSERT INTO \"tbl_inventory\" (";
@@ -174,7 +158,7 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
                             }
 						}
 						else if(is_numeric($qty[$i][$j][$k]) && $invId[$i][$j][$k] > 0)
-						{								
+						{
 							$query = "UPDATE \"tbl_inventory\" SET ";
 							$query .="\"newQty\" = '".$qty[$i][$j][$k]."' ";
 							$query .=",\"isStorage\" = 0 ";
