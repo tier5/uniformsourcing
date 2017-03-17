@@ -97,6 +97,17 @@ $sql='select  distinct box from "tbl_invStorage" order by box asc';
 	}
 pg_free_result($result_cnt9);
 
+$sql = 'select "name","containerId" from "tbl_container" ';
+$sql='select  distinct box from "tbl_invStorage" order by box asc';
+	if(!($result_cnt9=pg_query($connection,$sql))){
+		print("Failed InvData: " . pg_last_error($connection));
+		exit;
+	}
+	while($row_cnt9 = pg_fetch_array($result_cnt9)){
+		$data_container[]=$row_cnt9;
+	}
+pg_free_result($result_cnt9);
+
 include('../../pagination.class.php');
 $search_sql="";
 $limit="";
@@ -325,6 +336,7 @@ $(document).ready(function()
           <td align="right">&nbsp;</td>
         </tr>
 </table>
+
 <form action="reports.php" method="post" name="validationForm">
 <table width="100%">
 <tr>
@@ -453,6 +465,7 @@ $(document).ready(function()
                 <td class="grid001">Notes:</td>
                 <td class="grid001"><input type="text" name="notes" id="notes" value="<?php echo $_REQUEST['notes'];?>"/></td>
               </tr>
+
              <tr>
                 <td class="grid001">Box #:</td>
                 <td class="grid001"><select name="box_num" id="box_num">
@@ -469,6 +482,30 @@ $(document).ready(function()
                 <td class="grid001"></td>
                 <td class="grid001"></td>
               </tr>  
+
+
+              <tr>
+                <td class="grid001">Container #:</td>
+                <td class="grid001"><select name="box_num" id="box_num">
+                  <option value="">---- Select Containers # ----</option>
+                   <?php 
+                  	for($i=0; $i < count($data_container); $i++)
+                  	{
+	                    if($data_container[$i]['box']!="")  
+	                    	echo '<option value="'.$data_container[$i]['name'].'"';
+	                    if(isset($_REQUEST['container']) && $_REQUEST['container']==$data_container[$i]['name']) 
+	                    	echo ' selected="selected" '; 
+	                    echo '>'.$data_container[$i]['name'].'</option>';
+                	}
+                  ?>
+                                        </select>
+                </td>
+                <td class="grid001">&nbsp;</td>
+                <td class="grid001"></td>
+                <td class="grid001"></td>
+              </tr>  
+
+              
               
               <tr>
                 <td>&nbsp;</td>

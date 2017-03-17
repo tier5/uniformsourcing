@@ -259,14 +259,12 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
         $_store[]=$row; // -------------------------- data_color ---------
     }
 
-
-
-
-
-
 ?>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/jquery-ui.min-1.8.2.js"></script>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/samplerequest.js"></script>
+
+
+
 
 <table width="90%" border="0" cellspacing="0" cellpadding="0">
     <tr>

@@ -19,4 +19,5 @@ if(isset($_SESSION['perm_admin']) AND $_SESSION['perm_admin'] == "on" OR (isset(
 	require('../../trailer.php');
 	exit;
 }
+
 ?>
