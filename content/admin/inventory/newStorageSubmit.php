@@ -51,7 +51,7 @@ for ($i=0;$i<$totalRow;$i++) {
             $qty = $data_inv1[$i]['newQty'];
         if($data_storage) {
             $query = "UPDATE \"tbl_invStorage\" SET ";
-            $query .= " \"wareHouseQty\" = '" . $qty . "' ";
+            $query .= " \"wareHouseQty\" = '" . $data_inv1[$i]['quantity'] . "' ";
             $query .= ",\"updatedBy\" = '" . $_SESSION['employeeID'] . "' ";
             $query .= ",\"updatedDate\" = '" . date('U') . "' ";
             $query .= "  where \"storageId\"='" . $data_storage['storageId'] . "' ";
@@ -88,7 +88,7 @@ for ($i=0;$i<$totalRow;$i++) {
             if ($rack != "") $query .= " ,'" . $rack . "' ";
             if ($shelf != "") $query .= " ,'" . $shelf . "' ";
             if ($box != "") $query .= " ,'" . $box . "' ";
-            $query .= " ,'" . $qty . "' ";
+            $query .= " ,'" . $data_inv1[$i]['quantity'] . "' ";
             $query .= " ,'" . $_SESSION['employeeID'] . "' ";
             $query .= " ,'" . $_SESSION['employeeID'] . "' ";
             $query .= " ,'" . date('U') . "' ";
