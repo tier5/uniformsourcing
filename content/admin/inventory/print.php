@@ -303,7 +303,7 @@ require('Application.php');
 			<tr>
 				<td style="width: 30%">Style #: <?php echo $data_style['styleNumber']; ?></td>
 				<td style="width: 35%">Employee:<input type="text" name=""></td>
-				<td style="width: 35%">Date Entered:</td>
+				<td style="width: 35%">Date Entered: <input type="text"></td>
 			</tr>
 			<tr>
 				<td style="width: 30%">Garment Type: <?php echo $data_garment["garmentName"]; ?></td>
