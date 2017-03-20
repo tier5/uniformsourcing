@@ -4,7 +4,6 @@ require('../../header.php');
 //$sql='select st."styleId" st."styleNumber",st."scaleNameId",st."scaleNameId" from "tbl_invStyle" st left join tbl_inventory inv on st."styleId"=inv."styleId" where st."styleId"='.$_GET['StyleId'];
 
 $loc_identity = 0;
-
 if (isset($_GET["del"]) && $_GET["del"] == "true") {
     $sql = 'select "inventoryId" from "tbl_inventory" as inv where inv."styleId"=' . $_GET['styleId'] . ' and inv."colorId"=' . $_GET['colorId'];
     if (!($result2 = pg_query($connection, $sql))) {
@@ -228,8 +227,6 @@ $locArr = array();
 if ($data_style['locationIds'] != "") {
     $locArr = explode(",", $data_style['locationIds']);
 }
-
-
 if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
     $query = 'select * from "tbl_invStorage" WHERE box=' . "'" . $_GET['boxId'] . "'";
 
@@ -258,6 +255,20 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
     {
         $_store[]=$row; // -------------------------- data_color ---------
     }
+    //----------------------------------Location-----------------------
+    $query = '';
+    $query = "SELECT * from \"locationDetails\"";
+    $query .= "  where \"locationId\"='" . $data_style['locationIds'] . "' ";
+  //  $query .= " INNER JOIN \"tbl_invLocation\" ON (\"locationDetails.locationId\"=\"tbl_invLocation.locationId\")";
+if (!($resultProduct = pg_query($connection, $query))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($resultProduct)) {
+        $data_location[] = $row;
+    }
+    pg_free_result($resultProduct);
+//echo "<pre>";print_r($data_location[0]['conveyor']);die();
 
 ?>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/jquery-ui.min-1.8.2.js"></script>
@@ -351,6 +362,25 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                                         if (isset($_REQUEST['boxId']) && $_REQUEST['boxId'] == $data_storage[$i]['box']) echo ' selected="selected" ';
                                         echo '>' . $data_storage[$i]['box'] . '</option>';
                                     }
+                                    ?>
+                                </select>
+                            </td>
+                            <td>
+                                Conveyor #: <select name="conveyor" id="sConveyor">
+                                    <option value="0">----Select Conveyor # ----</option>
+                                    <?php
+                                        if (count($data_location) > 0) {
+                                            for ($i=0;$i<count($data_location);$i++) {
+                                                if($data_location[$i]['conveyor'] != null){ ?>
+                                                    <option value="<?php echo $data_location[$i]['id'] ?>" <?php if (isset($_REQUEST['conveyor']) && $_REQUEST['conveyor'] == $data_location[$i]['id']) echo ' selected="selected" '; ?>>
+                                                        <?php
+                                                            echo $data_location[$i]['conveyor'];
+                                                        ?>
+                                                    </option>
+                                              <?php  }
+
+                                            }
+                                        }
                                     ?>
                                 </select>
                             </td>
@@ -727,7 +757,7 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
             alert("Please Provide a row");
             return false;
         }
-        var self = $('#updateself').val();
+        var self = $('#updateshelf').val();
         if(self == '') {
             alert("Please Provide a self");
             return false;
@@ -1239,6 +1269,9 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                 PostRequest();
 
             });
+            $("#sConveyor").change(function () {
+                PostRequest();
+            });
             function PostRequest() {
                 //alert('PostRequest');
                 var stylId = document.getElementById('styleId').value;
@@ -1251,7 +1284,11 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                 if ($("#box_num").val() != undefined) {
                     boxId = $("#box_num").val();
                 }
-                var dataString = 'styleId=' + stylId + '&colorId=' + clrId + '&boxId=' + boxId;
+                var conveyor = 0;
+                if($("#sConveyor").val() != undefined) {
+                    conveyor = $("#sConveyor").val();
+                }
+                var dataString = 'styleId=' + stylId + '&colorId=' + clrId + '&boxId=' + boxId+ '&conveyor='+conveyor;
                 //alert(dataString);
                 $.ajax
                 ({
@@ -1260,7 +1297,7 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                     data: dataString,
                     dataType: "json",
                     success: function (data) {
-                        console.log(data);
+                        //console.log(data);
                         if (data != null) {
                             if (data.styleId != null) {
                                 $(location).attr('href', 'reportViewEdit.php?' + dataString);
