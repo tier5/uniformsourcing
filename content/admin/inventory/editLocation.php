@@ -1,6 +1,6 @@
 <?php require('Application.php');
 require('../../header.php');
-$sql ='select * from "inventoryLocation" WHERE "id"='.$_GET['locationId'];
+$sql ='select * from "tbl_invLocation" WHERE "locationId"='.$_GET['locationId'];
 if(!($result=pg_query($connection,$sql))){
     $return_arr[0]['error'] = pg_last_error($connection);
     echo json_encode($return_arr);
@@ -8,6 +8,40 @@ if(!($result=pg_query($connection,$sql))){
 }
 $row = pg_fetch_array($result);
 $data_location[] = $row;
+$query = '';
+$query = "SELECT warehouse from \"locationDetails\"";
+$query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
+if (!($resultProduct = pg_query($connection, $query))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+while ($row = pg_fetch_array($resultProduct)) {
+    $data_warehouse[] = $row;
+}
+pg_free_result($result);
+pg_free_result($resultProduct);
+$query = '';
+$query = "SELECT container from \"locationDetails\"";
+$query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
+if (!($resultProduct = pg_query($connection, $query))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+while ($row = pg_fetch_array($resultProduct)) {
+    $data_container[] = $row;
+}
+pg_free_result($resultProduct);
+$query = '';
+$query = "SELECT conveyor from \"locationDetails\"";
+$query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
+if (!($resultProduct = pg_query($connection, $query))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+while ($row = pg_fetch_array($resultProduct)) {
+    $conveyor[] = $row;
+}
+pg_free_result($resultProduct);
 ?>
     <table width="100%">
         <tr>
@@ -24,40 +58,76 @@ $data_location[] = $row;
                         </table>
                         <br/><br/>
                         <table border="0" cellpadding="0" cellspacing="0">
-                            <input type="hidden" id="dataId" value="<?php echo $data_location[0]['id'] ?>">
+                            <input type="hidden" id="dataId" value="<?php echo $data_location[0]['locationId'] ?>">
                             <tr>
                                 <td>Location Name: </td>
-                                <td><input type="text" value="<?php echo $data_location[0]['location'] ?>" id="location" readonly style="background-color: #999999"></td>
-                            </tr>
-                            <tr>
+                                <td><input type="text" value="<?php echo $data_location[0]['name'] ?>" id="location" readonly style="background-color: #999999"></td>
                                 <td>Location Identifier: </td>
-                                <td><input type="text" value="<?php echo $data_location[0]['locIdn'] ?>" id="identifier" readonly style="background-color: #999999"></td>
-                            </tr>
-                            <tr>
-                                <td>Total Warehouse: </td>
-                                <td><input type="text" value="<?php echo $data_location[0]['totalWarehouse'] ?>" id="warehouse"></td>
-                            </tr>
-                            <tr>
-                                <td>Total Container: </td>
-                                <td><input type="text" value="<?php echo $data_location[0]['totalContainer'] ?>" id="container"></td>
-                            </tr>
-                            <tr>
-                                <td>Total Conveyor: </td>
-                                <td><input type="text" value="<?php echo $data_location[0]['tatalConveyor'] ?>" id="conveyor"></td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                            </tr>
-                            <tr>
+                                <td><input type="text" value="<?php echo $data_location[0]['identifier'] ?>" id="identifier"></td>
                                 <td><button onclick="addLocation()">Edit Location</button></td>
-                                <td><a href="location.php"><button>Cancel</button></a></td>
+                                <!--<td><a href="location.php"><button>Cancel</button></a></td>-->
                             </tr>
+                        </table>
+                        <br /><br/><br/>
+                        <table width="50%">
+                            <tr><button onclick="addWarehouse()">Add Warehouse</button></tr>
+                            <tr><button onclick="addContainer()">Add Container</button></tr>
+                            <tr><button onclick="addConveyor()">Add Conveyor</button></tr>
+                        </table>
+                        <br/><br/><br/>
+                        <table width="25%" border="1" style="float: left">
+                            <thead><tr><th>Warehouse</th></tr></thead>
+                            <tbody>
+                            <?php
+                            if (count($data_warehouse) > 0) {
+                                for ($i=0;$i<count($data_warehouse);$i++){
+                                    if($data_warehouse[$i]['warehouse'] != null) { ?>
+                                        <tr><td align="center"><?php echo $data_warehouse[$i]['warehouse']; ?></td></tr>
+                                    <?php  }
+                                }
+                            } else {
+                                ?><tr><td>No Warehouse found</td></tr><?php
+                            }
+                            ?>
+                            </tbody>
+                        </table>
+                        <table width="25%" border="1" style="float: left ">
+                            <thead><tr><th>Container</th></tr></thead>
+                            <tbody>
+                            <?php
+                                if (count($data_container) > 0) {
+                                    for ($i=0;$i<count($data_container);$i++){
+                                        if($data_container[$i]['container'] != null) { ?>
+                                            <tr><td align="center"><?php echo $data_container[$i]['container']; ?></td></tr>
+                                        <?php  }
+                                    }
+                                }else {
+                                    echo "<tr><td>No container found</td></tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                        <table width="25%" border="1" style="float: left ">
+                            <thead><tr><th>Conveyor</th></tr></thead>
+                            <tbody>
+                            <?php
+                            if (count($conveyor) > 0) {
+                                for ($i=0;$i<count($conveyor);$i++){
+                                    if($conveyor[$i]['conveyor'] != null) { ?>
+                                        <tr><td align="center"><?php echo $conveyor[$i]['conveyor']; ?></td></tr>
+                                    <?php  }
+                                }
+                            } else {
+                                echo "<tr><td>No Conveyor found</td></tr>";
+                            }
+                            ?>
+                            </tbody>
                         </table>
                     </center>
             </td>
         </tr>
     </table>
+
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript">
         function addLocation() {
@@ -71,32 +141,75 @@ $data_location[] = $row;
                 alert("please provide a Location Identifier");
                 return false;
             }
-            var warehouse = document.getElementById('warehouse').value;
-            if(warehouse == ''){
-                warehouse = 0;
-            }
-            var container = document.getElementById('container').value;
-            if(container == ''){
-                container = 0;
-            }
-            var conveyor = document.getElementById('conveyor').value;
-            if(conveyor == ''){
-                conveyor = 0;
-            }
             $.ajax({
                 url: "submitEditLocation.php",
                 type: "post",
                 data:{
                     id: document.getElementById('dataId').value,
-                    warehouse: warehouse,
-                    container: container,
-                    conveyor: conveyor,
+                    identifier: identifier,
                 },
                 success: function (response) {
                     if(response==1){
                         $("#message").html("<div class='successMessage'><strong>Location Added Successfully. Please Wait....</strong></div>");
                         setTimeout(function(){
                             $(location).attr('href', 'location.php');
+                        }, 2000);
+                    } else {
+                        $("#message").html("<div class='errorMessage'><strong>Something wrong Please try again later</strong></div>");
+                    }
+                }
+            });
+        };
+        function addWarehouse() {
+            $.ajax({
+                url: "addWarehouse.php",
+                type: "post",
+                data: {
+                    id: document.getElementById('dataId').value,
+                },
+                success: function (data) {
+                    if(data==1){
+                        $("#message").html("<div class='successMessage'><strong>Warehouse Added Successfully. Please Wait....</strong></div>");
+                        setTimeout(function(){
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        $("#message").html("<div class='errorMessage'><strong>Something wrong Please try again later</strong></div>");
+                    }
+                }
+            });
+        };
+        function addContainer() {
+            $.ajax({
+                url: "addContainer.php",
+                type: "post",
+                data: {
+                    id: document.getElementById('dataId').value,
+                },
+                success: function (data) {
+                    if(data==1){
+                        $("#message").html("<div class='successMessage'><strong>Warehouse Added Successfully. Please Wait....</strong></div>");
+                        setTimeout(function(){
+                              location.reload();
+                        }, 2000);
+                    } else {
+                        $("#message").html("<div class='errorMessage'><strong>Something wrong Please try again later</strong></div>");
+                    }
+                }
+            });
+        };
+        function addConveyor() {
+            $.ajax({
+                url: "addConveyor.php",
+                type: "post",
+                data: {
+                    id: document.getElementById('dataId').value,
+                },
+                success: function (data) {
+                    if(data==1){
+                        $("#message").html("<div class='successMessage'><strong>Warehouse Added Successfully. Please Wait....</strong></div>");
+                        setTimeout(function(){
+                            location.reload();
                         }, 2000);
                     } else {
                         $("#message").html("<div class='errorMessage'><strong>Something wrong Please try again later</strong></div>");
