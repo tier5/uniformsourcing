@@ -372,10 +372,10 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                         {
                         ?>
                     <tr id="view_details">
-                        <td>Room: <strong><?php echo $data_product[0]['room']; ?></strong></td>
-                        <td>Row: <strong><?php echo $data_product[0]['row']; ?></strong></td>
-                        <td>Rack: <strong><?php echo $data_product[0]['rack']; ?></strong></td>
-                        <td>Shelf:<strong> <?php echo $data_product[0]['shelf']; ?></strong></td>
+                        <td>Room: <input type="text" id="updateroom" value="<?php echo $data_product[0]['room']; ?>" style="border: none"/></td>
+                        <td>Row: <input type="text" id="updaterow" value="<?php echo $data_product[0]['row']; ?>" style="border: none"/></td>
+                        <td>Rack: <input type="text" id="updaterack" value="<?php echo $data_product[0]['rack']; ?>" style="border: none"/></td>
+                        <td>Shelf: <input type="text" id="updateshelf" value="<?php echo $data_product[0]['shelf']; ?>" style="border: none"/></strong></td>
                         <td>
                             <button type="button" onclick="Update()" class="btn btn-success" style="color: #0c00d2">
                                 Update
@@ -712,7 +712,47 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
 <script>
         
     function Update() {
-        $(location).attr('href', "updateInventory.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "<?php if (isset($_REQUEST['boxId']) && $_REQUEST['boxId'] != '') echo '&boxId=' . $_REQUEST['boxId'];?>");
+        var room = $('#updateroom').val();
+        if(room == '') {
+            alert("Please Provide a Room");
+            return false;
+        }
+        var rack = $('#updaterack').val();
+        if(rack == '') {
+            alert("Please Provide a rack");
+            return false;
+        }
+        var row = $('#updaterow').val();
+        if(row == '') {
+            alert("Please Provide a row");
+            return false;
+        }
+        var self = $('#updateself').val();
+        if(self == '') {
+            alert("Please Provide a self");
+            return false;
+        }
+        $.ajax({
+            url: 'editRoom.php',
+            type:"post",
+            data: {
+                room: room,
+                rack: rack,
+                row: row,
+                self: self,
+                boxId: "<?php echo $_REQUEST['boxId'];?>",
+                styleId: document.getElementById('styleId').value
+            },
+            success: function (response) {
+                if(response == 1) {
+                    alert("Updated");
+                    location.reload();
+                } else {
+                    alert("Not Updated! Please Try Again After Some Time");
+                }
+            }
+        });
+       // $(location).attr('href', "updateInventory.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "<?php if (isset($_REQUEST['boxId']) && $_REQUEST['boxId'] != '') echo '&boxId=' . $_REQUEST['boxId'];?>");
     }
 
     function Delete() {
@@ -722,7 +762,7 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                 type: "post",
                 data: {
                     styleId: document.getElementById('styleId').value,
-                    colorId: document.getElementById('styleId').value,
+                    colorId: document.getElementById('colorId').value,
                     boxId: "<?php echo $_REQUEST['boxId'];?>"
                 },
                 success: function (response) {
