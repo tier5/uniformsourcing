@@ -305,7 +305,7 @@ if (!isset($_GET['boxId']) || $_GET['boxId'] != '0') {
                                     ,'<?php echo $data_loc[$loc_identity]['name'] ?>'
                                     ,'<?php if (isset($_GET['boxId'])) echo $_GET['boxId'];
                                 else echo 'null' ?>')"
-                                class="pull-right">print
+                                class="pull-right">Print
                         </button>
 
 

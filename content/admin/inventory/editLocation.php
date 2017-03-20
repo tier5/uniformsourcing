@@ -127,7 +127,7 @@ pg_free_result($resultProduct);
             </td>
         </tr>
     </table>
-
+<br/><br/>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript">
         function addLocation() {
