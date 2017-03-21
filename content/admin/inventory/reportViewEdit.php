@@ -286,6 +286,50 @@ if (!($resultProduct = pg_query($connection, $query))) {
                 &nbsp;&nbsp; </label></td>
     </tr>
 </table>
+
+
+<div id="inventory_form" class="col-md-10" style="display: none">
+
+    <div id="warehouse_form" style="display: none">
+        <label>Location: </label>
+        <select>
+            <option>---All Locations---</option>
+            <option>Location 1</option>
+            <option>Location 2</option>
+            <option>Location 3</option>
+        </select>
+        <br>
+
+        <label>Warehouse :</label>
+        <select>
+            <option>---All Warehouse---</option>
+            <option>Warehouse 1</option>
+            <option>Warehouse 2</option>
+            <option>Warehouse 3</option>
+        </select>
+        <br>
+
+        <label>Box# </label>
+        <input type="text" name="_box">
+        <br>
+
+        <label>Row# </label>
+        <input type="text" name="_row">
+        <br>
+
+        <label>Rack# </label>
+        <input type="text" name="_rack">
+        <br>
+
+        <label>Shelf# </label>
+        <input type="text" name="_shelf">
+        <br>
+
+    </div>
+    
+</div>
+
+
 <table width="100%">
     <tr>
         <td>
@@ -721,6 +765,15 @@ if (!($resultProduct = pg_query($connection, $query))) {
 
 
 <script>
+
+
+    $('#newInventory').click(function(e){
+
+        $('#inventory_form').show();
+        $('#warehouse_form').show();
+
+        
+    });
         
     function Update() {
         var room = $('#updateroom').val();
