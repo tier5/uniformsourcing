@@ -427,10 +427,10 @@ if (!($resultProduct = pg_query($connection, $query))) {
                         {
                         ?>
                     <tr id="view_details">
-                        <td>Room: <input type="text" id="updateroom" value="<?php echo $data_product[0]['room']; ?>" style="border: none"/></td>
-                        <td>Row: <input type="text" id="updaterow" value="<?php echo $data_product[0]['row']; ?>" style="border: none"/></td>
-                        <td>Rack: <input type="text" id="updaterack" value="<?php echo $data_product[0]['rack']; ?>" style="border: none"/></td>
-                        <td>Shelf: <input type="text" id="updateshelf" value="<?php echo $data_product[0]['shelf']; ?>" style="border: none"/></strong></td>
+                        <td>Room: <input type="text" id="updateroom" value="<?php echo $data_product[0]['room']; ?>"/></td>
+                        <td>Row: <input type="text" id="updaterow" value="<?php echo $data_product[0]['row']; ?>" /></td>
+                        <td>Rack: <input type="text" id="updaterack" value="<?php echo $data_product[0]['rack']; ?>" /></td>
+                        <td>Shelf: <input type="text" id="updateshelf" value="<?php echo $data_product[0]['shelf']; ?>" /></strong></td>
                         <td>
                             <button type="button" onclick="Update()" class="btn btn-success" style="color: #0c00d2">
                                 Update
