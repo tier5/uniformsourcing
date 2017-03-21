@@ -1680,7 +1680,7 @@ window.onclick = function(event) {
                                         url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&boxId=" + boxId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
                                         type: "GET",
                                         success: function (data) {
-                                            return false;
+                                            //return false;
                                             if (data != null) {
                                                 if (data.name || data.error) {
                                                     $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
@@ -1704,7 +1704,7 @@ window.onclick = function(event) {
                                         url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&boxId=" + boxId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
                                         type: "GET",
                                         success: function (data) {
-                                           return false;
+                                           //return false;
                                             if (data != null) {
                                                 if (data.name || data.error) {
                                                     $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
