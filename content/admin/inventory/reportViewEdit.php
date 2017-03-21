@@ -146,7 +146,7 @@ $tableWidth = $totalScale * 100;
 
 //query changed -- added 'where "styleId"='.$_GET['styleId']';
 
-$sql = 'select "inventoryId",quantity,"newQty","isStorage" from "tbl_inventory" where "styleId"='.$_GET['styleId'];
+$sql = 'select "inventoryId",quantity,"newQty","isStorage","warehouse_id" from "tbl_inventory" where "styleId"='.$_GET['styleId'];
 
 if (!($result = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
@@ -156,8 +156,7 @@ while ($row = pg_fetch_array($result)) {
     $data_inv[] = $row;
 }
 
-// echo "<pre>";print_r($data_inv);
-// exit();
+
 
 for ($i = 0; $i < count($data_inv); $i++) {
     if ($data_inv[$i]['newQty'] > 0) {
@@ -213,6 +212,79 @@ if (count($data_color) > 0) {
             }
         }
     }
+
+    // echo "<pre>"; print_r($data_inv);
+    // exit();
+
+
+
+    $sql = 'select distinct warehouse_id, "locationId" from "tbl_inventory"';
+    $all_location_inv;
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($result)) {
+        $all_location_inv[] = $row;
+    }
+    // echo "<pre>"; print_r($all_location_inv);
+    // exit();
+
+
+
+    $sql = 'select distinct "locationId" from "tbl_container"';
+    $all_location_cont;
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($result)) {
+        $all_location_cont[] = $row;
+    }
+
+    // echo "<pre>"; print_r($all_location_cont);
+    // exit();
+
+
+
+
+    $sql = 'select distinct "locationId" from "tbl_conveyor"';
+    $all_location_conv;
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($result)) {
+        $all_location_conv[] = $row;
+    }
+    // echo "<pre>"; print_r($all_location_conv);
+    // exit();
+    $location_string = " ";
+    foreach ($all_location_inv as $key => $value) {
+        if($location_string == " ") 
+            $location_string .= $value['locationId'];
+        else
+            $location_string .= ','.$value['locationId'];
+    }
+    //echo "<pre>"; print_r($location_string);
+    //exit();
+
+
+
+    $sql = 'select warehouse_name,"locationId" from "warehouse" where "locationId" in ('.$location_string.')';
+
+    $warehouse_info;
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($result)) {
+        $warehouse_info[] = $row;
+    }
+    // echo "<pre>"; print_r($warehouse_name);
+    // exit();
+
+    
 }
 $query = 'select * from "tbl_invLocation" order by "locationId"';
 if (!($result = pg_query($connection, $query))) {
@@ -274,7 +346,10 @@ if (!($resultProduct = pg_query($connection, $query))) {
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/jquery-ui.min-1.8.2.js"></script>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/samplerequest.js"></script>
 
+<script src="<?php echo $mydirectory; ?>/js/modernizr.js"></script>
+<script src="<?php echo $mydirectory; ?>/js/tabs.js"></script>
 
+<link href="<?php echo $mydirectory; ?>/css/style.css" rel="stylesheet">
 
 
 <table width="90%" border="0" cellspacing="0" cellpadding="0">
@@ -288,46 +363,217 @@ if (!($resultProduct = pg_query($connection, $query))) {
 </table>
 
 
-<div id="inventory_form" class="col-md-10" style="display: none">
 
-    <div id="warehouse_form" style="display: none">
-        <label>Location: </label>
-        <select>
-            <option>---All Locations---</option>
-            <option>Location 1</option>
-            <option>Location 2</option>
-            <option>Location 3</option>
-        </select>
-        <br>
 
-        <label>Warehouse :</label>
-        <select>
-            <option>---All Warehouse---</option>
-            <option>Warehouse 1</option>
-            <option>Warehouse 2</option>
-            <option>Warehouse 3</option>
-        </select>
-        <br>
 
-        <label>Box# </label>
-        <input type="text" name="_box">
-        <br>
 
-        <label>Row# </label>
-        <input type="text" name="_row">
-        <br>
 
-        <label>Rack# </label>
-        <input type="text" name="_rack">
-        <br>
+<!-- Trigger/Open The Modal -->
+<!-- <button id="myBtn">Open Modal</button>
+ -->
+<!-- The Modal -->
+<div id="myModal" class="modal">
 
-        <label>Shelf# </label>
-        <input type="text" name="_shelf">
-        <br>
-
-    </div>
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
     
+    <div class="main-form">
+        <div class="form-left" >
+           <ul id="tab">
+            <li class="active">
+                <h2>Warehouse Form</h2>
+                <form>
+                  <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td>
+                          Location
+                        </td>
+                        <td>
+                          <select>
+
+                            <?php foreach($all_location_inv as $k_inv=>$each_inv){ ?>
+                            <option><?php echo $each_inv['locationId']; ?></option>
+                             <?php } ?>
+                          </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                          Warehouse
+                        </td>
+                        <td>
+                          <select>
+                            <option>1</option>
+                             <option>2</option>
+                          </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                          Row
+                        </td>
+                        <td>
+                          <input type="text" name="">
+                        </td>
+                    </tr> 
+                    <tr>
+                        <td>
+                          Rack
+                        </td>
+                        <td>
+                          <input type="text" name="">
+                        </td>
+                    </tr> 
+                    <tr>
+                        <td>
+                          Shelf
+                        </td>
+                        <td>
+                          <input type="text" name="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                          Box
+                        </td>
+                        <td>
+                          <input type="text" name="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                         &nbsp;
+                        </td>
+                        <td>
+                          <input class="save-btn" type="submit" value="Save" name="">
+                        </td>
+                    </tr>
+                  </table>
+
+                </form>
+            </li>
+            <li>
+                <h2>Container Form</h2>
+                <form>
+                  <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td>
+                          Location
+                        </td>
+                        <td>
+                          <select>
+                            <option>1</option>
+                             <option>2</option>
+                          </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                          Container
+                        </td>
+                        <td>
+                          <select>
+                            <option>1</option>
+                             <option>2</option>
+                          </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                          Box
+                        </td>
+                        <td>
+                          <input type="text" name="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                         &nbsp;
+                        </td>
+                        <td>
+                          <input class="save-btn" type="submit" value="Save" name="">
+                        </td>
+                    </tr>
+                  </table>
+                </form>
+            </li>
+            <li>
+                <h2>Conveyor Form</h2>
+                <form>
+                  <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td>
+                          Location
+                        </td>
+                        <td>
+                          <select>
+                            <option>1</option>
+                             <option>2</option>
+                          </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                          Conveyor
+                        </td>
+                        <td>
+                          <select>
+                            <option>1</option>
+                             <option>2</option>
+                          </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                          Box
+                        </td>
+                        <td>
+                          <input type="text" name="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                         &nbsp;
+                        </td>
+                        <td>
+                          <input class="save-btn" type="submit" value="Save" name="">
+                        </td>
+                    </tr>
+                  </table>
+                </form>
+            </li>
+            
+        </ul> 
+
+
+
+
+        </div>
+        <div class="form-right">
+        <ul id="tabs">
+            <li class="active">Warehouse</li>
+            <li>container</li>
+            <li>conveyor</li>
+        </ul>
+
+        </div>
+        <div class="clearfix"></div>
+
+    </div>  
+
+  </div>
+
 </div>
+
+
+
+
+
+
+
+
+
 
 
 <table width="100%">
@@ -453,7 +699,13 @@ if (!($resultProduct = pg_query($connection, $query))) {
                         </tr>
                     <?php } ?>
                     <tr id="hide">
-                        <td>
+
+
+                        
+                        <button class="pull-left" type="button" id="addinventory_new">Add Inventory</button>
+
+
+                        <!-- <td>
                             <button type="button" id="newInventory" onclick="addInventory()"
                                     class="btn btn-success">Add new Inventory
                             </button>
@@ -461,10 +713,10 @@ if (!($resultProduct = pg_query($connection, $query))) {
                         <td>&nbsp; </td>
                         <td>&nbsp;</td>
                         <td>&nbsp; </td>
-                        <td>&nbsp;</td>
+                        <td>&nbsp;</td> -->
                     </tr>
                     <tr id="inventoryDetails" style="display: none">
-                        <td>Box Name: <input type="text" id="newBox"></td>
+                        <!-- <td>Box Name: <input type="text" id="newBox"></td>
                         <td>Room: <input type="text" id="newRoom"></td>
                         <td>Row: <input type="text" id="newRow"></td>
                         <td>Rack: <input type="text" id="newRack"></td>
@@ -476,7 +728,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                         <td>
                             <button type="button" onclick="cancelInventory()" class="btn" style="color: #cd0a0a">
                                 Cancel
-                            </button>
+                            </button> -->
                     </tr>
                     </tr>
 
@@ -762,6 +1014,35 @@ if (!($resultProduct = pg_query($connection, $query))) {
         <input type="hidden" name="styleId" id="styleId_mail" value="<?php echo $_GET['styleId']; ?>"/>
     </form>
 </div>
+
+
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("addinventory_new");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
 
 
 <script>
