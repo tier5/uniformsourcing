@@ -229,36 +229,6 @@ if (count($data_color) > 0) {
     }
     // echo "<pre>"; print_r($all_location_inv);
     // exit();
-
-
-
-    $sql = 'select distinct "locationId" from "tbl_container"';
-    $all_location_cont;
-    if (!($result = pg_query($connection, $sql))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row = pg_fetch_array($result)) {
-        $all_location_cont[] = $row;
-    }
-
-    // echo "<pre>"; print_r($all_location_cont);
-    // exit();
-
-
-
-
-    $sql = 'select distinct "locationId" from "tbl_conveyor"';
-    $all_location_conv;
-    if (!($result = pg_query($connection, $sql))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row = pg_fetch_array($result)) {
-        $all_location_conv[] = $row;
-    }
-    // echo "<pre>"; print_r($all_location_conv);
-    // exit();
     $location_string = " ";
     foreach ($all_location_inv as $key => $value) {
         if($location_string == " ") 
@@ -266,12 +236,9 @@ if (count($data_color) > 0) {
         else
             $location_string .= ','.$value['locationId'];
     }
-    //echo "<pre>"; print_r($location_string);
-    //exit();
-
-
-
-    $sql = 'select warehouse_name,"locationId" from "warehouse" where "locationId" in ('.$location_string.')';
+    // echo "<pre>"; print_r($location_string);
+    // exit();
+    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.')';
 
     $warehouse_info;
     if (!($result = pg_query($connection, $sql))) {
@@ -281,8 +248,73 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $warehouse_info[] = $row;
     }
-    // echo "<pre>"; print_r($warehouse_name);
+    // echo "<pre>"; print_r($warehouse_info);
     // exit();
+
+
+
+
+    // ------- to be done after ajax call ----------
+
+    // $location_string = " ";
+    // foreach ($all_location_inv as $key => $value) {
+    //     if($location_string == " ") 
+    //         $location_string .= $value['locationId'];
+    //     else
+    //         $location_string .= ','.$value['locationId'];
+    // }
+    // //echo "<pre>"; print_r($location_string);
+    // //exit();
+
+    // $sql = 'select warehouse_name,"locationId" from "warehouse" where "locationId" in ('.$location_string.')';
+
+    // $warehouse_info;
+    // if (!($result = pg_query($connection, $sql))) {
+    //     print("Failed invQuery: " . pg_last_error($connection));
+    //     exit;
+    // }
+    // while ($row = pg_fetch_array($result)) {
+    //     $warehouse_info[] = $row;
+    // }
+    // echo "<pre>"; print_r($warehouse_info);
+    // exit();
+    // ------- to be done after ajax call for all_location_inv----------
+
+
+
+
+    // $sql = 'select distinct "locationId" , name from "tbl_container"';
+    // $all_location_cont;
+    // if (!($result = pg_query($connection, $sql))) {
+    //     print("Failed invQuery: " . pg_last_error($connection));
+    //     exit;
+    // }
+    // while ($row = pg_fetch_array($result)) {
+    //     $all_location_cont[] = $row;
+    // }
+
+    // echo "<pre>"; print_r($all_location_cont);
+    // exit();
+
+
+
+
+    // $sql = 'select distinct "locationId" , name from "tbl_conveyor"';
+    // $all_location_conv;
+    // if (!($result = pg_query($connection, $sql))) {
+    //     print("Failed invQuery: " . pg_last_error($connection));
+    //     exit;
+    // }
+    // while ($row = pg_fetch_array($result)) {
+    //     $all_location_conv[] = $row;
+    // }
+    // echo "<pre>"; print_r($all_location_conv);
+    // exit();
+    
+
+
+
+    
 
     
 }
@@ -342,6 +374,12 @@ if (!($resultProduct = pg_query($connection, $query))) {
     pg_free_result($resultProduct);
 //echo "<pre>";print_r($data_location[0]['conveyor']);die();
 
+
+
+    
+
+
+
 ?>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/jquery-ui.min-1.8.2.js"></script>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/samplerequest.js"></script>
@@ -376,36 +414,36 @@ if (!($resultProduct = pg_query($connection, $query))) {
 
   <!-- Modal content -->
   <div class="modal-content">
-    <span class="close">&times;</span>
+    <span id="close_warehouse_f" class="close">&times;</span>
     
     <div class="main-form">
         <div class="form-left" >
            <ul id="tab">
             <li class="active">
                 <h2>Warehouse Form</h2>
-                <form>
+                <form id="warehouse_new_form" method="post" action="addNewInventory.php">
+
+                <input type="hidden" name="styleId" value="<?php echo $_GET['styleId']; ?>">
                   <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td>
                           Location
                         </td>
                         <td>
-                          <select>
-
-                            <?php foreach($all_location_inv as $k_inv=>$each_inv){ ?>
-                            <option><?php echo $each_inv['locationId']; ?></option>
+                          <select id="location_dropdown" name="location" class="location_dropdown">
+                          <option>--All Location--</option>
+                            <?php foreach($warehouse_info as $k_info=>$each_info){ ?>
+                            <option value="<?php echo $each_info['locationId']; ?>"><?php echo $each_info['locationId'].'    --'.$each_info['name']; ?></option>
                              <?php } ?>
                           </select>
                         </td>
                     </tr>
-                    <tr>
+                    <tr id="warehouse_td" style="display: none">
                         <td>
                           Warehouse
                         </td>
                         <td>
-                          <select>
-                            <option>1</option>
-                             <option>2</option>
+                          <select name="warehouse" id="warehouse_dropdown">
                           </select>
                         </td>
                     </tr>
@@ -414,7 +452,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                           Row
                         </td>
                         <td>
-                          <input type="text" name="">
+                          <input type="text" name="row">
                         </td>
                     </tr> 
                     <tr>
@@ -422,7 +460,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                           Rack
                         </td>
                         <td>
-                          <input type="text" name="">
+                          <input type="text" name="rack">
                         </td>
                     </tr> 
                     <tr>
@@ -430,15 +468,15 @@ if (!($resultProduct = pg_query($connection, $query))) {
                           Shelf
                         </td>
                         <td>
-                          <input type="text" name="">
+                          <input type="text" name="shelf">
                         </td>
                     </tr>
                     <tr>
                         <td>
                           Box
                         </td>
-                        <td>
-                          <input type="text" name="">
+                        <td id="location_box">
+                          <input type="text" name="box">
                         </td>
                     </tr>
                     <tr>
@@ -1017,6 +1055,92 @@ if (!($resultProduct = pg_query($connection, $query))) {
 
 
 <script>
+
+$('#warehouse_dropdown').select(function(e){
+    alert(this.value);
+});
+
+
+$('.location_dropdown').change(function(e){
+    id = this.value;
+    $.ajax({
+            url: 'warehouse_dropdown.php',
+            type:"post",
+            dataType : "json",
+            data: {
+                id:id
+            },
+            success: function(data) 
+            {
+                //console.log(data);
+                length = Object.keys(data).length;
+                //console.log(length);
+                $('#warehouse_td').show();
+                $('#warehouse_dropdown').empty();
+                $('#warehouse_dropdown').append($('<option>',
+                     {
+                        value: 0,
+                        text : '--All warehouse--'
+                    }));
+
+                $.each (data, function (i) {
+                    console.log (i);
+                    $('#warehouse_dropdown').append($('<option>',
+                     {
+                        value: i,
+                        text : data[i]
+                    }));
+                });
+
+                
+            }
+        });
+});
+
+// function warehouse_dropdown()
+//     {
+//         console.log(1);
+//     }
+
+$('#warehouse_new_form').submit(function(e){
+    e.preventDefault();
+    var styleId = document.getElementById('styleId').value;
+    var colorId = document.getElementById('colorId').value;
+    var location = $('#location_dropdown').val();
+    var warehouse = $('#warehouse_dropdown').val();
+    //alert(e.row);
+    //alert($('#location_dropdown').val());
+    //alert($('input[name="box"]').val());
+    $.ajax({
+            url: 'addNewInventory.php',
+            type:"post",
+            data: {
+                location:location,
+                warehouse:warehouse,
+                rack: $('input[name="rack"]').val(),
+                row: $('input[name="row"]').val(),
+                shelf: $('input[name="shelf"]').val(),
+                box:$('input[name="box"]').val(),
+                colorId:colorId,
+                styleId:styleId
+            },
+            success: function (data) {
+                //alert(response);
+                console.log(data);
+                if (data != null) {
+
+                    $('#close_warehouse_f').trigger("click");
+
+                        window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&boxId=" + data);
+                        $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+                    } else {
+                        $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+                    }
+            }
+        });
+});
+
+
 // Get the modal
 var modal = document.getElementById('myModal');
 
