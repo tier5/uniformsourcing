@@ -24,5 +24,17 @@ if(!($result2=pg_query($connection,$query2))){
 	print("Failed query2: " . pg_last_error($connection));
 	exit;
 }
+$sql = '';
+$sql = "INSERT INTO \"audit_logs\" (";
+$sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+$sql .= " \"log\") VALUES (";
+$sql .= " 'null' ";
+$sql .= ", '". $_SESSION['employeeID'] ."'";
+$sql .= ", '". date('U') ."'";
+$sql .= ", 'Clock Out'";
+$sql .= ")";
+if(!($audit = pg_query($connection,$sql))){
+	$return_arr['error'] = pg_last_error($connection);
+}
 header("location: ../../index.php");
 ?>

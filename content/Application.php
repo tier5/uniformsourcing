@@ -61,6 +61,7 @@ if(count($dataapp1) > 1){
 	header("location: ".${appdir}."../login.php?error=both");
 	exit;
 }
+
 // Set session variables if not set already
 //if(!isset($_SESSION['EmployeeID'])) {
 $_SESSION['employee_type_id']=$dataapp1[0]['employee_type_id'];
@@ -71,11 +72,26 @@ $_SESSION['password']=$dataapp1[0]['password'];
 $_SESSION['firstname']=$dataapp1[0]['firstname'];
 $_SESSION['lastname']=$dataapp1[0]['lastname'];
 $_SESSION['email']=$dataapp1[0]['email'];
+
 //}
 if(isset($_SESSION['count'])){
 	$_SESSION['count']++;
 }else{
 	$_SESSION['count']=1;
+}
+if ($_SESSION['count'] == 1){
+	$sql = '';
+	$sql = "INSERT INTO \"audit_logs\" (";
+	$sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+	$sql .= " \"log\") VALUES (";
+	$sql .= " 'null' ";
+	$sql .= ", '". $dataapp1[0]['employeeID'] ."'";
+	$sql .= ", '". date('U') ."'";
+	$sql .= ", 'Login'";
+	$sql .= ")";
+	if(!($audit = pg_query($connection,$sql))){
+		$return_arr['error'] = pg_last_error($connection);
+	}
 }
 // set up query for permissions 
 $eid=$_SESSION['employeeID'];

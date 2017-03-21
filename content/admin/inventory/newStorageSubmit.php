@@ -55,6 +55,17 @@ for ($i=0;$i<$totalRow;$i++) {
             $query .= ",\"updatedBy\" = '" . $_SESSION['employeeID'] . "' ";
             $query .= ",\"updatedDate\" = '" . date('U') . "' ";
             $query .= "  where \"storageId\"='" . $data_storage['storageId'] . "' ";
+
+            //Log Tracking
+            $sql = '';
+            $sql = "INSERT INTO \"audit_logs\" (";
+            $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+            $sql .= " \"log\") VALUES (";
+            $sql .= "'".$data_inv1[$i]['inventoryId']."'";
+            $sql .= ", '". $_SESSION['employeeID'] ."'";
+            $sql .= ", '". date('U') ."'";
+            $sql .= ", 'Edit Inventory Quantity form ".$data_storage['wareHouseQty']." to ". $data_inv1[$i]['newQty'] ." '";
+            $sql .= ")";
         } else {
             $query = "INSERT INTO \"tbl_invStorage\" (";
             $query .= " \"invId\" ";
@@ -94,6 +105,17 @@ for ($i=0;$i<$totalRow;$i++) {
             $query .= " ,'" . date('U') . "' ";
             $query .= " ,'" . date('U') . "' ";
             $query .= " )";
+
+            //Log Tracking
+            $sql = '';
+            $sql = "INSERT INTO \"audit_logs\" (";
+            $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+            $sql .= " \"log\") VALUES (";
+            $sql .= "'".$data_inv1[$i]['inventoryId']."'";
+            $sql .= ", '". $_SESSION['employeeID'] ."'";
+            $sql .= ", '". date('U') ."'";
+            $sql .= ", 'Edit Inventory Quantity form 0 to ". $data_inv1[$i]['newQty'] ." '";
+            $sql .= ")";
         }
         if ($query != "") {
             $return_arr['type'] = "warehouse";
@@ -106,6 +128,14 @@ for ($i=0;$i<$totalRow;$i++) {
             }
             pg_free_result($result);
             $query = "";
+        }
+        if($sql != '') {
+            if(!($audit = pg_query($connection,$sql))){
+                $return_arr['error'] = pg_last_error($connection);
+                echo json_encode($return_arr);
+                return;
+            }
+            pg_free_result($result);
         }
             $query = '';
             $query = "UPDATE \"tbl_inventory\" SET ";

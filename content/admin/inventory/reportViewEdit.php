@@ -365,25 +365,6 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                     ?>
                                 </select>
                             </td>
-                            <td>
-                                Conveyor #: <select name="conveyor" id="sConveyor">
-                                    <option value="0">----Select Conveyor # ----</option>
-                                    <?php
-                                        if (count($data_location) > 0) {
-                                            for ($i=0;$i<count($data_location);$i++) {
-                                                if($data_location[$i]['conveyor'] != null){ ?>
-                                                    <option value="<?php echo $data_location[$i]['id'] ?>" <?php if (isset($_REQUEST['conveyor']) && $_REQUEST['conveyor'] == $data_location[$i]['id']) echo ' selected="selected" '; ?>>
-                                                        <?php
-                                                            echo $data_location[$i]['conveyor'];
-                                                        ?>
-                                                    </option>
-                                              <?php  }
-
-                                            }
-                                        }
-                                    ?>
-                                </select>
-                            </td>
                             <!--<td>&nbsp;<input  type="button" name="del_qnt" id="del_qnt" value="Delete All Quantities"
                                          onclick="javascript:delAllQnts();" class="ui-button ui-widget ui-state-default ui-corner-all"/></td>-->
                         </form>
@@ -1365,7 +1346,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                         url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&boxId=" + boxId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
                                         type: "GET",
                                         success: function (data) {
-                                            //return false;
+                                            return false;
                                             if (data != null) {
                                                 if (data.name || data.error) {
                                                     $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
@@ -1389,7 +1370,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                         url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&boxId=" + boxId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
                                         type: "GET",
                                         success: function (data) {
-                                           //return false;
+                                           return false;
                                             if (data != null) {
                                                 if (data.name || data.error) {
                                                     $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");

@@ -3,6 +3,14 @@ require('Application.php');
 require('../../jsonwrapper/jsonwrapper.php');
 $return_arr = array();
 extract($_POST);
+$sql="SELECT * from \"tbl_invLocation\" WHERE \"locationId\"='".$id."'";
+if (!($resultProduct = pg_query($connection, $sql))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+while ($row = pg_fetch_array($resultProduct)) {
+    $location = $row;
+}
 //print_r($name." ".$identifier." ".$warehouse." ".$container." ".$conveyor);
 $query = '';
 $query = "SELECT warehouse from \"locationDetails\"";
@@ -40,6 +48,18 @@ $query .=")";
 if (!($resultProduct = pg_query($connection, $query))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
+}
+$sql = '';
+$sql = "INSERT INTO \"audit_logs\" (";
+$sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+$sql .= " \"log\") VALUES (";
+$sql .= " 'null' ";
+$sql .= ", '". $_SESSION['employeeID'] ."'";
+$sql .= ", '". date('U') ."'";
+$sql .= ", 'Add Container W".$current." at Location ".$location['identifier']."'";
+$sql .= ")";
+if(!($audit = pg_query($connection,$sql))){
+    $return_arr['error'] = pg_last_error($connection);
 }
 echo 1;
 exit();
