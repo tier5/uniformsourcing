@@ -49,6 +49,15 @@ if (!($resultProduct = pg_query($connection, $query))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
+$conveyor = '';
+$conveyor = "INSERT INTO \"tbl_conveyor\" (";
+$conveyor .= " \"locationId\", \"quantity\",\"name\") VALUES (";
+$conveyor .= " '".$id."','0','CV".$current."')";
+//print_r($warehouse);die();
+if (!($resultProduct = pg_query($connection, $conveyor))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
 $sql = '';
 $sql = "INSERT INTO \"audit_logs\" (";
 $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";

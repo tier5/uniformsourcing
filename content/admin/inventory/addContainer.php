@@ -48,6 +48,16 @@ if (!($resultProduct = pg_query($connection, $query))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
+$container = '';
+$container = "INSERT INTO \"tbl_container\" (";
+$container .= " \"locationId\", \"quantity\",\"name\") VALUES (";
+$container .= " '".$id."','0','CN".$current."')";
+//print_r($warehouse);die();
+if (!($resultProduct = pg_query($connection, $container))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+pg_free_result($resultProduct);
 $sql = '';
 $sql = "INSERT INTO \"audit_logs\" (";
 $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";

@@ -71,7 +71,7 @@ if($tbl_container_exists['exists'] === 'f')
 			(
 			  "containerId" SERIAL PRIMARY KEY,
 			  "name" character varying(100),
-			  "styleId" bigint NOT NULL,
+			  "styleId" bigint,
 			  "scaleId" bigint,
 			  "sizeScaleId" bigint,
 			  "colorId" bigint,
@@ -140,7 +140,7 @@ if($tbl_conveyor_exists['exists'] === 'f')
 			(
 			  "conveyorId" SERIAL PRIMARY KEY,
 			  "name" character varying(100),
-			  "styleId" bigint NOT NULL,
+			  "styleId" bigint,
 			  "scaleId" bigint,
 			  "sizeScaleId" bigint,
 			  "colorId" bigint,
