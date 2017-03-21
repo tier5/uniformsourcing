@@ -26,7 +26,7 @@ if (count($data_container) > 0) {
 if($last_result == '0'){
     $current = 1;
 } else {
-    $current = substr($last_result,9)+1;
+    $current = substr($last_result,2)+1;
 }
 pg_free_result($resultProduct);
 $query = '';
@@ -34,7 +34,7 @@ $query = "INSERT INTO \"locationDetails\" (";
 $query .=" \"container\" ";
 $query .=" ,\"locationId\" ";
 $query .=" ) VALUES ( ";
-$query .="'container".$current."'";
+$query .="'CN".$current."'";
 $query .=", '".$id."'";
 $query .=")";
 if (!($resultProduct = pg_query($connection, $query))) {

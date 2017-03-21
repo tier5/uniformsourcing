@@ -26,7 +26,7 @@ if (count($conveyor) > 0) {
 if($last_result == '0'){
     $current = 1;
 } else {
-    $current = substr($last_result,8)+1;
+    $current = substr($last_result,2)+1;
 }
 pg_free_result($resultProduct);
 $query = '';
@@ -34,7 +34,7 @@ $query = "INSERT INTO \"locationDetails\" (";
 $query .=" \"conveyor\" ";
 $query .=" ,\"locationId\" ";
 $query .=" ) VALUES ( ";
-$query .="'conveyor".$current."'";
+$query .="'CV".$current."'";
 $query .=", '".$id."'";
 $query .=")";
 if (!($resultProduct = pg_query($connection, $query))) {

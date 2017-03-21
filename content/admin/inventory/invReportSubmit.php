@@ -102,7 +102,7 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 						if((is_numeric($qty[$i][$j][$k])) && ($hdnqty[$i][$j][$k] == 0 && $hdnNewQty[$i][$j][$k] == 0 ))
 						{
                             if($invId[$i][$j][$k] > 0){
-                                echo "if".$invId[$i][$j][$k];
+                                //echo "if".$invId[$i][$j][$k];
                                 $query = "UPDATE \"tbl_inventory\" SET ";
                                 $query .="\"newQty\" = '".$qty[$i][$j][$k]."' ";
                                 $query .=",\"isStorage\" = 0 ";
