@@ -33,7 +33,7 @@ if (count($data_container) > 0) {
 if($last_result == '0'){
     $current = 1;
 } else {
-    $current = substr($last_result,2)+1;
+    $current = substr($last_result,1)+1;
 }
 pg_free_result($resultProduct);
 $query = '';
@@ -41,7 +41,7 @@ $query = "INSERT INTO \"locationDetails\" (";
 $query .=" \"container\" ";
 $query .=" ,\"locationId\" ";
 $query .=" ) VALUES ( ";
-$query .="'CN".$current."'";
+$query .="'C".$current."'";
 $query .=", '".$id."'";
 $query .=")";
 if (!($resultProduct = pg_query($connection, $query))) {
@@ -51,7 +51,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
 $container = '';
 $container = "INSERT INTO \"tbl_container\" (";
 $container .= " \"locationId\", \"quantity\",\"name\") VALUES (";
-$container .= " '".$id."','0','CN".$current."')";
+$container .= " '".$id."','0','C".$current."')";
 //print_r($warehouse);die();
 if (!($resultProduct = pg_query($connection, $container))) {
     print("Failed invQuery: " . pg_last_error($connection));
@@ -65,7 +65,7 @@ $sql .= " \"log\") VALUES (";
 $sql .= " 'null' ";
 $sql .= ", '". $_SESSION['employeeID'] ."'";
 $sql .= ", '". date('U') ."'";
-$sql .= ", 'Add Container CN".$current." at Location ".$location['identifier']."'";
+$sql .= ", 'Add Container C".$current." at Location ".$location['identifier']."'";
 $sql .= ")";
 if(!($audit = pg_query($connection,$sql))){
     $return_arr['error'] = pg_last_error($connection);

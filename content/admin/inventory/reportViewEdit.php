@@ -1691,9 +1691,6 @@ window.onclick = function(event) {
                     $mainIndex++;
                 }
             }
-
-
-
             ?>
             $("#color").change(function () {
 

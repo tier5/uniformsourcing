@@ -61,11 +61,12 @@ pg_free_result($resultProduct);
                             <tbody style="font-size: xx-large">
                             <?php
                                 for ($i=0;$i<count($logs);$i++) { ?>
+                                    <?php $string=$logs[$i]['log'];?>
                                     <tr>
                                         <td align="center"><strong><?php echo $logs[$i]['firstname'].' '.$logs[$i]['lastname'];?></strong></td>
                                         <td align="center"><strong><?php echo date("d-M-Y h:i:sa", $logs[$i]['updated_time']);?></strong></td>
                                         <td align="center"><strong><?php echo $logs[$i]['log'].'</strong>';
-                                                if ($log[$i]['inventory_id'] != 'null' && $logs[$i]['mainSize'] != null && $logs[$i]['rowSize'] != null){
+                                                if ($log[$i]['inventory_id'] != 'null' && $logs[$i]['mainSize'] != null && $logs[$i]['rowSize'] != null && $string[0] != 'D'){
                                                     echo " for main size: <strong>". $logs[$i]['mainSize']."</strong> row size: <strong>".$logs[$i]['rowSize']."</strong>";
                                                 }
                                                 ?></strong></td>
