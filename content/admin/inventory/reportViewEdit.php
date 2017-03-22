@@ -229,6 +229,7 @@ if (count($data_color) > 0) {
     }
     // echo "<pre>"; print_r($all_location_inv);
     // exit();
+
     $location_string = " ";
     foreach ($all_location_inv as $key => $value) {
         if($location_string == " ") 
@@ -252,6 +253,131 @@ if (count($data_color) > 0) {
     // exit();
 
 
+    $sql = 'select distinct "locationId", name from "tbl_container" order by "locationId"';
+    $containers;
+
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($result)) {
+        $containers[] = $row;
+    }
+    $location_string = " ";
+    foreach ($all_location_inv as $key => $value) {
+        if($location_string == " ") 
+            $location_string .= $value['locationId'];
+        else
+            $location_string .= ','.$value['locationId'];
+    }
+    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.')';
+
+    $containers_location;
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($result)) {
+        $containers_location[] = $row;
+    }
+    // echo "<pre>"; print_r( $containers_location);
+    // exit();
+
+
+
+    $sql = 'select distinct "locationId", name from "tbl_conveyor" order by "locationId"';
+    $conveyors;
+
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($result)) {
+        $conveyors[] = $row;
+    }
+    $location_string = " ";
+    foreach ($all_location_inv as $key => $value) {
+        if($location_string == " ") 
+            $location_string .= $value['locationId'];
+        else
+            $location_string .= ','.$value['locationId'];
+    }
+    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.')';
+
+    $conveyors_location;
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($result)) {
+        $conveyors_location[] = $row;
+    }
+    // echo('----');
+    // echo "<pre>"; print_r( $conveyors_location);
+    // exit();
+
+
+
+
+    // echo "<pre>"; print_r($conveyors);
+    // exit();
+
+
+    // $cn_hash;
+    // $container_locations=" ";
+    // foreach($containers as $key=>$value)
+    // {
+    //     if($container_locations == " ") 
+    //     {
+    //         $cn_hash[$value['locationId']] = $value['name'];
+    //         $container_locations .= $value['locationId'];
+    //     }
+    //     else
+    //     {
+    //         if(!isset($cn_hash[$value['locationId']]))
+    //         {
+    //             $container_locations .= ','.$value['locationId'];
+    //             $cn_hash[$value['locationId']] = $value['name'];
+    //         }
+    //         else
+    //         {
+    //             continue;
+    //         }
+    //     }
+    // }
+    
+    // echo "<pre>"; print_r($cn_hash);
+    // exit();
+
+    // $sql = 'select distinct identifier , "locationId" from "tbl_invLocation" where "locationId" in ('.$container_locations.')';
+    // $container_locations_name;
+    // if (!($result = pg_query($connection, $sql))) 
+    // {
+    //     print("Failed invQuery: " . pg_last_error($connection));
+    //     exit;
+    // }
+    // while ($row = pg_fetch_array($result)) 
+    // {
+    //     $container_locations_name[] = $row;
+    // }
+
+    // $cn_loc_hash;
+    // foreach($container_locations_name as $key=>$each)
+    // {
+    //     $cn_loc_hash[$each['locationId']] = $each['identifier']; 
+    // }
+    // echo "<pre>"; print_r($containers);
+    // exit();
+
+    
+
+
+    // foreach ($container_names as $key => $value) {
+    //     $value['identifier'] = $identifier;
+    // }
+   
+
+    
 
 
     // ------- to be done after ajax call ----------
@@ -420,7 +546,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
         <div class="form-left" >
            <ul id="tab">
             <li class="active">
-                <h2>Warehouse Form</h2>
+                <h2>Warehouse Form <span id="warehouse_err_msg" style="display: none; color: brown;"></span> </h2>
                 <form id="warehouse_new_form" method="post" action="addNewInventory.php">
 
                 <input type="hidden" name="styleId" value="<?php echo $_GET['styleId']; ?>">
@@ -431,7 +557,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                         </td>
                         <td>
                           <select id="location_dropdown" name="location" class="location_dropdown">
-                          <option>--All Location--</option>
+                          <option value="0">--All Location--</option>
                             <?php foreach($warehouse_info as $k_info=>$each_info){ ?>
                             <option value="<?php echo $each_info['locationId']; ?>"><?php echo $each_info['locationId'].'    --'.$each_info['name']; ?></option>
                              <?php } ?>
@@ -452,7 +578,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                           Row
                         </td>
                         <td>
-                          <input type="text" name="row">
+                          <input id="warehouse_form_row" type="text" name="row">
                         </td>
                     </tr> 
                     <tr>
@@ -460,7 +586,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                           Rack
                         </td>
                         <td>
-                          <input type="text" name="rack">
+                          <input id="warehouse_form_rack" type="text" name="rack">
                         </td>
                     </tr> 
                     <tr>
@@ -468,7 +594,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                           Shelf
                         </td>
                         <td>
-                          <input type="text" name="shelf">
+                          <input id="warehouse_form_shelf" type="text" name="shelf">
                         </td>
                     </tr>
                     <tr>
@@ -476,7 +602,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                           Box
                         </td>
                         <td id="location_box">
-                          <input type="text" name="box">
+                          <input id="warehouse_form_box" type="text" name="box">
                         </td>
                     </tr>
                     <tr>
@@ -492,28 +618,30 @@ if (!($resultProduct = pg_query($connection, $query))) {
                 </form>
             </li>
             <li>
-                <h2>Container Form</h2>
-                <form>
+                <h2>Container Form <span id="cont_err_msg" style="display: none; color: brown;"></span> </h2>
+                <form id="new_container_form">
                   <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td>
                           Location
                         </td>
                         <td>
-                          <select>
-                            <option>1</option>
-                             <option>2</option>
+                          <select id="container_loc_dropdown">
+                            <option value="0">--All Location--</option>
+                            <?php foreach($containers_location as $k_con=>$k_con_val){ ?>
+                            <option value="<?php echo $k_con_val['locationId']; ?>" ><?php echo $k_con_val['name']; ?></option>
+
+                            <?php } ?>
                           </select>
                         </td>
                     </tr>
-                    <tr>
+                    <tr id="container_td" style="display:none">
                         <td>
                           Container
                         </td>
                         <td>
-                          <select>
-                            <option>1</option>
-                             <option>2</option>
+                          <select id="container_dropdown">
+                            
                           </select>
                         </td>
                     </tr>
@@ -522,7 +650,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                           Box
                         </td>
                         <td>
-                          <input type="text" name="">
+                          <input type="text" id="co_box" name="co_box">
                         </td>
                     </tr>
                     <tr>
@@ -537,37 +665,39 @@ if (!($resultProduct = pg_query($connection, $query))) {
                 </form>
             </li>
             <li>
-                <h2>Conveyor Form</h2>
-                <form>
+                <h2>Conveyor Form <span id="conv_err_msg" style="display: none; color: brown;"></span> </h2>
+                <form id="new_conveyor_form">
                   <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td>
                           Location
                         </td>
                         <td>
-                          <select>
-                            <option>1</option>
-                             <option>2</option>
+                          <select id="conveyor_loc_dropdown">
+                            <option value="0">--All Location--</option>
+                            <?php foreach($conveyors_location as $k_conv=>$k_conv_val){ ?>
+                            <option value="<?php echo $k_conv_val['locationId']; ?>" ><?php echo $k_conv_val['name']; ?></option>
+
+                            <?php } ?>
                           </select>
                         </td>
                     </tr>
-                    <tr>
+                    <tr id="conveyor_td" style="display:none">
                         <td>
                           Conveyor
                         </td>
                         <td>
-                          <select>
-                            <option>1</option>
-                             <option>2</option>
+                          <select id="conveyor_dropdown">
+                            
                           </select>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                          Box
+                          Slot
                         </td>
                         <td>
-                          <input type="text" name="">
+                          <input type="text" name="cv_slot">
                         </td>
                     </tr>
                     <tr>
@@ -900,7 +1030,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                                             }
                                                             ?>
                                                             <tr>
-                                                            <td class="gridHeaderReportGrids3"><?php echo $data_loc[$loc_i]['name'];
+                                                            <td class="gridHeaderReportGrids3"><?php //echo $data_loc[$loc_i]['name'];
                                                                 $loc_identity = $loc_i; ?></td>
                                                             <?php
                                                             if (count($data_opt1Size) > 0) {
@@ -1056,14 +1186,99 @@ if (!($resultProduct = pg_query($connection, $query))) {
 
 <script>
 
+
+
 $('#warehouse_dropdown').select(function(e){
-    alert(this.value);
+   // alert(this.value);
 });
+
+
+$('#conveyor_loc_dropdown').change(function(e){
+    id = this.value;
+    if(id != 0)
+    {
+        $.ajax({
+            url: 'conveyor_dropdown.php',
+            type:"post",
+            dataType : "json",
+            data: {
+                id:id
+            },
+            success: function(data) 
+            {
+                console.log(data);
+                $('#conveyor_td').show();
+                $('#conveyor_dropdown').empty();
+                $('#conveyor_dropdown').append($('<option>',
+                {
+                    value: 0,
+                    data: "",
+                    text : '--All conveyor--'
+                }));
+                $.each (data, function(i){
+                    $('#conveyor_dropdown').append($('<option>',
+                     {
+                        value: data[i].conveyorId,
+                        text : data[i].name
+                    }));
+                });
+            }
+        }); 
+    }
+    else{
+        $('#conveyor_dropdown').empty();
+    }
+
+});
+
+$('#container_loc_dropdown').change(function(e){
+    id = this.value;
+    if(id != 0)
+    {
+        $.ajax({
+            url: 'container_dropdown.php',
+            type:"post",
+            dataType : "json",
+            data: {
+                id:id
+            },
+            success: function(data) 
+            {
+                console.log(data);
+                $('#container_td').show();
+                $('#container_dropdown').empty();
+                $('#container_dropdown').append($('<option>',
+                {
+                    value: 0,
+                    data: "",
+                    text : '--All container--'
+                }));
+                $.each (data, function(i){
+                    $('#container_dropdown').append($('<option>',
+                     {
+                        value: data[i].containerId,
+                        data : data[i].identifier,
+                        text : data[i].name
+                    }));
+                });
+
+                
+            }
+        }); 
+    }
+    else
+    {
+        $('#container_dropdown').empty();
+    }
+});
+
 
 
 $('.location_dropdown').change(function(e){
     id = this.value;
-    $.ajax({
+    if(id != 0)
+    {
+       $.ajax({
             url: 'warehouse_dropdown.php',
             type:"post",
             dataType : "json",
@@ -1094,7 +1309,12 @@ $('.location_dropdown').change(function(e){
 
                 
             }
-        });
+        }); 
+    }
+    else{
+        $('#warehouse_dropdown').empty();
+    }
+    
 });
 
 // function warehouse_dropdown()
@@ -1102,44 +1322,206 @@ $('.location_dropdown').change(function(e){
 //         console.log(1);
 //     }
 
+
+$('#new_conveyor_form').submit(function(e){
+    e.preventDefault();
+    var styleId = document.getElementById('styleId').value;
+    var colorId = document.getElementById('colorId').value;
+    var slot = $('input[name="cv_slot"]').val();
+    var locationId = $('#conveyor_loc_dropdown').val();
+    var conveyorId = $('#conveyor_dropdown').val();
+    
+    //alert(conveyorId);
+    if(slot == '' || conveyorId == '0' || conveyorId == null || locationId == '0' || locationId == null)
+    {
+        console.log(slot,conveyorId,locationId);
+    }
+    else
+    {
+        console.log(slot,conveyorId,locationId,styleId,colorId);
+        $.ajax({
+            url: 'add_box_to_conveyor.php',
+            type:"post",
+            dataType : "json",
+            data: {
+                styleId:styleId,
+                colorId:colorId,
+                slot : slot,
+                locationId : locationId,
+                conveyorId : conveyorId
+            },
+            success: function(data) 
+            {
+                console.log(data);
+                if(data == 'slot not available')
+                {
+                    //alert(data);
+                    $('#conv_err_msg').empty();
+                    $('#conv_err_msg').text(' -- slot not available');
+                    $('#conv_err_msg').show();
+                    $('#conv_err_msg').delay(3000).fadeOut();
+                    $('#conv_err_msg').empty();
+                } 
+                else
+                {
+                    alert('success');        
+                }   
+            }
+        }); 
+    }
+});
+
+
+
+
+$('#new_container_form').submit(function(e){
+    e.preventDefault();
+    var styleId = document.getElementById('styleId').value;
+    var colorId = document.getElementById('colorId').value;
+    var box = $('input[name="co_box"]').val();
+    var locationId = $('#container_loc_dropdown').val();
+    var containerId = $('#container_dropdown').val();
+
+    if(box == '' || containerId == '0' || containerId == null || locationId == '0' || locationId == null)
+    {
+        console.log(box,containerId,locationId);
+    }
+    else
+    {
+        console.log(box,containerId,locationId,styleId,colorId);
+        $.ajax({
+            url: 'add_box_to_container.php',
+            type:"post",
+            dataType : "json",
+            data: {
+                styleId:styleId,
+                colorId:colorId,
+                box : box,
+                locationId : locationId,
+                containerId : containerId
+            },
+            success: function(data) 
+            {
+                console.log(data);
+                if(data == 'box not available')
+                {
+                    //alert(data);
+                    $('#cont_err_msg').empty();
+                    $('#cont_err_msg').text(' -- box not available');
+                    $('#cont_err_msg').show();
+                    $('#cont_err_msg').delay(3000).fadeOut();
+                    //$('#cont_err_msg').empty();
+                } 
+                else
+                {
+                    alert('success');        
+                }
+            }
+        }); 
+    }
+});
+
+
+
+
 $('#warehouse_new_form').submit(function(e){
     e.preventDefault();
     var styleId = document.getElementById('styleId').value;
     var colorId = document.getElementById('colorId').value;
     var location = $('#location_dropdown').val();
     var warehouse = $('#warehouse_dropdown').val();
-    //alert(e.row);
-    //alert($('#location_dropdown').val());
-    //alert($('input[name="box"]').val());
-    $.ajax({
-            url: 'addNewInventory.php',
-            type:"post",
-            data: {
-                location:location,
-                warehouse:warehouse,
-                rack: $('input[name="rack"]').val(),
-                row: $('input[name="row"]').val(),
-                shelf: $('input[name="shelf"]').val(),
-                box:$('input[name="box"]').val(),
-                colorId:colorId,
-                styleId:styleId
-            },
-            success: function (data) {
-                //alert(response);
-                console.log(data);
-                if (data != null) {
+    var rack = $('input[name="rack"]').val();
+    var row  = $('input[name="row"]').val();
+    var shelf  = $('input[name="shelf"]').val();
+    var box = $('input[name="box"]').val();
 
-                    $('#close_warehouse_f').trigger("click");
 
-                        window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&boxId=" + data);
-                        $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
-                    } else {
+    if(colorId == '' || styleId == '' ||  box == '' || shelf == '' || row == '' || rack == '' || warehouse == '' || location == null || location == '0')
+    {
+        $('#close_warehouse_f').trigger("click");
+        $("#message").html("<div class='errorMessage'><strong>All fields are mandatory. Please fill all fields and try later.</strong></div>").delay(3000).fadeOut();
+    }
+    else
+    {
+            $.ajax({
+                url: 'addNewInventory.php',
+                type:"post",
+
+                data: {
+                    location:location,
+                    warehouse:warehouse,
+                    rack: rack,
+                    row: row,
+                    shelf: shelf,
+                    box:box,
+                    colorId:colorId,
+                    styleId:styleId
+                },
+                success: function (data) {
+                    //alert(response);
+                    
+                    if (data != null) 
+                    {
+                        if(data === "box not available")
+                        {
+                            $('#warehouse_err_msg').empty();
+                            $('#warehouse_err_msg').text(' -- box not available');
+                            $('#warehouse_err_msg').show();
+                            $('#warehouse_err_msg').delay(3000).fadeOut();
+                            console.log('kaudfy---------');
+                        }
+                        else
+                        {
+                            console.log('kajdfgaludfgluiyf');
+
+                            $('#close_warehouse_f').trigger("click");
+
+                            window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&boxId=" + data);
+                            $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+                        }
+                    } 
+                    else 
+                    {
+                        
                         $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
                     }
-            }
-        });
+                }
+            });
+    }
 });
 
+function clear_form_data(){
+    
+    //empty warehouse form
+    $('#warehouse_form_row').val('');
+    $('#warehouse_form_rack').val('');
+    $('#warehouse_form_shelf').val('');
+    $('#warehouse_form_box').val('');
+    $('#warehouse_dropdown').empty();
+    $('#warehouse_td').hide();
+    // $('#warehouse_dropdown').val('0');
+    // $('#warehouse_dropdown').text('--All warehouse--');
+    $('#warehouse_err_msg').text('');
+    $('#warehouse_err_msg').hide();
+    document.getElementById("location_dropdown").options[0].selected=true;
+
+    //empty container form
+    $('#co_box').val('');
+    $('#container_dropdown').empty();
+    $('#container_td').hide();
+    $('#cont_err_msg').empty();
+    $('#cont_err_msg').hide();
+    document.getElementById("container_loc_dropdown").options[0].selected=true;
+
+    //empty conveyor form
+    $('#cv_slot').val('');
+    $('#conveyor_dropdown').empty();
+    $('#conveyor_td').hide();
+    $('#conv_err_msg').empty();
+    $('#conv_err_msg').hide();
+    document.getElementById("conveyor_loc_dropdown").options[0].selected=true;
+    
+};
 
 // Get the modal
 var modal = document.getElementById('myModal');
@@ -1158,6 +1540,7 @@ btn.onclick = function() {
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {
     modal.style.display = "none";
+    clear_form_data();
 }
 
 // When the user clicks anywhere outside of the modal, close it
@@ -1435,6 +1818,7 @@ window.onclick = function(event) {
                 $("#hide").css("display", "block");
             } else {
                 $("#hide").css("display", "none");
+                $('#addinventory_new').hide();
             }
             <?php
             if ($data_style['scaleNameId'] != "") {

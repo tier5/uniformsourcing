@@ -6,6 +6,7 @@ $return_arr[0]['flag'] = 0;
 extract($_POST);
 // var_dump($_POST);
 // exit();
+
 $sql ='select * from "tbl_invStyle" where "styleId"='.$styleId;
 if(!($result=pg_query($connection,$sql))){
     $return_arr[0]['error'] = pg_last_error($connection);
@@ -24,6 +25,7 @@ if(!($result2=pg_query($connection,$query2))){
 while($row2 = pg_fetch_array($result2)){
     $data_mainSize[]=$row2;}
 pg_free_result($result2);
+
 
 $query2='Select "sizeScaleId" as "opt1SizeId", "opt1Size" from "tbl_invScaleSize" where "scaleId"='.$data_style['scaleNameId'].' and "opt1Size" IS NOT NULL and "opt1Size" <>\'\' order by "opt1Order","sizeScaleId"';
 if(!($result2=pg_query($connection,$query2))){
@@ -169,6 +171,27 @@ while($row = pg_fetch_array($result)){
 
 pg_free_result($result);
 
+
+
+
+
+$sql = 'select count(*) from "tbl_invStorage" where box=\''.$new_box.'\'';
+
+if(!($result=pg_query($connection,$sql))){
+    $err = pg_last_error($connection);
+    echo json_encode($err);
+    exit();
+}
+$id = array();
+$row = pg_fetch_array($result);
+if($row['count'] > 0)
+{
+    echo ("box not available");
+    exit();
+}
+
+
+
 $query = '';
 $query = "INSERT INTO \"tbl_invStorage\" (";
 $query .= " \"invId\" ";
@@ -220,9 +243,11 @@ $sql .= ", '". $_SESSION['employeeID'] ."'";
 $sql .= ", '". date('U') ."'";
 $sql .= ", 'created new box:  ".$new_box."'";
 $sql .= ")";
-if(!($audit = pg_query($connection,$sql))){
+if(!($audit = pg_query($connection,$sql)))
+{
     $return_arr['error'] = pg_last_error($connection);
 }
+
 
 echo $new_box;
 exit;
