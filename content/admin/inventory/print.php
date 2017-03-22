@@ -319,7 +319,7 @@ require('Application.php');
 				<td colspan="2" style="width: 70%">
 					<table width="100%">
 						<tr>
-							<td>Room: <?php echo $data_storage[0]['room']==''?'nil':$data_storage[0]['room'] ?></td>
+							<!-- <td>Room: <?php //echo $data_storage[0]['room']==''?'nil':$data_storage[0]['room'] ?></td> -->
 							<td>Row: <?php echo $data_storage[0]['row']==''?'nil':$data_storage[0]['row']  ?></td>
 							<td>Rack: <?php echo $data_storage[0]['rack']==''?'nil':$data_storage[0]['rack']  ?></td>
 							<td>Shelf: <?php echo $data_storage[0]['shelf']==''?'nil':$data_storage[0]['shelf']  ?></td>
