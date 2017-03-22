@@ -841,7 +841,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                         {
                         ?>
                     <tr id="view_details">
-                        <td>Room: <input type="text" id="updateroom" value="<?php echo $data_product[0]['room']; ?>"/></td>
+                        <td style="display: none;">Room: <input type="text" id="updateroom" value="<?php //echo $data_product[0]['room']; ?>"/></td>
                         <td>Row: <input type="text" id="updaterow" value="<?php echo $data_product[0]['row']; ?>" /></td>
                         <td>Rack: <input type="text" id="updaterack" value="<?php echo $data_product[0]['rack']; ?>" /></td>
                         <td>Shelf: <input type="text" id="updateshelf" value="<?php echo $data_product[0]['shelf']; ?>" /></strong></td>
@@ -1565,10 +1565,10 @@ window.onclick = function(event) {
         
     function Update() {
         var room = $('#updateroom').val();
-        if(room == '') {
-            alert("Please Provide a Room");
-            return false;
-        }
+        // if(room == '') {
+        //     alert("Please Provide a Room");
+        //     return false;
+        // }
         var rack = $('#updaterack').val();
         if(rack == '') {
             alert("Please Provide a rack");
