@@ -1796,7 +1796,7 @@ window.onclick = function(event) {
                             if (data[0].name || data[0].error) {
                                 $("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error + "</strong></div>");
                                 if (data[0].flag) {
-                                    //console.log('first');
+                                    console.log('first');
                                     $.ajax({
                                         url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&boxId=" + boxId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
                                         type: "GET",
