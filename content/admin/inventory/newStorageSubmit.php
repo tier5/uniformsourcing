@@ -49,6 +49,17 @@ for ($i=0;$i<$totalRow;$i++) {
             $qty = $data_inv1[$i]['newQty'] - $data_inv1[$i]['quantity'];
         else
             $qty = $data_inv1[$i]['newQty'];
+        if($data_storage != null) {
+            if($data_storage['wareHouseQty'] > $data_inv1[$i]['newQty']) {
+                $newQty = $data_inv1[$i]['quantity'] + ($data_inv1[$i]['newQty']-$data_storage['wareHouseQty']);
+            } elseif ($data_storage['wareHouseQty'] < $data_inv1[$i]['newQty']) {
+                $newQty = $data_inv1[$i]['quantity'] + ($data_inv1[$i]['newQty']-$data_storage['wareHouseQty']);
+            } else {
+                $newQty = $data_inv1[$i]['quantity'];
+            }
+        } else {
+            $newQty = $data_inv1[$i]['quantity']+$data_inv1[$i]['newQty'];
+        }
         if($data_storage) {
             $query = "UPDATE \"tbl_invStorage\" SET ";
             $query .= " \"wareHouseQty\" = '" . $data_inv1[$i]['newQty'] . "' ";
@@ -139,7 +150,7 @@ for ($i=0;$i<$totalRow;$i++) {
         }
             $query = '';
             $query = "UPDATE \"tbl_inventory\" SET ";
-            $query .= "\"quantity\" = '" . $qty . "' ";
+            $query .= "\"quantity\" = '" . $newQty . "' ";
             $query .= ",\"newQty\" = '0' ";
             $query .= ",\"isStorage\" = 1 ";
             $query .= ",\"updatedBy\" = '" . $_SESSION['employeeID'] . "' ";

@@ -64,7 +64,7 @@ pg_free_result($resultProduct);
                                 <td><input type="text" value="<?php echo $data_location[0]['name'] ?>" id="location" readonly style="background-color: #999999"></td>
                                 <td>Location Identifier: </td>
                                 <td><input type="text" value="<?php echo $data_location[0]['identifier'] ?>" id="identifier"></td>
-                                <td><button onclick="addLocation()">Edit Location</button></td>
+                                <td><button onclick="addLocation()">Update Location</button></td>
                                 <!--<td><a href="location.php"><button>Cancel</button></a></td>-->
                             </tr>
                         </table>
@@ -141,6 +141,10 @@ pg_free_result($resultProduct);
                 alert("please provide a Location Identifier");
                 return false;
             }
+            if(identifier.length != 3){
+                alert("Location Identifier Length should be 3");
+                return false;
+            }
             $.ajax({
                 url: "submitEditLocation.php",
                 type: "post",
@@ -150,9 +154,9 @@ pg_free_result($resultProduct);
                 },
                 success: function (response) {
                     if(response==1){
-                        $("#message").html("<div class='successMessage'><strong>Location Added Successfully. Please Wait....</strong></div>");
+                        $("#message").html("<div class='successMessage'><strong>Location updated Successfully. Please Wait....</strong></div>");
                         setTimeout(function(){
-                            $(location).attr('href', 'location.php');
+                            location.reload();
                         }, 2000);
                     } else {
                         $("#message").html("<div class='errorMessage'><strong>Something wrong Please try again later</strong></div>");
@@ -188,7 +192,7 @@ pg_free_result($resultProduct);
                 },
                 success: function (data) {
                     if(data==1){
-                        $("#message").html("<div class='successMessage'><strong>Warehouse Added Successfully. Please Wait....</strong></div>");
+                        $("#message").html("<div class='successMessage'><strong>Container Added Successfully. Please Wait....</strong></div>");
                         setTimeout(function(){
                               location.reload();
                         }, 2000);
@@ -207,7 +211,7 @@ pg_free_result($resultProduct);
                 },
                 success: function (data) {
                     if(data==1){
-                        $("#message").html("<div class='successMessage'><strong>Warehouse Added Successfully. Please Wait....</strong></div>");
+                        $("#message").html("<div class='successMessage'><strong>Conveyor Added Successfully. Please Wait....</strong></div>");
                         setTimeout(function(){
                             location.reload();
                         }, 2000);
