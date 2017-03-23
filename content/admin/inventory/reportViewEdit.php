@@ -235,7 +235,7 @@ if (count($data_color) > 0) {
 
 
 
-    $sql = 'select distinct warehouse_id, "locationId" from "tbl_inventory"';
+    $sql = 'select distinct warehouse , "locationId" from "locationDetails" where warehouse != \'null\'';
     $all_location_inv;
     if (!($result = pg_query($connection, $sql))) {
         print("Failed invQuery: " . pg_last_error($connection));
@@ -256,7 +256,7 @@ if (count($data_color) > 0) {
     }
     // echo "<pre>"; print_r($location_string);
     // exit();
-    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.')';
+    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.') order by "locationId"';
 
     $warehouse_info;
     if (!($result = pg_query($connection, $sql))) {
@@ -270,7 +270,9 @@ if (count($data_color) > 0) {
     // exit();
 
 
-    $sql = 'select distinct "locationId", name from "tbl_container" order by "locationId"';
+
+
+    $sql = 'select distinct container , "locationId" from "locationDetails" where container != \'null\'';
     $containers;
 
     if (!($result = pg_query($connection, $sql))) {
@@ -281,13 +283,13 @@ if (count($data_color) > 0) {
         $containers[] = $row;
     }
     $location_string = " ";
-    foreach ($all_location_inv as $key => $value) {
+    foreach ($containers as $key => $value) {
         if($location_string == " ") 
             $location_string .= $value['locationId'];
         else
             $location_string .= ','.$value['locationId'];
     }
-    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.')';
+    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.') order by "locationId"';
 
     $containers_location;
     if (!($result = pg_query($connection, $sql))) {
@@ -302,7 +304,7 @@ if (count($data_color) > 0) {
 
 
 
-    $sql = 'select distinct "locationId", name from "tbl_conveyor" order by "locationId"';
+    $sql = 'select distinct conveyor , "locationId" from "locationDetails" where conveyor != \'null\'';
     $conveyors;
 
     if (!($result = pg_query($connection, $sql))) {
@@ -312,14 +314,16 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $conveyors[] = $row;
     }
+
+
     $location_string = " ";
-    foreach ($all_location_inv as $key => $value) {
+    foreach ($conveyors as $key => $value) {
         if($location_string == " ") 
             $location_string .= $value['locationId'];
         else
             $location_string .= ','.$value['locationId'];
     }
-    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.')';
+    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.') order by "locationId"';
 
     $conveyors_location;
     if (!($result = pg_query($connection, $sql))) {
@@ -330,11 +334,8 @@ if (count($data_color) > 0) {
         $conveyors_location[] = $row;
     }
 
-    
-
-
     // echo('----');
-    // echo "<pre>"; print_r( $conveyors_location);
+    // echo "<pre>"; print_r($conveyors_location);
     // exit();
 
 
@@ -596,7 +597,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                           <select id="location_dropdown" name="location" class="location_dropdown">
                           <option value="0">--All Location--</option>
                             <?php foreach($warehouse_info as $k_info=>$each_info){ ?>
-                            <option value="<?php echo $each_info['locationId']; ?>"><?php echo $each_info['locationId'].'    --'.$each_info['name']; ?></option>
+                            <option value="<?php echo $each_info['locationId']; ?>"><?php echo $each_info['name']; ?></option>
                              <?php } ?>
                           </select>
                         </td>
@@ -2246,14 +2247,18 @@ window.onclick = function(event) {
                 dataString = $("#inventoryForm").serialize();
                 dataString += "&type=e";
                 dataString += "&unitId=" + unitId;
+                console.log(dataString);
                 $.ajax({
                     type: "POST",
                     url: "invReportSubmit.php",
                     data: dataString,
                     dataType: "json",
-                    success: function (data) {
-                        if (data != null) {
-                            if (data[0].name || data[0].error) {
+                    success: function (data) 
+                    {
+                        if (data != null) 
+                        {
+                            if (data[0].name || data[0].error) 
+                            {
                                 $("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error + "</strong></div>");
                                 if (data[0].flag) {
                                     console.log('first');
@@ -2278,7 +2283,9 @@ window.onclick = function(event) {
                                     });
                                     //$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&unitId="+unitId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
                                 }
-                            } else {
+                            } 
+                            else 
+                            {
                                 if (data[0].flag) {
                                     $("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");
                                     $.ajax({
