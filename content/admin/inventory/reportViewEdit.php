@@ -636,7 +636,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                     </tr>
                     <tr>
                         <td>
-                          unit
+                          box#
                         </td>
                         <td id="location_unit">
                           <input id="warehouse_form_unit" type="text" name="unit">
@@ -684,7 +684,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                     </tr>
                     <tr>
                         <td>
-                          unit
+                          box#
                         </td>
                         <td>
                           <input type="text" id="co_unit" name="co_unit">
@@ -731,7 +731,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                     </tr>
                     <tr>
                         <td>
-                          Slot
+                          Slot#
                         </td>
                         <td>
                           <input type="text" name="cv_slot">
