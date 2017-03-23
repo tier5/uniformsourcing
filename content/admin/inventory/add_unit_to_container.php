@@ -5,9 +5,7 @@ $return_arr[0]['error'] = "";
 $return_arr[0]['flag'] = 0;
 extract($_POST);
 
-
-
-$location_details_id = $conveyorId;
+$location_details_id = $containerId;
 
 
 
@@ -93,7 +91,7 @@ pg_free_result($result);
 
 
 $fetch_wh;
-$query='select conveyor from "locationDetails" where "locationId"=\''.$locationId.'\' and conveyor != \'null\'';
+$query='select container from "locationDetails" where "locationId"=\''.$locationId.'\' and container != \'null\'';
 if(!($result=pg_query($connection,$query))){
     $return_arr[0]['error'] = pg_last_error($connection);
     echo json_encode($return_arr);
@@ -105,9 +103,11 @@ pg_free_result($result);
 
 
 
-$new_slot = $fetch_loc['identifier'].'_'.$fetch_wh['conveyor'].'_'.$slot;
+$new_unit = $fetch_loc['identifier'].'_'.$fetch_wh['container'].'_'.$unit;
 
-$sql = 'select count(*) from "tbl_invStorage" where slot=\''.$new_slot.'\'';
+
+
+$sql = 'select count(*) from "tbl_invStorage" where unit=\''.$new_unit.'\'';
 if(!($result=pg_query($connection,$sql))){
     $err = pg_last_error($connection);
     echo json_encode($err);
@@ -118,7 +118,7 @@ pg_free_result($result);
 
 if($row['count']>0)
 {
-    echo json_encode("slot not available");
+    echo json_encode("box not available");
     exit();
 }
 
@@ -201,7 +201,7 @@ $query .= " \"invId\" ";
 $query .= " ,\"styleId\" ";
 $query .= " ,\"colorId\" ";
 $query .= " ,\"locationId\" ";
-if ($slot != "") $query .= " ,\"slot\" ";
+if ($unit != "") $query .= " ,\"unit\" "; // for the unit field
 if ($type != "") $query .= " ,\"type\" ";
 $query .= " ,\"wareHouseQty\" ";
 $query .= " ,\"createdBy\" ";
@@ -214,7 +214,7 @@ $query .= " '" . $id[0]['inventoryId'] . "' ";
 $query .= " ,'" . $styleId . "' ";
 $query .= " ,'" . $colorId . "' ";
 $query .= " ,'" . $locationId . "' ";
-if ($slot != "") $query .= " ,'" . $new_slot . "' ";
+if ($unit != "") $query .= " ,'" . $new_unit . "' "; // for the unit field
 if ($type != "") $query .= " ,'" . $type . "' ";
 $query .= " ,0 ";
 $query .= " ,'" . $_SESSION['employeeID'] . "' ";
@@ -236,12 +236,12 @@ $sql .= " \"log\") VALUES (";
 $sql .= " '" . $id[0]['inventoryId'] . "' ";
 $sql .= ", '". $_SESSION['employeeID'] ."'";
 $sql .= ", '". date('U') ."'";
-$sql .= ", 'created new slot:  ".$new_slot."'";
+$sql .= ", 'created new box:  ".$new_unit."'";
 $sql .= ")";
 if(!($audit = pg_query($connection,$sql))){
     $return_arr['error'] = pg_last_error($connection);
 }
 
-echo json_encode($new_slot);
+echo json_encode($new_unit);
 exit;
 ?>

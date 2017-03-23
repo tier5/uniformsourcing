@@ -1,6 +1,6 @@
 <?php
 require('Application.php');
-$sql = "SELECT * FROM \"tbl_invStorage\" WHERE box='".$_REQUEST['boxId']."' and \"styleId\"='".$_REQUEST['styleId']."' ";
+$sql = "SELECT * FROM \"tbl_invStorage\" WHERE unit='".$_REQUEST['unitId']."' and \"styleId\"='".$_REQUEST['styleId']."' ";
 if (!($resultProduct = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
@@ -8,13 +8,14 @@ if (!($resultProduct = pg_query($connection, $sql))) {
 while ($row = pg_fetch_array($resultProduct)) {
     $data_storage = $row;
 }
+
 $query = 'UPDATE "tbl_invStorage" SET ';
 $query .="room='".$_REQUEST['room']."'";
 $query .=",rack='".$_REQUEST['rack']."'";
 $query .=",shelf='".$_REQUEST['self']."'";
 $query .=",row='".$_REQUEST['row']."' ";
 $query .=",\"updatedDate\"='".date('U')."' ";
-$query .=" where box='".$_REQUEST['boxId']."' and \"styleId\"='".$_REQUEST['styleId']."' ";
+$query .=" where unit='".$_REQUEST['unitId']."' and \"styleId\"='".$_REQUEST['styleId']."' ";
 if (!($resultProduct = pg_query($connection, $query))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;

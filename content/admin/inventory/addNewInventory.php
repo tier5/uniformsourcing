@@ -5,7 +5,7 @@ $return_arr[0]['error'] = "";
 $return_arr[0]['flag'] = 0;
 extract($_POST);
 
-// print_r($_POST);
+// echo json_encode($_POST);
 // exit();
 
 $location_details_id = $warehouse;
@@ -114,11 +114,12 @@ pg_free_result($result);
 
 
 
-$new_box = $fetch_loc['identifier'].'_'.$fetch_wh['warehouse'].'_'.$box;
+$new_unit = $fetch_loc['identifier'].'_'.$fetch_wh['warehouse'].'_'.$unit;
+// echo json_encode($new_unit);
+// exit();
 
 
-
-$sql = 'select count(*) from "tbl_invStorage" where box=\''.$new_box.'\'';
+$sql = 'select count(*) from "tbl_invStorage" where unit=\''.$new_unit.'\'';
 if(!($result=pg_query($connection,$sql))){
     $err = pg_last_error($connection);
     echo json_encode($err);
@@ -217,8 +218,7 @@ if ($room != "") $query .= " ,\"room\" ";
 if ($_POST['row'] != "") $query .= " ,\"row\" ";
 if ($rack != "") $query .= " ,\"rack\" ";
 if ($shelf != "") $query .= " ,\"shelf\" ";
-if ($box != "") $query .= " ,\"box\" ";
-if ($slot != "") $query .= " ,\"slot\" ";
+if ($unit != "") $query .= " ,\"unit\" ";
 if ($type != "") $query .= " ,\"type\" ";
 $query .= " ,\"wareHouseQty\" ";
 $query .= " ,\"createdBy\" ";
@@ -235,8 +235,7 @@ if ($room != "") $query .= " ,'" . $room . "' ";
 if ($_POST['row'] != "") $query .= " ,'" . $_POST['row'] . "' ";
 if ($rack != "") $query .= " ,'" . $rack . "' ";
 if ($shelf != "") $query .= " ,'" . $shelf . "' ";
-if ($box != "") $query .= " ,'" . $new_box . "' ";
-if ($slot != "") $query .= " ,'" . $new_slot . "' ";
+if ($unit != "") $query .= " ,'" . $new_unit . "' ";
 if ($type != "") $query .= " ,'" . $type . "' ";
 $query .= " ,0 ";
 $query .= " ,'" . $_SESSION['employeeID'] . "' ";
@@ -258,12 +257,12 @@ $sql .= " \"log\") VALUES (";
 $sql .= " '" . $id[0]['inventoryId'] . "' ";
 $sql .= ", '". $_SESSION['employeeID'] ."'";
 $sql .= ", '". date('U') ."'";
-$sql .= ", 'created new box:  ".$new_box."'";
+$sql .= ", 'created new box:  ".$new_slot."'";
 $sql .= ")";
 if(!($audit = pg_query($connection,$sql))){
     $return_arr['error'] = pg_last_error($connection);
 }
 
-echo $new_box;
+echo $new_unit;
 exit;
 ?>

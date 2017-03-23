@@ -479,44 +479,41 @@ if($tbl_storage_map_exists['exists'] === 'f')
 
     }
 
- //    $sql = "SELECT EXISTS (SELECT column_name 
-	// 	FROM information_schema.columns 
-	// 	WHERE table_name='tbl_invStorage' and column_name='type')";
+    $sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_invStorage' and column_name='type')";
 
-	// $column_exists;
-	// if(!($result=pg_query($connection,$sql)))
- //    {
- //        print_r('Application.php -- error ');
- //        print("Failed StyleQuery: " . pg_last_error($connection));
- //        exit();
- //    }
- //    while($row = pg_fetch_array($result))
-	// {
-	//     $column_exists=$row;
-	// }
-	// pg_free_result($row);
- //    if($column_exists['exists'] === 'f')
- //    {
-
-
- //    	$sql = 'ALTER TABLE "tbl_invStorage" ADD COLUMN 
- //    			type character varying(30)';
- //    	// var_dump($sql);
- //    	// exit();
- //    	if(!($result=pg_query($connection,$sql)))
-	//     {
-	//         print_r('Application.php -- error ');
-	//         print("Failed StyleQuery: " . pg_last_error($connection));
-	//         exit();
-	//     }
-	//     else
-	//     {
-	//     	print_r('successfully added column slot');
-	//     	//exit();
-	//     }
-	//     pg_free_result($result);
-
- //    }
+	$column_exists;
+	if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    while($row = pg_fetch_array($result))
+	{
+	    $column_exists=$row;
+	}
+	pg_free_result($row);
+    if($column_exists['exists'] === 'f')
+    {
+    	$sql = 'ALTER TABLE "tbl_invStorage" ADD COLUMN 
+    			type character varying(30)';
+    	// var_dump($sql);
+    	// exit();
+    	if(!($result=pg_query($connection,$sql)))
+	    {
+	        print_r('Application.php -- error ');
+	        print("Failed StyleQuery: " . pg_last_error($connection));
+	        exit();
+	    }
+	    else
+	    {
+	    	print_r('successfully added column slot');
+	    	//exit();
+	    }
+	    pg_free_result($result);
+    }
 
 
 
@@ -607,58 +604,58 @@ if($column_exists['exists'] === 'f')
 
 }
 
-// $sql = "SELECT EXISTS (SELECT column_name 
-// 		FROM information_schema.columns 
-// 		WHERE table_name='tbl_invStorage' and column_name='unit')";
+$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_invStorage' and column_name='unit')";
 
-// $column_exists;
-// if(!($result=pg_query($connection,$sql)))
-// {
-//     print_r('Application.php -- error ');
-//     print("Failed StyleQuery: " . pg_last_error($connection));
-//     exit();
-// }
-// while($row = pg_fetch_array($result))
-// {
-//     $column_exists=$row;
-// }
-// pg_free_result($row);
-// if($column_exists['exists'] === 'f')
-// {
-// 	$sql = 'ALTER TABLE "tbl_invStorage" ADD COLUMN 
-// 			unit character varying(30) ';
-// 	// var_dump($sql);
-// 	// exit();
-// 	if(!($result=pg_query($connection,$sql)))
-//     {
-//         print_r('Application.php -- error ');
-//         print("Failed StyleQuery: " . pg_last_error($connection));
-//         exit();
-//     }
-//     else
-//     {
-//     	//print_r('successfully added column slot');
-//     	//exit();
-//     }
-//     pg_free_result($result);
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+	$sql = 'ALTER TABLE "tbl_invStorage" ADD COLUMN 
+			unit character varying(30) ';
+	// var_dump($sql);
+	// exit();
+	if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	//print_r('successfully added column slot');
+    	//exit();
+    }
+    pg_free_result($result);
 
-// }
+}
 
-// $sql = "UPDATE \"tbl_invStorage\" SET unit = box WHERE box != 'null'";
-// if(!($result=pg_query($connection,$sql)))
-// {
-//     print_r('Application.php -- error -- failed to update unit field with box value ');
-//     print("Failed StyleQuery: " . pg_last_error($connection));
-//     exit();
-// }
+$sql = "UPDATE \"tbl_invStorage\" SET unit = box WHERE box != 'null'";
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error -- failed to update unit field with box value ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
 
-// $sql = "UPDATE \"tbl_invStorage\" SET unit = slot WHERE slot != 'null'";
-// if(!($result=pg_query($connection,$sql)))
-// {
-//     print_r('Application.php -- error -- failed to update unit field with box value ');
-//     print("Failed StyleQuery: " . pg_last_error($connection));
-//     exit();
-// }
+$sql = "UPDATE \"tbl_invStorage\" SET unit = slot WHERE slot != 'null'";
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error -- failed to update unit field with box value ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
 
 
 
