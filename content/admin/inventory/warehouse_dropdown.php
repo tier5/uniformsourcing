@@ -2,23 +2,39 @@
 require('Application.php');
 extract($_POST);
 
-	$sql = 'select id,warehouse_name as name from "warehouse" where "locationId"='.$id;
+	// $sql = 'select id,warehouse_name as name from "warehouse" where "locationId"='.$id;
 
-    $warehouse_info;
-    $w_name;
+ //    $warehouse_info;
+ //    $w_name;
+ //    if (!($result = pg_query($connection, $sql))) {
+ //        print("Failed invQuery: " . pg_last_error($connection));
+ //        exit;
+ //    }
+ //    while ($row = pg_fetch_array($result)) {
+ //        $warehouse_info[] = $row;
+ //    }
+
+    $sql = 'select id , warehouse from "locationDetails" where "locationId"=\''.$id.'\' and warehouse !=  \'null\'';
     if (!($result = pg_query($connection, $sql))) {
         print("Failed invQuery: " . pg_last_error($connection));
         exit;
     }
     while ($row = pg_fetch_array($result)) {
-        $warehouse_info[] = $row;
+        $location_details_id[] = $row;
     }
+    echo json_encode($location_details_id);
+    exit();
+
+
+
 
     foreach($warehouse_info as $key=>$val)
     {
     	$w_name[$val['id']] = $val['name']; 
     }
-    
+
+    echo json_encode($warehouse_info);
+    exit();
 
     echo json_encode($w_name);
     exit();

@@ -58,6 +58,7 @@ if (isset($_GET['styleId'])) {
 
 
 }
+
 $sql = 'select "styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds" from "tbl_invStyle" where "styleId"=' . $styleId;
 if (!($result = pg_query($connection, $sql))) {
     print("Failed StyleQuery: " . pg_last_error($connection));
@@ -118,7 +119,11 @@ if ($data_style['scaleNameId'] != "") {
     pg_free_result($result2);
 
 
+
+    
     $sql = 'select distinct box from "tbl_invStorage" where "styleId"=' . $_GET['styleId'];
+
+    //$sql = 'select distinct box from "tbl_invStorage" where "styleId"=' . $_GET['styleId'];
     if ($_GET['colorId'] > 0) {
         $sql .= ' and "colorId"=' . $_GET['colorId'];
     } else if (count($data_color) > 0) {
@@ -133,6 +138,9 @@ if ($data_style['scaleNameId'] != "") {
         $data_storage[] = $row_cnt9;
     }
     pg_free_result($result_cnt9);
+
+    // echo "<pre>";print_r($data_storage);
+    // exit();
 
 }
 
@@ -159,14 +167,17 @@ while ($row = pg_fetch_array($result)) {
 
 
 for ($i = 0; $i < count($data_inv); $i++) {
-    if ($data_inv[$i]['newQty'] > 0) {
-        if (($data_inv[$i]['quantity'] != "" && $data_inv[$i]['quantity'] > 0)) {
+    if ($data_inv[$i]['newQty'] > 0) 
+    {
+        if (($data_inv[$i]['quantity'] != "" && $data_inv[$i]['quantity'] > 0)) 
+        {
             $sql = 'update "tbl_inventory" set "isStorage"=1 ,"newQty"=0';
             if (!($result = pg_query($connection, $sql))) {
                 print("Failed invUpdateQuery: " . pg_last_error($connection));
                 exit;
             }
-        } else if (($data_inv[$i]['quantity'] == "" || $data_inv[$i]['quantity'] == 0)) {
+        } else if (($data_inv[$i]['quantity'] == "" || $data_inv[$i]['quantity'] == 0)) 
+        {
             $sql = 'Delete from "tbl_inventory" where "inventoryId"=' . $data_inv[$i]['inventoryId'];
             if (!($result = pg_query($connection, $sql))) {
                 print("Failed deleteInvQuery: " . pg_last_error($connection));
@@ -312,6 +323,10 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $conveyors_location[] = $row;
     }
+
+    
+
+
     // echo('----');
     // echo "<pre>"; print_r( $conveyors_location);
     // exit();
@@ -550,6 +565,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                 <form id="warehouse_new_form" method="post" action="addNewInventory.php">
 
                 <input type="hidden" name="styleId" value="<?php echo $_GET['styleId']; ?>">
+
                   <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td>
@@ -944,18 +960,18 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                 </td>
                                 <td width="10"></td>
                                 <td>
-                                    <div id="header" style="float:left; width:100%;">
-                                        <div id="scrollLinks4">
-                                            <div id="scrollLinks2">
-                                                <div id="scrollLinks">
-                                                    <div id="scrollLinks3">
-                                                        <table class="HD001" width="250px" style="float:left;"
+                                <div id="header" style="float:left; width:100%;">
+                                    <div id="scrollLinks4">
+                                        <div id="scrollLinks2">
+                                          <div id="scrollLinks">
+                                            <div id="scrollLinks3">
+                                              <table class="HD001" width="250px" style="float:left;"
                                                                border="0" cellspacing="1" cellpadding="1">
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                  <tr>
+                                                    <td class="gridHeaderReportGrids3">&nbsp;</td>
                                                                 <td class="gridHeaderReport">sizes</td>
-                                                            </tr>
-                                                            <tr>
+                                                  </tr>
+                                                  <tr>
                                                                 <td class="gridHeaderReportGrids3"><a
                                                                         class="mouseover_left" href="#"><img
                                                                             src="<?php echo $mydirectory; ?>/images/leftArrw.gif"
@@ -1218,8 +1234,8 @@ $('#conveyor_loc_dropdown').change(function(e){
                 $.each (data, function(i){
                     $('#conveyor_dropdown').append($('<option>',
                      {
-                        value: data[i].conveyorId,
-                        text : data[i].name
+                        value: data[i].id,
+                        text : data[i].conveyor
                     }));
                 });
             }
@@ -1250,15 +1266,13 @@ $('#container_loc_dropdown').change(function(e){
                 $('#container_dropdown').append($('<option>',
                 {
                     value: 0,
-                    data: "",
                     text : '--All container--'
                 }));
                 $.each (data, function(i){
                     $('#container_dropdown').append($('<option>',
                      {
-                        value: data[i].containerId,
-                        data : data[i].identifier,
-                        text : data[i].name
+                        value: data[i].id,
+                        text : data[i].container
                     }));
                 });
 
@@ -1287,7 +1301,8 @@ $('.location_dropdown').change(function(e){
             },
             success: function(data) 
             {
-                //console.log(data);
+
+                console.log(data);
                 length = Object.keys(data).length;
                 //console.log(length);
                 $('#warehouse_td').show();
@@ -1302,19 +1317,17 @@ $('.location_dropdown').change(function(e){
                     console.log (i);
                     $('#warehouse_dropdown').append($('<option>',
                      {
-                        value: i,
-                        text : data[i]
+                        value: data[i].id,
+                        text : data[i].warehouse
                     }));
-                });
-
-                
+                });   
             }
         }); 
     }
-    else{
+    else
+    {
         $('#warehouse_dropdown').empty();
     }
-    
 });
 
 // function warehouse_dropdown()
@@ -1331,7 +1344,7 @@ $('#new_conveyor_form').submit(function(e){
     var locationId = $('#conveyor_loc_dropdown').val();
     var conveyorId = $('#conveyor_dropdown').val();
     
-    //alert(conveyorId);
+    console.log(slot,locationId,conveyorId);
     if(slot == '' || conveyorId == '0' || conveyorId == null || locationId == '0' || locationId == null)
     {
         console.log(slot,conveyorId,locationId);
@@ -1348,7 +1361,8 @@ $('#new_conveyor_form').submit(function(e){
                 colorId:colorId,
                 slot : slot,
                 locationId : locationId,
-                conveyorId : conveyorId
+                conveyorId : conveyorId,
+                type : 'slot'
             },
             success: function(data) 
             {
@@ -1364,8 +1378,11 @@ $('#new_conveyor_form').submit(function(e){
                 } 
                 else
                 {
-                    alert('success');        
-                }   
+                    $('#close_warehouse_f').trigger("click");
+
+                    window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&boxId=" + data);
+                    $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+                }
             }
         }); 
     }
@@ -1398,7 +1415,8 @@ $('#new_container_form').submit(function(e){
                 colorId:colorId,
                 box : box,
                 locationId : locationId,
-                containerId : containerId
+                containerId : containerId,
+                type : 'box_c'
             },
             success: function(data) 
             {
@@ -1411,10 +1429,16 @@ $('#new_container_form').submit(function(e){
                     $('#cont_err_msg').show();
                     $('#cont_err_msg').delay(3000).fadeOut();
                     //$('#cont_err_msg').empty();
-                } 
+                }
                 else
                 {
-                    alert('success');        
+
+                    $('#close_warehouse_f').trigger("click");
+
+                    window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&boxId=" + data);
+                    $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+
+                    //alert('success');        
                 }
             }
         }); 
@@ -1434,7 +1458,11 @@ $('#warehouse_new_form').submit(function(e){
     var row  = $('input[name="row"]').val();
     var shelf  = $('input[name="shelf"]').val();
     var box = $('input[name="box"]').val();
+    //var location_details_id = $('input[name="location_details_id"]').val();
 
+
+
+    //console.log(warehouse,location);
 
     if(colorId == '' || styleId == '' ||  box == '' || shelf == '' || row == '' || rack == '' || warehouse == '' || location == null || location == '0')
     {
@@ -1455,10 +1483,13 @@ $('#warehouse_new_form').submit(function(e){
                     shelf: shelf,
                     box:box,
                     colorId:colorId,
-                    styleId:styleId
+                    styleId:styleId,
+                    type : 'type_w'
+                    //location_details_id:location_details_id
                 },
-                success: function (data) {
-                    //alert(response);
+                success: function (data) 
+                {
+                    console.log(data);
                     
                     if (data != null) 
                     {
@@ -1472,7 +1503,7 @@ $('#warehouse_new_form').submit(function(e){
                         }
                         else
                         {
-                            console.log('kajdfgaludfgluiyf');
+                            //console.log('kajdfgaludfgluiyf');
 
                             $('#close_warehouse_f').trigger("click");
 

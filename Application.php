@@ -439,7 +439,235 @@ if($tbl_storage_map_exists['exists'] === 'f')
 	    pg_free_result($result);
 	}
 
+
+	$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_invStorage' and column_name='slot')";
+
+	$column_exists;
+	if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    while($row = pg_fetch_array($result))
+	{
+	    $column_exists=$row;
+	}
+	pg_free_result($row);
+    if($column_exists['exists'] === 'f')
+    {
+
+
+    	$sql = 'ALTER TABLE "tbl_invStorage" ADD COLUMN 
+    			slot character varying(30) ';
+    	// var_dump($sql);
+    	// exit();
+    	if(!($result=pg_query($connection,$sql)))
+	    {
+	        print_r('Application.php -- error ');
+	        print("Failed StyleQuery: " . pg_last_error($connection));
+	        exit();
+	    }
+	    else
+	    {
+	    	print_r('successfully added column slot');
+	    	//exit();
+	    }
+	    pg_free_result($result);
+
+    }
+
+ //    $sql = "SELECT EXISTS (SELECT column_name 
+	// 	FROM information_schema.columns 
+	// 	WHERE table_name='tbl_invStorage' and column_name='type')";
+
+	// $column_exists;
+	// if(!($result=pg_query($connection,$sql)))
+ //    {
+ //        print_r('Application.php -- error ');
+ //        print("Failed StyleQuery: " . pg_last_error($connection));
+ //        exit();
+ //    }
+ //    while($row = pg_fetch_array($result))
+	// {
+	//     $column_exists=$row;
+	// }
+	// pg_free_result($row);
+ //    if($column_exists['exists'] === 'f')
+ //    {
+
+
+ //    	$sql = 'ALTER TABLE "tbl_invStorage" ADD COLUMN 
+ //    			type character varying(30)';
+ //    	// var_dump($sql);
+ //    	// exit();
+ //    	if(!($result=pg_query($connection,$sql)))
+	//     {
+	//         print_r('Application.php -- error ');
+	//         print("Failed StyleQuery: " . pg_last_error($connection));
+	//         exit();
+	//     }
+	//     else
+	//     {
+	//     	print_r('successfully added column slot');
+	//     	//exit();
+	//     }
+	//     pg_free_result($result);
+
+ //    }
+
+
+
+
 //end -- adding contId to table tbl_invStorage
+
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'storage_table_data')";
+
+$storage_table_data;
+
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $storage_table_data=$row;
+}
+pg_free_result($row);
+if($storage_table_data['exists'] === 'f')
+{
+	$sql = $sql = 'CREATE TABLE public.storage_table_data
+			(
+			  "id" SERIAL PRIMARY KEY,
+			  "locationId" bigint,
+			  "rack" character varying(30),
+			  "row" character varying(30),
+			  "shelf" character varying(30),
+			  "type" character varying(30)
+			)
+			WITH (
+			  OIDS=FALSE
+			);
+			ALTER TABLE public.storage_table_data
+			  OWNER TO globaluniformuser';
+
+	if(!($result=pg_query($connection,$sql)))
+    {
+        
+        print_r('Application.php -- error in insert storage_table_data');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	//print('successfully built the table
+    }
+
+    pg_free_result($result);
+
+}
+
+$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_inventory' and column_name='location_details_id')";
+
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+	$sql = 'ALTER TABLE "tbl_inventory" ADD COLUMN 
+			location_details_id bigint ';
+	// var_dump($sql);
+	// exit();
+	if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	//print_r('successfully added column slot');
+    	//exit();
+    }
+    pg_free_result($result);
+
+}
+
+// $sql = "SELECT EXISTS (SELECT column_name 
+// 		FROM information_schema.columns 
+// 		WHERE table_name='tbl_invStorage' and column_name='unit')";
+
+// $column_exists;
+// if(!($result=pg_query($connection,$sql)))
+// {
+//     print_r('Application.php -- error ');
+//     print("Failed StyleQuery: " . pg_last_error($connection));
+//     exit();
+// }
+// while($row = pg_fetch_array($result))
+// {
+//     $column_exists=$row;
+// }
+// pg_free_result($row);
+// if($column_exists['exists'] === 'f')
+// {
+// 	$sql = 'ALTER TABLE "tbl_invStorage" ADD COLUMN 
+// 			unit character varying(30) ';
+// 	// var_dump($sql);
+// 	// exit();
+// 	if(!($result=pg_query($connection,$sql)))
+//     {
+//         print_r('Application.php -- error ');
+//         print("Failed StyleQuery: " . pg_last_error($connection));
+//         exit();
+//     }
+//     else
+//     {
+//     	//print_r('successfully added column slot');
+//     	//exit();
+//     }
+//     pg_free_result($result);
+
+// }
+
+// $sql = "UPDATE \"tbl_invStorage\" SET unit = box WHERE box != 'null'";
+// if(!($result=pg_query($connection,$sql)))
+// {
+//     print_r('Application.php -- error -- failed to update unit field with box value ');
+//     print("Failed StyleQuery: " . pg_last_error($connection));
+//     exit();
+// }
+
+// $sql = "UPDATE \"tbl_invStorage\" SET unit = slot WHERE slot != 'null'";
+// if(!($result=pg_query($connection,$sql)))
+// {
+//     print_r('Application.php -- error -- failed to update unit field with box value ');
+//     print("Failed StyleQuery: " . pg_last_error($connection));
+//     exit();
+// }
+
+
+
+
+
+
+
+
+
 
 
 

@@ -50,16 +50,16 @@ if (!($resultProduct = pg_query($connection, $query))) {
     exit;
 }
 pg_free_result($resultProduct);
-$warehouse = '';
-$warehouse = "INSERT INTO \"warehouse\" (";
-$warehouse .= " \"locationId\", \"warehouse_name\") VALUES (";
-$warehouse .= " '".$id."','W".$current."')";
-//print_r($warehouse);die();
-if (!($resultProduct = pg_query($connection, $warehouse))) {
-    print("Failed invQuery: " . pg_last_error($connection));
-    exit;
-}
-pg_free_result($resultProduct);
+// $warehouse = '';
+// $warehouse = "INSERT INTO \"warehouse\" (";
+// $warehouse .= " \"locationId\", \"warehouse_name\") VALUES (";
+// $warehouse .= " '".$id."','W".$current."')";
+// //print_r($warehouse);die();
+// if (!($resultProduct = pg_query($connection, $warehouse))) {
+//     print("Failed invQuery: " . pg_last_error($connection));
+//     exit;
+// }
+// pg_free_result($resultProduct);
 $sql = '';
 $sql = "INSERT INTO \"audit_logs\" (";
 $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";

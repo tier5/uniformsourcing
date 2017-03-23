@@ -4,9 +4,15 @@ $return_arr[0]['name'] = "";
 $return_arr[0]['error'] = "";
 $return_arr[0]['flag'] = 0;
 extract($_POST);
-// var_dump($_POST);
+
+// print_r($_POST);
 // exit();
 
+$location_details_id = $warehouse;
+
+$type = null;
+// var_dump($_POST);
+// exit();
 $sql ='select * from "tbl_invStyle" where "styleId"='.$styleId;
 if(!($result=pg_query($connection,$sql))){
     $return_arr[0]['error'] = pg_last_error($connection);
@@ -25,7 +31,6 @@ if(!($result2=pg_query($connection,$query2))){
 while($row2 = pg_fetch_array($result2)){
     $data_mainSize[]=$row2;}
 pg_free_result($result2);
-
 
 $query2='Select "sizeScaleId" as "opt1SizeId", "opt1Size" from "tbl_invScaleSize" where "scaleId"='.$data_style['scaleNameId'].' and "opt1Size" IS NOT NULL and "opt1Size" <>\'\' order by "opt1Order","sizeScaleId"';
 if(!($result2=pg_query($connection,$query2))){
@@ -84,8 +89,20 @@ while($row = pg_fetch_array($result)){
 pg_free_result($result);
 
 
+// $fetch_wh;
+// $query='select * from "warehouse" where "locationId"='.$location;
+// if(!($result=pg_query($connection,$query))){
+//     $return_arr[0]['error'] = pg_last_error($connection);
+//     echo json_encode($return_arr);
+//     return;
+// }
+// while($row = pg_fetch_array($result)){
+//     $fetch_wh=$row;}
+// pg_free_result($result);
+
+
 $fetch_wh;
-$query='select * from "warehouse" where "locationId"='.$location;
+$query='select warehouse from "locationDetails" where "locationId"=\''.$location.'\' and warehouse != \'null\'';
 if(!($result=pg_query($connection,$query))){
     $return_arr[0]['error'] = pg_last_error($connection);
     echo json_encode($return_arr);
@@ -95,9 +112,26 @@ while($row = pg_fetch_array($result)){
     $fetch_wh=$row;}
 pg_free_result($result);
 
-$new_box = $fetch_loc['identifier'].'_'.$fetch_wh['warehouse_name'].'_'.$box;
 
 
+$new_box = $fetch_loc['identifier'].'_'.$fetch_wh['warehouse'].'_'.$box;
+
+
+
+$sql = 'select count(*) from "tbl_invStorage" where box=\''.$new_box.'\'';
+if(!($result=pg_query($connection,$sql))){
+    $err = pg_last_error($connection);
+    echo json_encode($err);
+    exit();
+}
+$row = pg_fetch_array($result);
+pg_free_result($result);
+
+if($row['count']>0)
+{
+    echo "box not available";
+    exit();
+}
 
 
 
@@ -115,7 +149,7 @@ $query .=" \"styleId\" ";
 $query .=" ,\"styleNumber\" ";
 $query .=" ,\"scaleId\" ";
 $query .=", \"locationId\" ";
-$query .=", \"warehouse_id\" ";
+$query .=", \"location_details_id\" ";
 $query .=", \"quantity\" ";
 $query .=", \"newQty\" ";
 if($k < count($data_mainSize))$query .=", \"sizeScaleId\" ";
@@ -137,7 +171,7 @@ $query .=" '".$data_style['styleId']."' ";
 $query .=" ,'".$data_style['styleNumber']."' ";
 $query .=", '".$data_style['scaleNameId']."' ";
 $query .=" ,'".$location."' ";
-$query .=" ,'".$warehouse."' ";
+$query .=" , '".$location_details_id."' ";
 $query .=" ,0 ";
 $query .=" ,0 ";
 if($k < count($data_mainSize))$query .=", '".$data_mainSize[0]['mainSizeId']."' ";
@@ -169,28 +203,9 @@ while($row = pg_fetch_array($result)){
 
 
 
+
+
 pg_free_result($result);
-
-
-
-
-
-$sql = 'select count(*) from "tbl_invStorage" where box=\''.$new_box.'\'';
-
-if(!($result=pg_query($connection,$sql))){
-    $err = pg_last_error($connection);
-    echo json_encode($err);
-    exit();
-}
-$id = array();
-$row = pg_fetch_array($result);
-if($row['count'] > 0)
-{
-    echo ("box not available");
-    exit();
-}
-
-
 
 $query = '';
 $query = "INSERT INTO \"tbl_invStorage\" (";
@@ -198,12 +213,13 @@ $query .= " \"invId\" ";
 $query .= " ,\"styleId\" ";
 $query .= " ,\"colorId\" ";
 $query .= " ,\"locationId\" ";
-$query .= " ,\"warehouse_id\" ";
 if ($room != "") $query .= " ,\"room\" ";
 if ($_POST['row'] != "") $query .= " ,\"row\" ";
 if ($rack != "") $query .= " ,\"rack\" ";
 if ($shelf != "") $query .= " ,\"shelf\" ";
 if ($box != "") $query .= " ,\"box\" ";
+if ($slot != "") $query .= " ,\"slot\" ";
+if ($type != "") $query .= " ,\"type\" ";
 $query .= " ,\"wareHouseQty\" ";
 $query .= " ,\"createdBy\" ";
 $query .= " ,\"updatedBy\" ";
@@ -215,12 +231,13 @@ $query .= " '" . $id[0]['inventoryId'] . "' ";
 $query .= " ,'" . $styleId . "' ";
 $query .= " ,'" . $colorId . "' ";
 $query .= " ,'" . $location . "' ";
-$query .= " ,'" . $warehouse . "' ";
 if ($room != "") $query .= " ,'" . $room . "' ";
 if ($_POST['row'] != "") $query .= " ,'" . $_POST['row'] . "' ";
 if ($rack != "") $query .= " ,'" . $rack . "' ";
 if ($shelf != "") $query .= " ,'" . $shelf . "' ";
 if ($box != "") $query .= " ,'" . $new_box . "' ";
+if ($slot != "") $query .= " ,'" . $new_slot . "' ";
+if ($type != "") $query .= " ,'" . $type . "' ";
 $query .= " ,0 ";
 $query .= " ,'" . $_SESSION['employeeID'] . "' ";
 $query .= " ,'" . $_SESSION['employeeID'] . "' ";
@@ -243,11 +260,9 @@ $sql .= ", '". $_SESSION['employeeID'] ."'";
 $sql .= ", '". date('U') ."'";
 $sql .= ", 'created new box:  ".$new_box."'";
 $sql .= ")";
-if(!($audit = pg_query($connection,$sql)))
-{
+if(!($audit = pg_query($connection,$sql))){
     $return_arr['error'] = pg_last_error($connection);
 }
-
 
 echo $new_box;
 exit;
