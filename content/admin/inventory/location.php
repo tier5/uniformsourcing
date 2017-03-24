@@ -56,7 +56,7 @@ pg_free_result($result);
                                         </a>
                                     </td>
                                     <td align="center">
-                                        <button>Delete</button>
+                                        <button onclick="deleteLocation(<?php echo $data_location[$i]['locationId']; ?>)">Delete</button>
                                     </td>
                                 </tr>
                                 <?php
@@ -70,6 +70,29 @@ pg_free_result($result);
     </table>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript">
+        function deleteLocation(id) {
+            if (confirm("Are you Sure you want to delete this Location") == true) {
+                $.ajax({
+                    url: "deleteLocation.php",
+                    type: "post",
+                    data: {
+                        locationId: id
+                    },
+                    success: function (response) {
+                        //return false;
+                        // console.log(response);
+                        if (response == 1) {
+                            alert("Location Deleted SuccessFully");
+                            location.reload();
+                        } else {
+                            alert("Location Not Deleted Please Empty the Location first");
+                        }
+                    }
+                });
+            } else {
+                console.log('cancel');
+            }
+        }
         function addLocation() {
             var locationName = document.getElementById('addlocation').value;
             if(locationName == '') {
@@ -104,6 +127,7 @@ pg_free_result($result);
                 }
             });
         }
+
     </script>
 <?php require('../../trailer.php');
 ?>
