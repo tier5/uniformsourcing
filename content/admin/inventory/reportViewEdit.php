@@ -854,7 +854,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                             </td>
                             <td>
                                 unit #:&nbsp;<select name="unit_num" id="unit_num">
-                                    <option value="0">---- All unites # ----</option>
+                                    <option value="0">---- All units # ----</option>
                                     <?php
                                     for ($i = 0; $i < count($data_storage); $i++) {
                                         if ($data_storage[$i]['unit'] != "")
@@ -1015,10 +1015,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                     ?>
                                     <tr>
                                         <td>
-                                            <input id="update_inventory" width="117" height="98"
-                                                   type="image"
-                                                   src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg"
-                                                   alt="Submit button"/>
+                                            
                                         </td>
                                     </tr>
                                     <?php
@@ -1030,7 +1027,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                     </table>
                                 </td>
                                 <td width="10"></td>
-                                <td>
+                                <td width="100">
                                 <div id="header" style="float:left; width:100%;">
                                     <div id="scrollLinks4">
                                         <div id="scrollLinks2">
@@ -1228,6 +1225,12 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                                 </div>
                                             </div>
                                         </div>
+                                </td>
+                                <td>
+                                    <input id="update_inventory" width="117" height="98"
+                                                   type="image"
+                                                   src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg"
+                                                   alt="Submit button"/>
                                 </td>
                             </tr>
                             <tr>
