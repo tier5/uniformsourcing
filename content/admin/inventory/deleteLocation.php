@@ -13,7 +13,6 @@ $total = 0;
 for ($i=0;$i<count($data_location);$i++){
     $total = $total+$data_location[$i]['wareHouseQty'];
 }
-echo $total;
 if($total == 0){
     $query = "DELETE FROM \"tbl_invStorage\" WHERE \"locationId\"='".$_POST['locationId']."'";
     if (!($result = pg_query($connection, $query))) {

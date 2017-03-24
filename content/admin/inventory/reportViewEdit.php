@@ -2293,7 +2293,6 @@ window.onclick = function(event) {
     <script type="text/javascript">
         $(function () {
             $("#inventoryForm").submit(function () {
-
                 var location_id = $('#_location_id').val();
                 var inventory_id = $('#_inventory_id').val();
                 var location_details_id = $('#_location_details_id').val();
@@ -2340,7 +2339,7 @@ window.onclick = function(event) {
                             {
                                 $("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error + "</strong></div>");
                                 if (data[0].flag) {
-                                    console.log('first');
+                                    //console.log('first');
                                     $.ajax({
                                         url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&unitId=" + unitId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
                                         type: "GET",

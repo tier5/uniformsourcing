@@ -40,6 +40,18 @@ $wareHouseRow = $row;
 $return_arr['name'] = "";
 $return_arr['error'] = "";
 $return_arr['type'] = "";
+$sql1='SELECT "locationId" FROM "tbl_invStorage" where unit='."'".$unit."' and \"sizeScaleId\" IS NULL";
+if (!($result = pg_query($connection, $sql1))) {
+    print("Failed Data_invQuery: " . pg_last_error($connection));
+    exit;
+}
+$row = pg_fetch_array($result);
+$locId = $row;
+if($locId == null){
+    $locId = $data_inv1[0]['locationId'];
+} else {
+    $locId = $locId['locationId'];
+}
 for ($i=0;$i<$totalRow;$i++) {
     if (isset($data_inv1[$i]['inventoryId'])) {
         $sql = 'select "storageId", "invId", "sizeScaleId", "opt1ScaleId", "opt2ScaleId", "locationId", "conveyorSlotId", "conveyorQty", room, "row", rack, shelf, unit, "wareHouseQty", "location", "otherQty" from "tbl_invStorage" where "invId"=' . $data_inv1[$i]['inventoryId'] . ' and "unit"='." '".$unit."'";
@@ -108,7 +120,7 @@ for ($i=0;$i<$totalRow;$i++) {
             if ($data_inv1[$i]['sizeScaleId'] != "") $query .= " ,'" . $data_inv1[$i]['sizeScaleId'] . "' ";
             if ($data_inv1[$i]['opt1ScaleId'] != "") $query .= " ,'" . $data_inv1[$i]['opt1ScaleId'] . "' ";
             if ($data_inv1[$i]['opt2ScaleId'] != "") $query .= " ,'" . $data_inv1[$i]['opt2ScaleId'] . "' ";
-            $query .= " ,'" . $data_inv1[$i]['locationId'] . "' ";
+            $query .= " ,'" . $locId . "' ";
             if ($room != "") $query .= " ,'" . $room . "' ";
             if ($_GET['row'] != "") $query .= " ,'" . $_GET['row'] . "' ";
             if ($rack != "") $query .= " ,'" . $rack . "' ";
