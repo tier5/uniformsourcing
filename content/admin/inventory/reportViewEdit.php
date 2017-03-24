@@ -485,11 +485,14 @@ if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
     if(isset($temp[1]))
     {
         $tmp = substr($temp[1], 0,2);
-        if($tmp == 'CV')
+        if($tmp == 'CV' || substr($temp[1], 0,1) == 'C')
         {
             $is_slot = true;
         }
     }
+
+    //var_dump ($is_slot);
+    //exit();
     
     
 
