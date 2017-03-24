@@ -20,6 +20,9 @@ $rack = $_GET['rack'];
 $shelf = $_GET['shelf'];
 $unit = $_GET['unitId'];
 $room = $_GET['room'];
+
+
+
 $sql = 'select "inventoryId","styleNumber",col."name","sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty", "mainSize", "rowSize", "columnSize" from "tbl_inventory" as inv inner join "tbl_invColor" as col on col."colorId"=inv."colorId" where inv."styleId"=' . $styleId . ' and inv."colorId"=' . $colorId . ' and "isStorage"=0 order by "inventoryId"';
 
 if (!($result = pg_query($connection, $sql))) {
@@ -33,6 +36,7 @@ pg_free_result($result);
 $totalRow = count($data_inv1);
 //echo '<pre>';print_r($totalRow);die();
 $wareHouseRow = $row;
+
 $return_arr['name'] = "";
 $return_arr['error'] = "";
 $return_arr['type'] = "";
@@ -99,7 +103,7 @@ for ($i=0;$i<$totalRow;$i++) {
             if ($data_inv1[$i]['opt2ScaleId'] != "") $query .= " ,\"opt2ScaleId\" ";
             $query .= " ,\"locationId\" ";
             if ($room != "") $query .= " ,\"room\" ";
-            if ($wareHouseRow != "") $query .= " ,\"row\" ";
+            if ($_GET['row'] != "") $query .= " ,\"row\" ";
             if ($rack != "") $query .= " ,\"rack\" ";
             if ($shelf != "") $query .= " ,\"shelf\" ";
             if ($unit != "") $query .= " ,\"unit\" ";
@@ -118,7 +122,7 @@ for ($i=0;$i<$totalRow;$i++) {
             if ($data_inv1[$i]['opt2ScaleId'] != "") $query .= " ,'" . $data_inv1[$i]['opt2ScaleId'] . "' ";
             $query .= " ,'" . $locId . "' ";
             if ($room != "") $query .= " ,'" . $room . "' ";
-            if ($wareHouseRow != "") $query .= " ,'" . $wareHouseRow . "' ";
+            if ($_GET['row'] != "") $query .= " ,'" . $_GET['row'] . "' ";
             if ($rack != "") $query .= " ,'" . $rack . "' ";
             if ($shelf != "") $query .= " ,'" . $shelf . "' ";
             if ($unit != "") $query .= " ,'" . $unit . "' ";
