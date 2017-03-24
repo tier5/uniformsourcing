@@ -104,8 +104,8 @@ pg_free_result($result);
                 alert("please provide a Location Identifier");
                 return false;
             }
-            if(identifier.length != 3){
-                alert("Location Identifier Length should be 3");
+            if(identifier.length > 3){
+                alert("Location Identifier Length should be maximum 3");
                 return false;
             }
             $.ajax({
