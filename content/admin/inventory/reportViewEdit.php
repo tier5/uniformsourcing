@@ -146,7 +146,7 @@ if ($data_style['scaleNameId'] != "") {
 
 $totalScale = count($data_mainSize);
 $tableWidth = 0;
-//echo "<pre>"; print_r($data_mainSize);
+
 
 
 $tableWidth = $totalScale * 100;
@@ -203,7 +203,7 @@ if (count($data_color) > 0) {
         if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             $query .= ' left join "tbl_invStorage" as st on st."invId"=inv."inventoryId" ';
         }
-        $query .= ' where inv."styleId"=' . $data_style['styleId'] . ' and inv."isActive"=1' . $search . ' order by "inventoryId"';
+        $query .= ' where inv."styleId"=' . $data_style['styleId'] . ' and inv."isActive"=1' . $search . ' and st."opt1ScaleId" >0 and st."sizeScaleId" >0 order by "inventoryId"';
     } else {
         $clrId = $data_color[0]['colorId'];
         $query = 'select "inventoryId", "sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty" from "tbl_inventory" where "styleId"=' . $data_style['styleId'] . ' and "colorId"=' . $data_color[0]['colorId'] . '  and "isActive"=1 order by "inventoryId"';
@@ -230,6 +230,9 @@ if (count($data_color) > 0) {
             }
         }
     }
+
+    // echo "<pre>"; print_r($data_mainSize);
+    // echo "<br><br>";
     // echo "<pre>"; print_r($data_inv);
     // exit();
 
@@ -972,8 +975,8 @@ if (!($resultProduct = pg_query($connection, $query))) {
                 }
                 if(sizeof($my_data) > 1)
                 {
-                    echo "data_incorrect ----- line 978 -- in inventoryForm";
-                    exit();
+                    // echo "data_incorrect ----- line 978 -- in inventoryForm";
+                    // exit();
                 }
                 $location_id = $my_data[0]['locationId'];
                 $inventory_id = $my_data[0]['invId'];
@@ -1714,6 +1717,7 @@ window.onclick = function(event) {
             alert("Please Provide a self");
             return false;
         }
+        alert(row);
         $.ajax({
             url: 'editRoom.php',
             type:"post",
@@ -1853,8 +1857,9 @@ window.onclick = function(event) {
 
     function AddQty(trId,type,cellId,i,j,data,locIndex,rowIndex,qty,invIdValue)
     {
+        //alert(qty);
         //console.log(cellId,data);
-        //console.log(i,j,qty);
+        // console.log(i,j,qty);
         //alert(data);
         //alert(invIdValue);
         switch(type)
@@ -2054,7 +2059,7 @@ window.onclick = function(event) {
                                         // var_dump($data);
                                         // //var_dump($data_inv[$j]['quantity']);
                                         // echo "***************************************************";
-                                        // // exit();
+                                        // exit();
                                         if($data == '')
                                             $data = "-1";
 
@@ -2311,7 +2316,15 @@ window.onclick = function(event) {
                 dataString += "&inventory_id=" + inventory_id;
                 dataString += "&location_details_id=" + location_details_id;
                 //console.log(dataString);
-                $.ajax({
+
+                if(row == '')
+                {
+                    alert(row+' '+rack+' '+' '+room+' '+shelf);
+                }
+                else
+                {
+                    
+                    $.ajax({
                     type: "POST",
                     url: "invReportSubmit.php",
                     data: dataString,
@@ -2333,6 +2346,7 @@ window.onclick = function(event) {
                                         type: "GET",
                                         success: function (data) {
                                             //return false;
+                                            console.log(data);
                                             if (data != null) {
                                                 if (data.name || data.error) {
                                                     $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
@@ -2359,6 +2373,7 @@ window.onclick = function(event) {
                                         type: "GET",
                                         success: function (data) {
                                            //return false;
+                                           console.log(data);
                                             if (data != null) {
                                                 if (data.name || data.error) {
                                                     $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
@@ -2383,6 +2398,7 @@ window.onclick = function(event) {
                         }
                     }
                 });
+                }
                 return false;
             });
         });
