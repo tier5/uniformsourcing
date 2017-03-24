@@ -1,22 +1,26 @@
 <?php
 require('Application.php');
-$sql = "SELECT * FROM \"tbl_invStorage\" WHERE box='".$_REQUEST['boxId']."' and \"styleId\"='".$_REQUEST['styleId']."' ";
+$sql = "SELECT * FROM \"tbl_invStorage\" WHERE unit='".$_REQUEST['unitId']."' and \"styleId\"='".$_REQUEST['styleId']."' ";
 if (!($resultProduct = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
 while ($row = pg_fetch_array($resultProduct)) {
-    $data_storage = $row;
+    $data_storage[] = $row;
 }
-$query = 'DELETE FROM "tbl_invStorage"';
-$query .=" where box='".$_REQUEST['boxId']."' and \"styleId\"='".$_REQUEST['styleId']."' and \"wareHouseQty\"='0' RETURNING *";
-if (!($resultProduct = pg_query($connection, $query))) {
-    print("Failed invQuery: " . pg_last_error($connection));
-    exit;
+if(count($data_storage)){
+    for($i=0;$i<count($data_storage);$i++){
+        $query = 'DELETE FROM "tbl_invStorage"';
+        $query .=" where unit='".$_REQUEST['unitId']."' and \"styleId\"='".$_REQUEST['styleId']."' and \"wareHouseQty\"='0' RETURNING *";
+        if (!($resultProduct = pg_query($connection, $query))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $row = pg_fetch_array($resultProduct);
+        $data_inv = $row;
+        pg_free_result($result);
+    }
 }
-$row = pg_fetch_array($resultProduct);
-$data_inv = $row;
-pg_free_result($result);
 if($data_inv) {
     $sql = '';
     $sql = "INSERT INTO \"audit_logs\" (";
@@ -31,9 +35,9 @@ if($data_inv) {
         $return_arr['error'] = pg_last_error($connection);
     }
     echo 1;
+    exit;
 } else {
     echo 'No Result Found';
+    exit;
 }
-
-exit;
 ?>
