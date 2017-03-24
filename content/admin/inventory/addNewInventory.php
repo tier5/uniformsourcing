@@ -10,7 +10,6 @@ extract($_POST);
 
 $location_details_id = $warehouse;
 
-$type = null;
 // var_dump($_POST);
 // exit();
 $sql ='select * from "tbl_invStyle" where "styleId"='.$styleId;

@@ -230,6 +230,8 @@ if (count($data_color) > 0) {
             }
         }
     }
+    // echo "<pre>"; print_r($data_inv);
+    // exit();
 
     
 
@@ -522,6 +524,8 @@ if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
     {
         $_store[]=$row; // -------------------------- data_color ---------
     }
+    // echo "<pre>"; print_r($_store);
+    // exit();
     //----------------------------------Location-----------------------
     $query = '';
     $query = "SELECT * from \"locationDetails\"";
@@ -943,6 +947,49 @@ if (!($resultProduct = pg_query($connection, $query))) {
                 </table>
             </fieldset>
             <form id="inventoryForm">
+
+
+            <?php
+
+
+            if(isset($_GET['unitId']) && $_GET['unitId'] != '0'){
+
+                $my_data;
+
+                
+                $sql = 'select str."locationId" , str."invId" , inv.location_details_id from "tbl_invStorage" as str  left join "tbl_inventory" as inv on inv."inventoryId" = str."invId" where str.unit = \''.$_GET['unitId'].'\' and str.type != \'null\'';
+
+                if (!($result = pg_query($connection, $sql))) 
+                {
+                    print("Failed invQuery: " . pg_last_error($connection));
+                    exit;
+                }
+                while ($row = pg_fetch_array($result)) {
+                    $my_data[] = $row;
+                }
+                if(sizeof($my_data) > 1)
+                {
+                    echo "data_incorrect ----- line 978 -- in inventoryForm";
+                    exit();
+                }
+                $location_id = $my_data[0]['locationId'];
+                $inventory_id = $my_data[0]['invId'];
+                $location_details_id = $my_data[0]['location_details_id'];
+
+                
+            }
+            
+
+
+             ?>
+
+
+            <input type="hidden" id="_location_id" name="location_id" value="<?php echo (isset($location_id) && $location_id) > 0 ? $location_id : 'null' ?>">
+
+            <input type="hidden" id="_inventory_id" name="inventory_id" value="<?php echo (isset($inventory_id) && $inventory_id > 0) ? $inventory_id : 'null' ?>">
+
+            <input type="hidden" id="_location_details_id" name="location_details_id" value="<?php echo (isset($location_details_id) && $location_details_id) > 0 ? $location_details_id : 'null' ?>">
+
                 <div id="scrollLinks">
                     <fieldset style="margin:10px;">
                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -2235,10 +2282,17 @@ window.onclick = function(event) {
     <script type="text/javascript">
         $(function () {
             $("#inventoryForm").submit(function () {
+
+                var location_id = $('#_location_id').val();
+                var inventory_id = $('#_inventory_id').val();
+                var location_details_id = $('#_location_details_id').val();
+
+
                 var unitId = 0;
                 if ($("#unit_num").val() != undefined) {
                     unitId = $("#unit_num").val();
                 }
+                //alert(unitId);
                 var row = "<?php echo $data_product[0]['row']; ?>";
                 var room = "<?php echo $data_product[0]['room']; ?>";
                 var shelf = "<?php echo $data_product[0]['shelf']; ?>";
@@ -2247,7 +2301,10 @@ window.onclick = function(event) {
                 dataString = $("#inventoryForm").serialize();
                 dataString += "&type=e";
                 dataString += "&unitId=" + unitId;
-                console.log(dataString);
+                dataString += "&location_id=" + location_id;
+                dataString += "&inventory_id=" + inventory_id;
+                dataString += "&location_details_id=" + location_details_id;
+                //console.log(dataString);
                 $.ajax({
                     type: "POST",
                     url: "invReportSubmit.php",
@@ -2255,6 +2312,9 @@ window.onclick = function(event) {
                     dataType: "json",
                     success: function (data) 
                     {
+                        
+                        console.log(data);
+
                         if (data != null) 
                         {
                             if (data[0].name || data[0].error) 

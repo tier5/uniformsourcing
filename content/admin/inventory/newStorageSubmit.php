@@ -18,7 +18,7 @@ $colorId = $_GET['colorId'];
 $row = $_GET['row'];
 $rack = $_GET['rack'];
 $shelf = $_GET['shelf'];
-$box = $_GET['boxId'];
+$unit = $_GET['unitId'];
 $room = $_GET['room'];
 $sql = 'select "inventoryId","styleNumber",col."name","sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty", "mainSize", "rowSize", "columnSize" from "tbl_inventory" as inv inner join "tbl_invColor" as col on col."colorId"=inv."colorId" where inv."styleId"=' . $styleId . ' and inv."colorId"=' . $colorId . ' and "isStorage"=0 order by "inventoryId"';
 
@@ -38,7 +38,7 @@ $return_arr['error'] = "";
 $return_arr['type'] = "";
 for ($i=0;$i<$totalRow;$i++) {
     if (isset($data_inv1[$i]['inventoryId'])) {
-        $sql = 'select "storageId", "invId", "sizeScaleId", "opt1ScaleId", "opt2ScaleId", "locationId", "conveyorSlotId", "conveyorQty", room, "row", rack, shelf, box, "wareHouseQty", "location", "otherQty" from "tbl_invStorage" where "invId"=' . $data_inv1[$i]['inventoryId'] . ' and "box"='." '".$box."'";
+        $sql = 'select "storageId", "invId", "sizeScaleId", "opt1ScaleId", "opt2ScaleId", "locationId", "conveyorSlotId", "conveyorQty", room, "row", rack, shelf, unit, "wareHouseQty", "location", "otherQty" from "tbl_invStorage" where "invId"=' . $data_inv1[$i]['inventoryId'] . ' and "unit"='." '".$unit."'";
         if (!($result = pg_query($connection, $sql))) {
             print("Failed Data_invQuery: " . pg_last_error($connection));
             exit;
@@ -90,7 +90,7 @@ for ($i=0;$i<$totalRow;$i++) {
             if ($wareHouseRow != "") $query .= " ,\"row\" ";
             if ($rack != "") $query .= " ,\"rack\" ";
             if ($shelf != "") $query .= " ,\"shelf\" ";
-            if ($box != "") $query .= " ,\"box\" ";
+            if ($unit != "") $query .= " ,\"unit\" ";
             $query .= " ,\"wareHouseQty\" ";
             $query .= " ,\"createdBy\" ";
             $query .= " ,\"updatedBy\" ";
@@ -109,7 +109,7 @@ for ($i=0;$i<$totalRow;$i++) {
             if ($wareHouseRow != "") $query .= " ,'" . $wareHouseRow . "' ";
             if ($rack != "") $query .= " ,'" . $rack . "' ";
             if ($shelf != "") $query .= " ,'" . $shelf . "' ";
-            if ($box != "") $query .= " ,'" . $box . "' ";
+            if ($unit != "") $query .= " ,'" . $unit . "' ";
             $query .= " ,'" . $data_inv1[$i]['newQty'] . "' ";
             $query .= " ,'" . $_SESSION['employeeID'] . "' ";
             $query .= " ,'" . $_SESSION['employeeID'] . "' ";
