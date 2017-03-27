@@ -89,6 +89,11 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 		}
 
 
+		// echo $locCount;
+		// exit();
+
+		//$locCount = sizeof($locArr);
+
 
 		for($i=0;$i<$locCount;$i++)
 		{
@@ -118,6 +123,8 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
                         }
                         $row = pg_fetch_array($result);
                         $inv=$row;
+                        echo $inv;
+             			exit();
                         pg_free_result($result);
                         if($inv != null){
                             $query = "";

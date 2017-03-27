@@ -76,6 +76,11 @@ for ($i=0;$i<$totalRow;$i++) {
         } else {
             $newQty = $data_inv1[$i]['quantity']+$data_inv1[$i]['newQty'];
         }
+
+        // print_r(json_encode($data_inv1));
+        // exit();
+
+
         if($data_storage) {
             $query = "UPDATE \"tbl_invStorage\" SET ";
             $query .= " \"wareHouseQty\" = '" . $data_inv1[$i]['newQty'] . "' ";
@@ -93,7 +98,8 @@ for ($i=0;$i<$totalRow;$i++) {
             $sql .= ", '". date('U') ."'";
             $sql .= ", 'Edit Inventory Quantity form ".$data_storage['wareHouseQty']." to ". $data_inv1[$i]['newQty'] ." '";
             $sql .= ")";
-        } else {
+        } 
+        else {
             $query = "INSERT INTO \"tbl_invStorage\" (";
             $query .= " \"invId\" ";
             $query .= " ,\"styleId\" ";

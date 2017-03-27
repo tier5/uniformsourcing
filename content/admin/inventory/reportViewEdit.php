@@ -106,6 +106,8 @@ if ($data_style['scaleNameId'] != "") {
     while ($row2 = pg_fetch_array($result2)) {
         $data_opt1Size[] = $row2;
     }//------------------------data_opt1Size----------------------------
+
+
     pg_free_result($result2);
 
     $query2 = 'Select "sizeScaleId" as "opt2SizeId", "opt2Size" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "opt2Size" IS NOT NULL and "opt2Size" <>\'\' order by "opt2Order","sizeScaleId"';
@@ -203,12 +205,14 @@ if (count($data_color) > 0) {
         if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             $query .= ' left join "tbl_invStorage" as st on st."invId"=inv."inventoryId" ';
         }
-        $query .= ' where inv."styleId"=' . $data_style['styleId'] . ' and inv."isActive"=1' . $search . ' and st."opt1ScaleId" >0 and st."sizeScaleId" >0 order by "inventoryId"';
-    } else {
+        $query .= ' where inv."styleId"=' . $data_style['styleId'] . ' and inv."isActive"=1' . $search . ' order by "inventoryId"';
+    } 
+    else {
         $clrId = $data_color[0]['colorId'];
         $query = 'select "inventoryId", "sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty" from "tbl_inventory" where "styleId"=' . $data_style['styleId'] . ' and "colorId"=' . $data_color[0]['colorId'] . '  and "isActive"=1 order by "inventoryId"';
     }
     // echo $query;
+    // exit();
     if (!($result = pg_query($connection, $query))) {
         print("Failed invQuery: " . pg_last_error($connection));
         exit;
@@ -231,10 +235,7 @@ if (count($data_color) > 0) {
         }
     }
 
-    // echo "<pre>"; print_r($data_mainSize);
-    // echo "<br><br>";
-    // echo "<pre>"; print_r($data_inv);
-    // exit();
+    
 
     
 
@@ -339,130 +340,7 @@ if (count($data_color) > 0) {
         $conveyors_location[] = $row;
     }
 
-    // echo('----');
-    // echo "<pre>"; print_r($conveyors_location);
-    // exit();
-
-
-
-
-    // echo "<pre>"; print_r($conveyors);
-    // exit();
-
-
-    // $cn_hash;
-    // $container_locations=" ";
-    // foreach($containers as $key=>$value)
-    // {
-    //     if($container_locations == " ") 
-    //     {
-    //         $cn_hash[$value['locationId']] = $value['name'];
-    //         $container_locations .= $value['locationId'];
-    //     }
-    //     else
-    //     {
-    //         if(!isset($cn_hash[$value['locationId']]))
-    //         {
-    //             $container_locations .= ','.$value['locationId'];
-    //             $cn_hash[$value['locationId']] = $value['name'];
-    //         }
-    //         else
-    //         {
-    //             continue;
-    //         }
-    //     }
-    // }
     
-    // echo "<pre>"; print_r($cn_hash);
-    // exit();
-
-    // $sql = 'select distinct identifier , "locationId" from "tbl_invLocation" where "locationId" in ('.$container_locations.')';
-    // $container_locations_name;
-    // if (!($result = pg_query($connection, $sql))) 
-    // {
-    //     print("Failed invQuery: " . pg_last_error($connection));
-    //     exit;
-    // }
-    // while ($row = pg_fetch_array($result)) 
-    // {
-    //     $container_locations_name[] = $row;
-    // }
-
-    // $cn_loc_hash;
-    // foreach($container_locations_name as $key=>$each)
-    // {
-    //     $cn_loc_hash[$each['locationId']] = $each['identifier']; 
-    // }
-    // echo "<pre>"; print_r($containers);
-    // exit();
-
-    
-
-
-    // foreach ($container_names as $key => $value) {
-    //     $value['identifier'] = $identifier;
-    // }
-   
-
-    
-
-
-    // ------- to be done after ajax call ----------
-
-    // $location_string = " ";
-    // foreach ($all_location_inv as $key => $value) {
-    //     if($location_string == " ") 
-    //         $location_string .= $value['locationId'];
-    //     else
-    //         $location_string .= ','.$value['locationId'];
-    // }
-    // //echo "<pre>"; print_r($location_string);
-    // //exit();
-
-    // $sql = 'select warehouse_name,"locationId" from "warehouse" where "locationId" in ('.$location_string.')';
-
-    // $warehouse_info;
-    // if (!($result = pg_query($connection, $sql))) {
-    //     print("Failed invQuery: " . pg_last_error($connection));
-    //     exit;
-    // }
-    // while ($row = pg_fetch_array($result)) {
-    //     $warehouse_info[] = $row;
-    // }
-    // echo "<pre>"; print_r($warehouse_info);
-    // exit();
-    // ------- to be done after ajax call for all_location_inv----------
-
-
-
-
-    // $sql = 'select distinct "locationId" , name from "tbl_container"';
-    // $all_location_cont;
-    // if (!($result = pg_query($connection, $sql))) {
-    //     print("Failed invQuery: " . pg_last_error($connection));
-    //     exit;
-    // }
-    // while ($row = pg_fetch_array($result)) {
-    //     $all_location_cont[] = $row;
-    // }
-
-    // echo "<pre>"; print_r($all_location_cont);
-    // exit();
-
-
-
-
-    // $sql = 'select distinct "locationId" , name from "tbl_conveyor"';
-    // $all_location_conv;
-    // if (!($result = pg_query($connection, $sql))) {
-    //     print("Failed invQuery: " . pg_last_error($connection));
-    //     exit;
-    // }
-    // while ($row = pg_fetch_array($result)) {
-    //     $all_location_conv[] = $row;
-    // }
-    // echo "<pre>"; print_r($all_location_conv);
-    // exit(); 
 }
 
 $query = 'select * from "tbl_invLocation" order by "locationId"';
@@ -549,6 +427,17 @@ if (!($resultProduct = pg_query($connection, $query))) {
 
 
 
+
+    // echo "data mainsize :<pre>"; print_r($data_mainSize);
+    // echo "<br><br>";
+    // echo "data_opt1Size :<pre>"; print_r($data_opt1Size);
+    // echo "<br><br>";
+    // echo "loc arr :<pre>"; print_r($locArr);
+    // echo "<br><br>";
+    // echo "data style :<pre>"; print_r($data_style);
+    // echo "<br><br>";
+    // echo "data inv: <pre>"; print_r($data_inv);
+    // exit();
     
 
 
@@ -1561,7 +1450,7 @@ $('#warehouse_new_form').submit(function(e){
     var unit = $('input[name="unit"]').val();
     //var location_details_id = $('input[name="location_details_id"]').val();
 
-
+    alert(location+' '+styleId);
 
     //console.log(warehouse,location);
 
@@ -2023,10 +1912,19 @@ window.onclick = function(event) {
                     {
                         if($rowSizeId > 0)
                         {
+                            // if($data_inv[$j]['quantity'] == 10)
+                            // {
+                            //  echo "|||||||||||||| ".$locId."--".$data_inv[$j]['locationId']."--".$data_inv[$j]['quantity']." |||||||||||";
+                            // }
+
                             if(($data_inv[$j]['sizeScaleId'] == $data_mainsize[$i]['mainSizeId']) && 
                                 ($locId == $data_inv[$j]['locationId']) && 
                                 ($rowSizeId == $data_inv[$j]['opt1ScaleId']))
                             {
+                               
+
+                            //echo "|||||||||||||| ".$locId."--".$data_inv[$j]['locationId']."--".$data_inv[$j]['quantity']." |||||||||||";
+                                
                                 $invFound = 1;
 
                                 if($data_inv[$j]['inventoryId'] != "")
@@ -2100,6 +1998,8 @@ window.onclick = function(event) {
                                     echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
                                     // echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
 
+
+
                                     $data = "-1";
                                     echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
                                             "qty",
@@ -2114,6 +2014,7 @@ window.onclick = function(event) {
                                 }
                                 break;
                             }
+                            
                         }
                         else
                         {
@@ -2322,7 +2223,7 @@ window.onclick = function(event) {
                 }
                 else
                 {
-                    
+                    alert(location_id+' '+document.getElementById('styleId').value);
                     $.ajax({
                     type: "POST",
                     url: "invReportSubmit.php",
@@ -2331,8 +2232,9 @@ window.onclick = function(event) {
                     success: function (data) 
                     {
                         
+                        
+                        //return false;
                         console.log(data);
-
                         if (data != null) 
                         {
                             if (data[0].name || data[0].error) 
