@@ -353,9 +353,47 @@ while ($row = pg_fetch_array($result)) {
 }
 pg_free_result($result);
 $locArr = array();
-if ($data_style['locationIds'] != "") {
-    $locArr = explode(",", $data_style['locationIds']);
-}
+// if ($data_style['locationIds'] != "") {
+//     $locArr = explode(",", $data_style['locationIds']);
+// }
+
+
+if (isset($_GET['unitId']) && $_GET['unitId'] != '0')
+    {
+
+       $sql = 'select "locationId" from "tbl_invStorage" where unit = \''.$_GET['unitId'].'\' LIMIT 1';
+       if (!($result = pg_query($connection, $sql))) 
+       {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $row = pg_fetch_array($result);
+            $this_location[] = $row;
+        
+        pg_free_result($row);
+
+
+        $locArr[0]=$this_location[0]['locationId'];
+
+        //var_dump($this_location[0]['locationId']);
+        //exit();
+
+
+    }
+    else
+    {
+        if ($data_style['locationIds'] != "") {
+            $locArr = explode(",", $data_style['locationIds']);
+        }
+    }
+
+    // print_r($locArr);
+    // exit();
+
+
+
+
+
 
 $is_slot = false;
 
@@ -424,6 +462,45 @@ if (!($resultProduct = pg_query($connection, $query))) {
     }
     pg_free_result($resultProduct);
 //echo "<pre>";print_r($data_location[0]['conveyor']);die();
+
+
+
+
+    // echo "<pre>";print_r($data_style['locationIds']);
+    // exit();
+
+    // if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
+    //     echo "**********************************";
+    //     exit();
+    // }
+
+    // echo "<pre>";print_r($locArr);
+    // exit();
+
+
+    // if (isset($_GET['unitId']) && $_GET['unitId'] != '0')
+    // {
+
+    //    $sql = 'select "locationId" from "tbl_invStorage" where unit = \''.$_GET['unitId'].'\' LIMIT 1';
+    //    if (!($result = pg_query($connection, $sql))) 
+    //    {
+    //         print("Failed invQuery: " . pg_last_error($connection));
+    //         exit;
+    //     }
+    //     $row = pg_fetch_array($result);
+    //         $this_location[] = $row;
+        
+    //     pg_free_result($row);
+
+
+    //     $locArr[0]=$this_location[0]['locationId'];
+
+    //     //var_dump($this_location[0]['locationId']);
+    //     //exit();
+
+
+    // }
+    
 
 
 

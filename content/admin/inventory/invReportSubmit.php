@@ -1,5 +1,8 @@
 <?php
 require('Application.php');
+//echo json_encode($_POST['location_id']);
+//exit();
+
 require('../../jsonwrapper/jsonwrapper.php');
 if($debug == "on"){
 	require('../../header.php');
@@ -157,7 +160,7 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
                             $query .=" ,'".$data_style['styleNumber']."' ";
                             $query .=", '".$data_style['scaleNameId']."' ";
                             if($price[$k] != "") $query .=" ,'".$price[$k]."' ";
-                            $query .=" ,'".$locArr[$i]."' ";
+                            $query .=" ,'".$_POST['location_id']."' ";
                             $query .=" ,0 ";
                             $query .=" ,'".$qty[$i][$j][$k]."' ";
                             if($k < count($data_mainSize))$query .=", '".$data_mainSize[$k]['mainSizeId']."' ";

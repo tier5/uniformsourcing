@@ -88,6 +88,11 @@ while($row = pg_fetch_array($result)){
 pg_free_result($result);
 
 
+
+
+
+
+
 // $fetch_wh;
 // $query='select * from "warehouse" where "locationId"='.$location;
 // if(!($result=pg_query($connection,$query))){
