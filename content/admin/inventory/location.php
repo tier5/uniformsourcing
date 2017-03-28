@@ -85,7 +85,7 @@ pg_free_result($result);
                             alert("Location Deleted SuccessFully");
                             location.reload();
                         } else {
-                            alert("Location Not Deleted Please Empty the Location first");
+                            alert("Location Not Deleted. Please Empty The Location First");
                         }
                     }
                 });
