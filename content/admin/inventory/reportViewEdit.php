@@ -998,61 +998,61 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                 ?>
 
 
-                            <?php } ?>
-                                    </table>
-                                </td>
-                                <td width="10"></td>
-                                <td width="100">
-                                <div id="header" style="float:left; width:100%;">
-                                    <div id="scrollLinks4">
-                                        <div id="scrollLinks2">
-                                          <div id="scrollLinks">
-                                            <div id="scrollLinks3">
-                                              <table class="HD001" width="250px" style="float:left;"
-                                                               border="0" cellspacing="1" cellpadding="1">
-                                                  <tr>
-                                                    <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td class="gridHeaderReport">sizes</td>
-                                                  </tr>
-                                                  <tr>
-                                                                <td class="gridHeaderReportGrids3"><a
-                                                                        class="mouseover_left" href="#"><img
-                                                                            src="<?php echo $mydirectory; ?>/images/leftArrw.gif"
-                                                                            alt="lft" width="33" height="26"
-                                                                            border="0"/></a><a
-                                                                        class="mouseover_right" href="#"><img
-                                                                            src="<?php echo $mydirectory; ?>/images/rightArrw.gif"
-                                                                            alt="lft" width="30" height="26"
-                                                                            border="0"/></a></td>
-                                                                <td class="gridHeaderReport">prices</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td class="gridHeaderReportGrids2">&nbsp;</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td colspan="2"
-                                                                    class="gridHeaderReportGrids4"><?php echo $data_optionName['opt1Name']; ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td class="gridHeaderReportGrids2"><span
-                                                                        class="gridHeaderReportGrids3"><a
-                                                                            class="mouseover_up" href="#"><img
-                                                                                src="<?php echo $mydirectory; ?>/images/upArrw.gif"
-                                                                                alt="lft" width="33" height="26"
-                                                                                border="0"/></a><a
-                                                                            class="mouseover_down" href="#"><img
-                                                                                src="<?php echo $mydirectory; ?>/images/dwnArrw.gif"
-                                                                                alt="lft" width="33" height="26"
-                                                                                border="0"/></a></span></td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+            <?php } ?>
+                    </table>
+                </td>
+                <td width="10"></td>
+                <td width="100">
+                <div id="header" style="float:left; width:100%;">
+                    <div id="scrollLinks4">
+                        <div id="scrollLinks2">
+                          <div id="scrollLinks">
+                            <div id="scrollLinks3">
+                              <table class="HD001" width="250px" style="float:left;"
+                                               border="0" cellspacing="1" cellpadding="1">
+                                  <tr>
+                                    <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                <td class="gridHeaderReport">sizes</td>
+                                  </tr>
+                                  <tr>
+                                                <td class="gridHeaderReportGrids3"><a
+                                                        class="mouseover_left" href="#"><img
+                                                            src="<?php echo $mydirectory; ?>/images/leftArrw.gif"
+                                                            alt="lft" width="33" height="26"
+                                                            border="0"/></a><a
+                                                        class="mouseover_right" href="#"><img
+                                                            src="<?php echo $mydirectory; ?>/images/rightArrw.gif"
+                                                            alt="lft" width="30" height="26"
+                                                            border="0"/></a></td>
+                                                <td class="gridHeaderReport">prices</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                <td class="gridHeaderReportGrids2">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                <td colspan="2"
+                                                    class="gridHeaderReportGrids4"><?php echo $data_optionName['opt1Name']; ?></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                <td class="gridHeaderReportGrids2"><span
+                                                        class="gridHeaderReportGrids3"><a
+                                                            class="mouseover_up" href="#"><img
+                                                                src="<?php echo $mydirectory; ?>/images/upArrw.gif"
+                                                                alt="lft" width="33" height="26"
+                                                                border="0"/></a><a
+                                                            class="mouseover_down" href="#"><img
+                                                                src="<?php echo $mydirectory; ?>/images/dwnArrw.gif"
+                                                                alt="lft" width="33" height="26"
+                                                                border="0"/></a></span></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                                         <div class="TopDiv">
                                             <!-- window 1 starts here -->
                                             <div id="wn">
@@ -1829,7 +1829,7 @@ window.onclick = function(event) {
     function AddQty(trId,type,cellId,i,j,data,locIndex,rowIndex,qty,invIdValue)
     {
         //alert(qty);
-        //console.log(cellId,data);
+        console.log(locIndex,cellId,data,type);
         // console.log(i,j,qty);
         //alert(data);
         //alert(invIdValue);
@@ -1881,6 +1881,7 @@ window.onclick = function(event) {
                 var trd = document.getElementById('qtyDummy'+locIndex);
                 if(trd !=null)
                 {
+                    alert(trd+' '+locIndex);
                     var cell = trd.insertCell(cellId);
                     cell.className = 'gridHeaderReportGrids2';
                     cell.innerHTML="&nbsp;";
@@ -1931,11 +1932,15 @@ window.onclick = function(event) {
                 $sizeIndex = 0;
                 $columnSize = 0;
 
+
+                
                 for ($i = 0; $i < count($data_mainSize); $i++) {
+                    
+
                     $invPrice = 0;
                     $found = 0;
 
-                    echo 'AddRow("main",' . $sizeIndex . ',"' . $data_mainSize[$i]['scaleSize'] . '");';
+                    //echo 'AddRow("main",' . $sizeIndex . ',"' . $data_mainSize[$i]['scaleSize'] . '");';
                     for ($j = 0; $j < count($data_inv); $j++) {
                         if ($data_inv[$j]['sizeScaleId'] == $data_mainSize[$i]['mainSizeId']) {
                             if ($data_inv[$j]['price'] != "" || $data_inv[$j]['price'] > 0) {
@@ -1957,24 +1962,33 @@ window.onclick = function(event) {
                 if ($sizeIndex)
                     echo "document.getElementById('mainCount').value = $sizeIndex;";
             }
+            
             $locIndex = 0;
             $rowIndex = 0;
             $mainIndex = 0;
             if ($locArr[0] > 0 && $locArr[0] != "") {
                 // var_dump(count($locArr));
                 // exit();
-                for ($i = 0; $i < count($locArr); $i++, $locIndex++) {
+                for ($i = 0; $i < count($locArr); $i++, $locIndex++) 
+                {
                     $rowIndex = 0;
-                    if (count($data_opt1Size) > 0) {
-                        for ($j = 0; $j < count($data_opt1Size); $j++) {
+                    //echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>".$locIndex."    ";
+                    if (count($data_opt1Size) > 0) 
+                    {
+                        for ($j = 0; $j < count($data_opt1Size); $j++) 
+                        {
                             InsertQty($data_mainSize, $data_inv, $data_opt1Size[$j]['opt1SizeId'], $locArr[$i], $locIndex, $rowIndex,$_store);
                             $rowIndex++;
                         }
-                    } else {
+                    }
+                    else 
+                    {
                         InsertQty($data_mainSize, $data_inv, 0, $locArr[$i], $locIndex, $rowIndex,$_store);
                         $rowIndex++;
                     }
-                    echo 'AddQty("dummy","qtyDummy",' . $mainIndex . ',' . $locIndex . ',' . $rowIndex . ',0,0);';
+                    echo 'AddQty("dummy","qtyDummy",' . $mainIndex . ',0,0,0,' . $locIndex . ',' . $rowIndex . ',0,0);';
+
+                    //trId,type,cellId,i,j,data,locIndex,rowIndex,qty,invIdValue
                 }
             }
             if ($locIndex)
