@@ -1,8 +1,5 @@
 <?php
 require('Application.php');
-//echo json_encode($_POST['location_id']);
-//exit();
-
 require('../../jsonwrapper/jsonwrapper.php');
 if($debug == "on"){
 	require('../../header.php');
@@ -112,8 +109,12 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
                         if($k < count($data_opt2Size))$sql .=" and \"opt2ScaleId\"= '".$data_opt2Size[$k]['opt2SizeId']."'";
                         if($k < count($data_mainSize))$sql .=" and \"mainSize\"= '".$data_mainSize[$k]['scaleSize']."'";
                         if($j < count($data_opt1Size))$sql .=" and \"rowSize\"= '".$data_opt1Size[$j]['opt1Size']."'";
-                        if($k < count($data_opt2Size))$sql .=" and \"columnSize\"= '".data_opt2Size[$k]['opt2Size']."'";
+                        if($k < count($data_opt2Size))$sql .=" and \"columnSize\"= '".$data_opt2Size[$k]['opt2Size']."'";
                         $sql .= " and \"isStorage\"='1'";
+
+                        if(isset($_POST['location_id']))
+                        	$sql .= "and \"locationId\"='".$_POST['location_id']."'";
+
                         if(!($result=pg_query($connection,$sql))){
                             $return_arr[0]['error'] = pg_last_error($connection);
                             echo json_encode($return_arr);
@@ -129,7 +130,8 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
                             $query .=",\"isStorage\" = 0 ";
                             $query .=",\"updatedBy\" = '".$_SESSION['employeeID']."' ";
                             $query .=",\"updatedDate\" = '".date('U')."' ";
-                            $query .="  where \"inventoryId\"='".$inv['inventoryId']."' ";
+                            $query .="  where \"inventoryId\"='".$inv['inventoryId']."'";
+                            
                         } else {
                             $notes = 'auto inventory';
                             $query = "";
@@ -180,6 +182,10 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
                         }
                         if($query != "")
                         {
+
+                        	// echo $query;
+                        	// exit();
+
                             $return_arr[0]['flag'] = 1;
                             if(!($result=pg_query($connection,$query))){
                                 $return_arr[0]['error'] = pg_last_error($connection);

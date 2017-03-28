@@ -122,8 +122,43 @@ if($row['count']>0)
     exit();
 }
 
+//changing the tbl_invStyle table
+// echo json_encode($_POST['locationId']);
+// exit();
+
+if($data_style['locationIds'] != "")
+{
+    $all_locations = explode(",",$data_style['locationIds']);
+}
 
 
+$flag =0;
+foreach ($all_locations as $key => $value) 
+{
+    if($value == $_POST['locationId'])
+    {
+        $flag =1;
+    }
+}
+
+if($flag == 0)
+{
+    $new_location_ids = $data_style['locationIds'].','.$_POST['locationId'];
+    $x = $data_style['styleId'];
+    $y="'".$new_location_ids."'";
+
+    $sql = 'UPDATE "tbl_invStyle" SET "locationIds"= '.$y.' where "styleId" ='.$x;
+    // echo json_encode($sql);
+    // exit();
+    if(!($result=pg_query($connection,$sql)))
+    {
+        $return_arr[0]['error'] = pg_last_error($connection);
+        echo json_encode($return_arr);
+        exit();
+    }
+
+}
+// -----------------
 
 
 $locArr = array();

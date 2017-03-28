@@ -939,16 +939,19 @@ if (!($resultProduct = pg_query($connection, $query))) {
                 while ($row = pg_fetch_array($result)) {
                     $my_data[] = $row;
                 }
+
+
                 if(sizeof($my_data) > 1)
                 {
-                    // echo "data_incorrect ----- line 978 -- in inventoryForm";
-                    // exit();
+                    echo "data_incorrect ----- line 978 -- in inventoryForm";
+                    exit();
                 }
                 $location_id = $my_data[0]['locationId'];
                 $inventory_id = $my_data[0]['invId'];
                 $location_details_id = $my_data[0]['location_details_id'];
 
-                
+                // echo "<pre>";print_r($data_product);
+                // exit();
             }
             
 
@@ -1072,59 +1075,59 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="wn3">
-                                        <div id="lyr3">
-                                            <div id="rowSize" style="float:left; width:250px;">
-                                                <table width="250" border="0" cellspacing="1" cellpadding="1">
-                                                    <?php
-                                                    if ($locArr[0] > 0 && $locArr[0] != "") {
-                                                        $loc_i = 0;
-                                                        for ($i = 0; $i < count($locArr); $i++, $loc_i++) {
-                                                            for (; $loc_i < count($data_loc); $loc_i++) {
-                                                                if ($locArr[$i] == $data_loc[$loc_i]['locationId'])
-                                                                    break;
-                                                            }
-                                                            ?>
-                                                            <tr>
-                                                            <td class="gridHeaderReportGrids3"><?php //echo $data_loc[$loc_i]['name'];
-                                                                $loc_identity = $loc_i; ?></td>
-                                                            <?php
-                                                            if (count($data_opt1Size) > 0) {
-                                                                for ($j = 0; $j < count($data_opt1Size); $j++) {
-                                                                    if ($j != 0) {
-                                                                        ?>
-                                                                        <tr>
-                                                                            <td class="gridHeaderReportGrids3">
-                                                                                &nbsp;</td>
-                                                                            <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
-                                                                        </tr>
+    <div id="wn3">
+        <div id="lyr3">
+            <div id="rowSize" style="float:left; width:250px;">
+                <table width="250" border="0" cellspacing="1" cellpadding="1">
+                    <?php
+                    if ($locArr[0] > 0 && $locArr[0] != "") {
+                        $loc_i = 0;
+                        for ($i = 0; $i < count($locArr); $i++, $loc_i++) {
+                            for (; $loc_i < count($data_loc); $loc_i++) {
+                                if ($locArr[$i] == $data_loc[$loc_i]['locationId'])
+                                    break;
+                            }
+                            ?>
+                            <tr>
+                            <td class="gridHeaderReportGrids3"><?php //echo $data_loc[$loc_i]['name'];
+                                $loc_identity = $loc_i; ?></td>
+                            <?php
+                            if (count($data_opt1Size) > 0) {
+                                for ($j = 0; $j < count($data_opt1Size); $j++) {
+                                    if ($j != 0) {
+                                        ?>
+                                        <tr>
+                                            <td class="gridHeaderReportGrids3">
+                                                &nbsp;</td>
+                                            <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
+                                        </tr>
 
-                                                                        <?php
-                                                                    } else {
-                                                                        ?>
-                                                                        <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
-                                                                        </tr>
-                                                                        <?php
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                ?>
-                                                                <td style="visibility:hidden;"
-                                                                    class="gridHeaderReportGrids2">&nbsp;</td>
-                                                                </tr>
-                                                                <?php
-                                                            }
-                                                            ?>
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td class="gridHeaderReportGrids2">&nbsp;</td>
-                                                            </tr>
-                                                            <?php
-                                                        }//LocArr for
-                                                    }//locArr if
-                                                    ?>
-                                                </table>
-                                            </div>
+                                        <?php
+                                    } else {
+                                        ?>
+                                        <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                }
+                            } else {
+                                ?>
+                                <td style="visibility:hidden;"
+                                    class="gridHeaderReportGrids2">&nbsp;</td>
+                                </tr>
+                                <?php
+                            }
+                            ?>
+                            <tr>
+                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                <td class="gridHeaderReportGrids2">&nbsp;</td>
+                            </tr>
+                            <?php
+                        }//LocArr for
+                    }//locArr if
+                    ?>
+                </table>
+            </div>
                                             <?php if (count($data_opt1Size) > 0){ ?>
                                             <div id="wn2"
                                                  style="position:relative; width:600px; height:<?php echo((count($data_opt1Size) * count($locArr) * 32) + (count($data_loc) * 32)); ?>px;  overflow:hidden; float:left;">
@@ -1419,6 +1422,7 @@ $('#new_conveyor_form').submit(function(e){
     }
     else
     {
+        alert (locationId+' '+styleId);
         console.log(slot,conveyorId,locationId,styleId,colorId);
         $.ajax({
             url: 'add_unit_to_conveyor.php',
@@ -1474,6 +1478,7 @@ $('#new_container_form').submit(function(e){
     else
     {
         console.log(unit,containerId,locationId,styleId,colorId);
+        alert (locationId+' '+styleId);
         $.ajax({
             url: 'add_unit_to_container.php',
             type:"post",
@@ -2294,13 +2299,15 @@ window.onclick = function(event) {
                 dataString += "&location_details_id=" + location_details_id;
                 //console.log(dataString);
 
-                if(row == '')
+                if(unitId == '')
                 {
-                    alert(row+' '+rack+' '+' '+room+' '+shelf);
+                    //alert(row+' '+rack+' '+' '+room+' '+shelf);
+                    //alert('here');
                 }
                 else
                 {
-                    alert(location_id+' '+document.getElementById('styleId').value);
+                    // alert('*********');
+                    // alert(location_id+' '+inventory_id+' '+location_details_id+' '+document.getElementById('styleId').value);
                     $.ajax({
                     type: "POST",
                     url: "invReportSubmit.php",
