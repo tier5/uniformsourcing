@@ -1879,6 +1879,8 @@ window.onclick = function(event) {
         }
     }
 
+
+
     function AddQty(trId,type,cellId,i,j,data,locIndex,rowIndex,qty,invIdValue)
     {
         //alert(qty);
@@ -1894,7 +1896,7 @@ window.onclick = function(event) {
                 var tr = document.getElementById(trId);     
                 var cell = tr.insertCell(cellId);
                 var txtunit = document.createElement("input");
-                cell.className = 'gridHeaderReportGrids';
+                cell.className = 'gridHeaderReportGrids allvaluesingrid';
                 txtunit.type = "text";
                 txtunit.name = "qty["+locIndex+"]["+rowIndex+"][]";
                 txtunit.className = "txBxGrey eachcell"; 
@@ -1967,6 +1969,8 @@ window.onclick = function(event) {
 </script>
     <script type="text/javascript">
         $(document).ready(function () {
+
+
 
 
             if ($('#unit_num').val() == 0 || $('#unit_num').val() == 'undefined') {
@@ -2340,7 +2344,8 @@ window.onclick = function(event) {
 
     <script type="text/javascript">
         $(function () {
-            $("#inventoryForm").submit(function () {
+            $("#inventoryForm").submit(function (e) {
+                
                 var location_id = $('#_location_id').val();
                 //var inventory_id = $('#_inventory_id').val();
                 var location_details_id = $('#_location_details_id').val();
@@ -2357,7 +2362,7 @@ window.onclick = function(event) {
                 var room = "<?php echo $data_product[0]['room']; ?>";
                 var shelf = "<?php echo $data_product[0]['shelf']; ?>";
                 var rack = "<?php echo $data_product[0]['rack']; ?>";
-                $("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");
+                
                 dataString = $("#inventoryForm").serialize();
                 dataString += "&type=e";
                 dataString += "&unitId=" + unitId;
@@ -2366,17 +2371,42 @@ window.onclick = function(event) {
                 dataString += "&location_details_id=" + location_details_id;
                 //console.log(dataString);
 
+                //var data_ = "";
+                flag = 0;
+                for (i = 0; ; i++) 
+                {
+                    var data = $('#unique_' + i).val();
+                    if (typeof(data) != "undefined" && data !== null ) 
+                    {
+                        if(data < 0)
+                        {
+                            flag = 1;
+                            break;
+                        }
+                    }                    
+                    else 
+                    {
+                        break;
+                    }
+                }
+
                 if(unitId == '')
                 {
                     //alert(row+' '+rack+' '+' '+room+' '+shelf);
                     //alert('here');
+                    alert('unitId is null! not submiting the form');
+                }
+                else if(flag == 1)
+                {
+                    alert('Negetive number not accepted!');
                 }
                 else
                 {
+                    //alert('in else');
+                    $("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");
                     //alert(location_id)
-
-                    // alert('*********');
-                    // alert(location_id+' '+inventory_id+' '+location_details_id+' '+document.getElementById('styleId').value);
+                    //alert('*********');
+                    //alert(location_id+' '+inventory_id+' '+location_details_id+' '+document.getElementById('styleId').value);
                     $.ajax({
                     type: "POST",
                     url: "invReportSubmit.php",
