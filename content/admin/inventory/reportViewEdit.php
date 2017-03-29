@@ -1983,12 +1983,10 @@ window.onclick = function(event) {
 
                 
                 for ($i = 0; $i < count($data_mainSize); $i++) {
-                    
-
                     $invPrice = 0;
                     $found = 0;
 
-                    //echo 'AddRow("main",' . $sizeIndex . ',"' . $data_mainSize[$i]['scaleSize'] . '");';
+                    echo 'AddRow("main",' . $sizeIndex . ',"' . $data_mainSize[$i]['scaleSize'] . '");';
                     for ($j = 0; $j < count($data_inv); $j++) {
                         if ($data_inv[$j]['sizeScaleId'] == $data_mainSize[$i]['mainSizeId']) {
                             if ($data_inv[$j]['price'] != "" || $data_inv[$j]['price'] > 0) {
