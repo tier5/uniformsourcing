@@ -515,6 +515,44 @@ if (!($resultProduct = pg_query($connection, $query))) {
     // echo "<br><br>";
     // echo "data inv: <pre>"; print_r($data_inv);
     // exit();
+
+    if (!isset($_GET['unitId']) || $_GET['unitId'] == '0')
+    {
+        $bckup_data_inv = $data_inv;
+        $hash = array();
+        for ($i = 0 ; $i<count($data_inv) ; $i++) 
+        {
+            if(isset($data_inv[$i]['opt1ScaleId']) && isset($data_inv[$i]['sizeScaleId']))
+            {
+                $y = $data_inv[$i]['opt1ScaleId'].'_'.$data_inv[$i]['sizeScaleId'];
+                if(!isset($hash[$y]))
+                {
+                    $hash[$y] = (int)$data_inv[$i]['quantity'];
+                    $data_inv[$i]['locationId'] = 1;
+                }
+                else
+                {
+                    $hash[$y] = $hash[$y]+$data_inv[$i]['quantity'];
+                    $data_inv[$i]['locationId'] = 1;
+                }
+            }
+        }
+
+        for($i=0; $i<count($data_inv); $i++)
+        {
+
+            
+            if(isset($data_inv[$i]['opt1ScaleId']) && isset($data_inv[$i]['sizeScaleId']))
+            {
+
+                $x = $data_inv[$i]['opt1ScaleId'].'_'.$data_inv[$i]['sizeScaleId'];
+                $data_inv[$i]['quantity'] = $hash[$x];
+            }
+        }
+
+        $locArr = array();
+        $locArr[0] = 1;
+    }
     
 
 
@@ -926,10 +964,12 @@ if (!($resultProduct = pg_query($connection, $query))) {
 
             if(isset($_GET['unitId']) && $_GET['unitId'] != '0'){
 
-                $my_data;
+                //$my_data;
 
                 
-                $sql = 'select str."locationId" , str."invId" , inv.location_details_id from "tbl_invStorage" as str  left join "tbl_inventory" as inv on inv."inventoryId" = str."invId" where str.unit = \''.$_GET['unitId'].'\' and str.type != \'null\'';
+                $sql = 'select str."locationId" , inv.location_details_id from "tbl_invStorage" as str  left join "tbl_inventory" as inv on inv."inventoryId" = str."invId" where str.unit = \''.$_GET['unitId'].'\' ';
+
+
 
                 if (!($result = pg_query($connection, $sql))) 
                 {
@@ -940,17 +980,25 @@ if (!($resultProduct = pg_query($connection, $query))) {
                     $my_data[] = $row;
                 }
 
-
-                if(sizeof($my_data) > 1)
+                $location_id = '';
+                $location_details_id = '';
+                foreach ($my_data as $key => $value)
                 {
-                    echo "data_incorrect ----- line 978 -- in inventoryForm";
-                    exit();
-                }
-                $location_id = $my_data[0]['locationId'];
-                $inventory_id = $my_data[0]['invId'];
-                $location_details_id = $my_data[0]['location_details_id'];
 
-                // echo "<pre>";print_r($data_product);
+                    $location_id = $value['locationId'];
+                    if($value['location_details_id'] != '')
+                    $location_details_id = $value['location_details_id'];
+                }
+
+                
+                //$location_id = $my_data[0]['locationId'];
+                //$inventory_id = $my_data[0]['invId'];
+                //$location_details_id = $my_data[0]['location_details_id'];
+
+                // echo $location_id.'=='.$location_details_id;
+                // exit();
+
+                // echo "<pre>";print_r($my_data);
                 // exit();
             }
             
@@ -1422,7 +1470,7 @@ $('#new_conveyor_form').submit(function(e){
     }
     else
     {
-        alert (locationId+' '+styleId);
+        //alert (locationId+' '+styleId);
         console.log(slot,conveyorId,locationId,styleId,colorId);
         $.ajax({
             url: 'add_unit_to_conveyor.php',
@@ -1478,7 +1526,7 @@ $('#new_container_form').submit(function(e){
     else
     {
         console.log(unit,containerId,locationId,styleId,colorId);
-        alert (locationId+' '+styleId);
+        //alert (locationId+' '+styleId);
         $.ajax({
             url: 'add_unit_to_container.php',
             type:"post",
@@ -1532,7 +1580,7 @@ $('#warehouse_new_form').submit(function(e){
     var unit = $('input[name="unit"]').val();
     //var location_details_id = $('input[name="location_details_id"]').val();
 
-    alert(location+' '+styleId);
+    //alert(location+' '+styleId);
 
     //console.log(warehouse,location);
 
@@ -1881,7 +1929,7 @@ window.onclick = function(event) {
                 var trd = document.getElementById('qtyDummy'+locIndex);
                 if(trd !=null)
                 {
-                    alert(trd+' '+locIndex);
+                    //alert(trd+' '+locIndex);
                     var cell = trd.insertCell(cellId);
                     cell.className = 'gridHeaderReportGrids2';
                     cell.innerHTML="&nbsp;";
@@ -2291,9 +2339,11 @@ window.onclick = function(event) {
         $(function () {
             $("#inventoryForm").submit(function () {
                 var location_id = $('#_location_id').val();
-                var inventory_id = $('#_inventory_id').val();
+                //var inventory_id = $('#_inventory_id').val();
                 var location_details_id = $('#_location_details_id').val();
 
+
+                alert(location_id+' '+location_details_id);
 
                 var unitId = 0;
                 if ($("#unit_num").val() != undefined) {
@@ -2309,7 +2359,7 @@ window.onclick = function(event) {
                 dataString += "&type=e";
                 dataString += "&unitId=" + unitId;
                 dataString += "&location_id=" + location_id;
-                dataString += "&inventory_id=" + inventory_id;
+                //dataString += "&inventory_id=" + inventory_id;
                 dataString += "&location_details_id=" + location_details_id;
                 //console.log(dataString);
 
@@ -2320,6 +2370,8 @@ window.onclick = function(event) {
                 }
                 else
                 {
+                    alert(location_id)
+
                     // alert('*********');
                     // alert(location_id+' '+inventory_id+' '+location_details_id+' '+document.getElementById('styleId').value);
                     $.ajax({
