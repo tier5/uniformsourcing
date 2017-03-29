@@ -84,9 +84,24 @@ for ($i=0;$i<$totalRow;$i++) {
         if($data_storage) {
             $query = "UPDATE \"tbl_invStorage\" SET ";
             $query .= " \"wareHouseQty\" = '" . $data_inv1[$i]['newQty'] . "' ";
+
+            
+            if ($data_inv1[$i]['sizeScaleId'] != "")
+                $query .= ",\"sizeScaleId\" = '" . $data_inv1[$i]['sizeScaleId'] . "' ";
+
+            if ($data_inv1[$i]['opt1ScaleId'] != "")
+                $query .= ",\"opt1ScaleId\" = '" . $data_inv1[$i]['opt1ScaleId'] . "' ";
+
+            if ($data_inv1[$i]['opt2ScaleId'] != "")
+                $query .= ",\"opt1ScaleId\" = '" . $data_inv1[$i]['opt2ScaleId'] . "' ";
+
+
             $query .= ",\"updatedBy\" = '" . $_SESSION['employeeID'] . "' ";
             $query .= ",\"updatedDate\" = '" . date('U') . "' ";
             $query .= "  where \"storageId\"='" . $data_storage['storageId'] . "' ";
+
+            // print_r(json_encode($query));
+            // exit();
 
             //Log Tracking
             $sql = '';

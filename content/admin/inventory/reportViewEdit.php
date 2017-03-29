@@ -515,6 +515,8 @@ if (!($resultProduct = pg_query($connection, $query))) {
     // echo "<br><br>";
     // echo "data inv: <pre>"; print_r($data_inv);
     // exit();
+    // echo "<pre>"; print_r($_store);
+    // exit();
 
     if (!isset($_GET['unitId']) || $_GET['unitId'] == '0')
     {
@@ -1715,8 +1717,10 @@ window.onclick = function(event) {
         
     });
         
-    function Update() {
-        var room = $('#updateroom').val();
+    function Update() 
+    {
+        
+        room = $('#updateroom').val();
         // if(room == '') {
         //     alert("Please Provide a Room");
         //     return false;
@@ -1736,7 +1740,7 @@ window.onclick = function(event) {
             alert("Please Provide a self");
             return false;
         }
-        alert(row);
+        //alert(row);
         $.ajax({
             url: 'editRoom.php',
             type:"post",
@@ -1760,7 +1764,8 @@ window.onclick = function(event) {
        // $(location).attr('href', "updateInventory.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
     }
 
-    function Delete() {
+    function Delete() 
+    {
         if (confirm("Are you Sure you want to delete this unit") == true) {
             $.ajax({
                 url: "deleteInventory.php",
@@ -2341,7 +2346,7 @@ window.onclick = function(event) {
                 var location_details_id = $('#_location_details_id').val();
 
 
-                alert(location_id+' '+location_details_id);
+                //alert(location_id+' '+location_details_id);
 
                 var unitId = 0;
                 if ($("#unit_num").val() != undefined) {
@@ -2368,7 +2373,7 @@ window.onclick = function(event) {
                 }
                 else
                 {
-                    alert(location_id)
+                    //alert(location_id)
 
                     // alert('*********');
                     // alert(location_id+' '+inventory_id+' '+location_details_id+' '+document.getElementById('styleId').value);
