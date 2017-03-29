@@ -2398,7 +2398,7 @@ window.onclick = function(event) {
                 }
                 else if(flag == 1)
                 {
-                    alert('Negetive number not accepted!');
+                    alert('Negative value not accepted!');
                 }
                 else
                 {
