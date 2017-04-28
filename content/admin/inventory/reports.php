@@ -1,6 +1,133 @@
+<style>
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+</style>
 <?php
 require('Application.php');
 require('../../jsonwrapper/jsonwrapper.php');?>
+<?php
+function logCheckvival($styleId) {
+	$server_URL = "http://127.0.0.1:4569";
+$db_server = "localhost";
+$db_name = "php_intranet_uniformsourcing";
+$db_uname= "globaluniformuser";    
+$db_pass= "globaluniformpassword";   
+try{
+	$connection = pg_connect("host = $db_server ".
+						 "dbname = $db_name ".
+						 "user = $db_uname ".
+						 "password = $db_pass");
+
+}
+catch(\Exception $e)
+{
+	var_dump($e->getMessage());
+}
+// SELECT e.\"employeeID\" as \"employeeID\", ".
+// 			"e.\"username\" as \"username\", ".
+// 			"e.\"password\" as \"password\", ".
+// 			"e.\"firstname\" as \"firstname\", ".
+// 			"e.\"lastname\" as \"lastname\", ".
+// 			"e.\"email\" as \"email\",  ".
+// 			"p.\"login\" as \"plogin\", ".
+// 			"e.\"employeeType\" as \"employeeType\",  ".
+// 			"e.employee_type_id as employee_type_id ".
+// 			"FROM \"employeeDB\" e, \"permissions\" p ".
+// 			"WHERE username = '$username' AND password = '$password' AND e.\"employeeID\" = p.\"employee\" AND p.\"login\" = 'on' "
+	$sql ='select * from "tbl_date_interval_setting"';
+			if (!($resultProduct = pg_query($connection, $sql))) {
+			print("Failed invQuery: " . pg_last_error($connection));
+			exit;
+			}
+			while ($row = pg_fetch_array($resultProduct)) {
+				if($row['color']=="red"){
+					 $red = $row['interval'];
+				}
+				if($row['color']=="green"){
+					 $green = $row['interval'];
+				}
+				if($row['color']=="yellow"){
+					$yellow = $row['interval'];
+				}
+			
+			}
+	pg_free_result($resultProduct);	
+    pg_free_result($resultoldinv);
+    $sql='';
+  	$sql='select * from "tbl_log_updates" where "styleId" ='.$styleId.' and "present" = '."'".inventory."'".' order by "updatedDate" asc LIMIT 1';
+		if(!($resultoldinv=pg_query($connection,$sql))){
+			//echo "no";
+		}
+		else{
+			//echo "yes";
+		}
+        $rowoldinv = pg_fetch_row($resultoldinv);
+        $oldinv=$rowoldinv;
+        pg_free_result($resultoldinv);
+        //print_r($oldinv['4']);
+        $date2=date('U');
+        $date1=$oldinv['4'];
+
+
+        if($oldinv['4']){
+        	$resultday=round(abs($date1-$date2)/86400);
+			if($resultday<=$green){
+				$colo= "green";
+			}
+			if($resultday<=$yellow && $resultday>$green){
+				$colo= "yellow";
+			}
+			if($resultday>$yellow){
+				$colo= "red";
+			}
+			pg_free_result($resultemp);
+			$empsql='select * from "employeeDB" where "employeeID" ='.$oldinv['2'].' LIMIT 1';
+			if(!($resultemp=pg_query($connection,$empsql))){
+			
+			}
+			else{
+			
+			}
+			$rowemp = pg_fetch_row($resultemp);
+			$oldemp=$rowemp;
+			pg_free_result($resultemp);
+			//print_r($oldemp);
+			 $updatedby=$oldemp['1']." ".$oldemp['2'];
+			 echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"><span class="tooltiptext">'.$updatedby.'</br><a href="checkLog.php?ID='.$styleId.'">check the log</a></span></div>';
+        
+        }else{
+        	$colo= "red";
+        	$updatedby="Not Update Yet !!!";
+        	echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"></div>';
+        
+        }
+        
+}
+
+
+
+?>
 <?php 
 if(isset($_GET['close']))
 {
@@ -531,6 +658,7 @@ $(document).ready(function()
             <th class="sortable">Garment</th>
             <th class="sortable">Size Scale</th>
             <th class="sortable">Notes </th>
+            <th class="sortable">Log </th>
             <th class="gridHeader">Report View/Edit</th>
             <th class="gridHeader">Style View/Edit </th>
             <?php if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType']<4){ ?>
@@ -552,6 +680,7 @@ if(count($datalist))
 		echo '<td class="grid001">'.$datalist[$i]['notes'].'</td>';
 
 		?>
+		<td class="grid001"><?php logCheckvival($datalist[$i]['styleId']); ?></td>
 		<td class="grid001">
 			<a href="reportViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">
 			<img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0">
@@ -599,5 +728,6 @@ else
       </table>
      
 </form>
+
 <?php  require('../../trailer.php');
 ?>

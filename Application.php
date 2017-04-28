@@ -2,7 +2,7 @@
 //error_reporting(E_ALL); ini_set('display_errors', '1'); 
 $server_URL = "http://127.0.0.1:4569";  //Server address needed for sending sample request email 
 $db_server = "localhost";
-$db_name = "php_intranet_uniformsourcing2";                          // database name
+$db_name = "php_intranet_uniformsourcing";                          // database name
 $db_uname= "globaluniformuser";                              // username to connect to database
 $db_pass= "globaluniformpassword";                                // password of username to connecto to database
 $debug="off";                                   // set to on for the little debug code i have set on/off
@@ -41,8 +41,6 @@ while($rowcomp = pg_fetch_array($resultcomp)){
 	$datacomp[]=$rowcomp;
 }
 	$compname="".$datacomp[0]['client']."";			// company name
-
-
 
 
 $sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_container')";
@@ -110,7 +108,7 @@ if($tbl_container_exists['exists'] === 'f')
     {
     	// successfully built the table
     }
-    
+   pg_free_result($result); 
 }
 
 //creating table conveyor
@@ -183,6 +181,52 @@ if($tbl_conveyor_exists['exists'] === 'f')
     
 }
 
+//tbl_log_updates create
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_log_updates')";
+$tbl_log_updates_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $tbl_log_updates_exists=$row;
+}
+pg_free_result($row);
+if($tbl_log_updates_exists['exists'] === 'f')
+{
+	//var_dump('false');
+
+	$sql = 'CREATE TABLE public.tbl_log_updates
+			(
+			  "Logid" SERIAL PRIMARY KEY,
+			  "styleId" bigint,
+			  "createdBy" bigint DEFAULT 0,
+			  "createdDate" bigint DEFAULT 0,
+			  "updatedDate" bigint DEFAULT 0,
+			  "previous" text,
+			  "present" text
+			)
+			WITH (
+			  OIDS=FALSE
+			);
+			ALTER TABLE public.tbl_log_updates
+			  OWNER TO globaluniformuser';
+
+	if(!($result=pg_query($connection,$sql)))
+    {
+        
+        print_r('Application.php -- error in insert tbl_log_updates');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	// successfully built the table
+    }
+    pg_free_result($result);
+}
 $sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'storage_map')";
 
 $tbl_storage_map_exists;
@@ -640,7 +684,93 @@ if($column_exists['exists'] === 'f')
     pg_free_result($result);
 
 }
+//tbl_date_interval_setting create
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_date_interval_setting')";
+$tbl_date_interval_setting_exists;
 
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection).$sql);
+    exit;
+}
+
+while($row = pg_fetch_array($result))
+{
+    $tbl_date_interval_setting_exists=$row;
+}
+pg_free_result($row);
+if($tbl_date_interval_setting_exists['exists'] === 'f')
+{
+	//var_dump('false');
+
+	$sql = 'CREATE TABLE public.tbl_date_interval_setting
+			(
+			  "Colid" SERIAL PRIMARY KEY,
+			  "color" text,
+			  "interval" bigint DEFAULT 0,
+			  "createdDate" bigint DEFAULT 0,
+			  "updatedDate" bigint DEFAULT 0
+			)
+			WITH (
+			  OIDS=FALSE
+			);
+			ALTER TABLE public.tbl_date_interval_setting
+			  OWNER TO globaluniformuser';
+
+	if(!($result=pg_query($connection,$sql)))
+    {
+        
+        print_r('Application.php -- error in insert tbl_date_interval_setting');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    			$sql = '';
+                $sql = "INSERT INTO \"tbl_date_interval_setting\" (";
+                $sql .= " \"color\", \"interval\", \"createdDate\", \"updatedDate\" ";
+                $sql .= " ) VALUES (";
+                $sql .= " 'red' ";
+                $sql .= ", '3'";
+                $sql .= ", '". date('U') ."'";
+                $sql .= ", '". date('U') ."'";
+                $sql .= ")";
+                //echo $sql;$return_arr['set']=
+                if(!($audit = pg_query($connection,$sql))){
+                    $return_arr['error'] = pg_last_error($connection);
+                }
+
+                $sql = '';
+                $sql = "INSERT INTO \"tbl_date_interval_setting\" (";
+                $sql .= " \"color\", \"interval\", \"createdDate\", \"updatedDate\" ";
+                $sql .= " ) VALUES (";
+                $sql .= " 'yellow' ";
+                $sql .= ", '2'";
+                $sql .= ", '". date('U') ."'";
+                $sql .= ", '". date('U') ."'";
+                $sql .= ")";
+                //echo $sql;$return_arr['set']=
+                if(!($audit = pg_query($connection,$sql))){
+                    $return_arr['error'] = pg_last_error($connection);
+                }
+
+                $sql = '';
+                $sql = "INSERT INTO \"tbl_date_interval_setting\" (";
+                $sql .= " \"color\", \"interval\", \"createdDate\", \"updatedDate\" ";
+                $sql .= " ) VALUES (";
+                $sql .= " 'green' ";
+                $sql .= ", '1'";
+                $sql .= ", '". date('U') ."'";
+                $sql .= ", '". date('U') ."'";
+                $sql .= ")";
+                //echo $sql;$return_arr['set']=
+                if(!($audit = pg_query($connection,$sql))){
+                    $return_arr['error'] = pg_last_error($connection);
+                }
+    	 		
+    }
+   pg_free_result($result); 
+}
 $sql = "UPDATE \"tbl_invStorage\" SET unit = box WHERE box != 'null'";
 if(!($result=pg_query($connection,$sql)))
 {

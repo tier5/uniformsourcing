@@ -21,7 +21,15 @@ $shelf = $_GET['shelf'];
 $unit = $_GET['unitId'];
 $room = $_GET['room'];
 
-
+    $sqloldinv = "SELECT * FROM \"tbl_inventory\" WHERE ";
+    $sqloldinv .= " \"styleId\"='".$_GET['styleId']."'";
+    $sqloldinv .= " and \"colorId\"='".$_GET['colorId']."'";
+        if(!($resultoldinv=pg_query($connection,$sqloldinv))){
+            
+        }
+        while($rowoldinv = pg_fetch_array($resultoldinv)){
+            $oldinv[]=$rowoldinv;}
+        pg_free_result($resultoldinv);
 
 $sql = 'select "inventoryId","styleNumber",col."name","sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty", "mainSize", "rowSize", "columnSize" from "tbl_inventory" as inv inner join "tbl_invColor" as col on col."colorId"=inv."colorId" where inv."styleId"=' . $styleId . ' and inv."colorId"=' . $colorId . ' and "isStorage"=0 order by "inventoryId"';
 
@@ -204,6 +212,51 @@ for ($i=0;$i<$totalRow;$i++) {
         $return_arr['name'] = "Storage information is already updated...";
     }
 }
+    $sqlnewinv = "SELECT * FROM \"tbl_inventory\" WHERE ";
+    $sqlnewinv .= " \"styleId\"='".$_GET['styleId']."'";
+    $sqlnewinv .= " and \"colorId\"='".$_GET['colorId']."'";
+        if(!($resultnewinv=pg_query($connection,$sqlnewinv))){
+            
+        }
+        while($rownewinv = pg_fetch_array($resultnewinv)){
+            $newinv[]=$rownewinv;}
+        pg_free_result($resultnewinv);
+        
+        //print_r($oldinv);
+        foreach ($newinv as $ni_key => $newinventory) {
+            foreach ($oldinv as $oi_key => $oldinventory) {
+                if($newinventory['sizeScaleId']==$oldinventory['sizeScaleId'] && $newinventory['colorId']==$oldinventory['colorId'] && $newinventory['opt1ScaleId']==$oldinventory['opt1ScaleId'] && $newinventory['quantity']==$oldinventory['quantity']){
+                     
+                    unset($newinv[$ni_key]);
+                    unset($oldinv[$oi_key]);
+                }
+            }
+        }
+        if(!empty($oldinv)||!empty($newinv)){
+            $json_array['inventory'][0]=$oldinv;
+            $json_array['inventory'][1]=$newinv;
+            if(!empty($json_array)){
+                $json_array=json_encode($json_array);
+                // print_r($json_array);
+                // print_r($_SESSION['employeeID']);
+                $sql = '';
+                $sql = "INSERT INTO \"tbl_log_updates\" (";
+                $sql .= " \"styleId\", \"createdBy\", \"createdDate\", \"updatedDate\", \"previous\", \"present\" ";
+                $sql .= " ) VALUES (";
+                $sql .= " '" . $_GET['styleId'] . "' ";
+                $sql .= ", '". $_SESSION['employeeID'] ."'";
+                $sql .= ", '". date('U') ."'";
+                $sql .= ", '". date('U') ."'";
+                $sql .= ", '".$json_array."'";
+                $sql .= ", 'inventory'";
+                $sql .= ")";
+                //echo $sql;$return_arr['set']=
+                if(!($audit = pg_query($connection,$sql))){
+                    $return_arr['error'] = pg_last_error($connection);
+                }
+            }
+        }
+    
 echo json_encode($return_arr);
 exit;
 ?>

@@ -15,6 +15,15 @@ $return_arr[0]['flag'] = 0;
 
 if(isset($_POST['type']) && $_POST['type'] == "e")
 {
+    $sqloldinv = "SELECT * FROM \"tbl_inventory\" WHERE ";
+    $sqloldinv .= " \"styleId\"='".$_POST['styleId']."'";
+    $sqloldinv .= " and \"colorId\"='".$_POST['colorId']."'";
+        if(!($resultoldinv=pg_query($connection,$sqloldinv))){
+            
+        }
+        while($rowoldinv = pg_fetch_array($resultoldinv)){
+            $oldinv[]=$rowoldinv;}
+        pg_free_result($resultoldinv);
 	extract($_POST);
 	if($colorId > 0)
 	{
@@ -309,6 +318,7 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 		}
 	}		
 }
+
 echo json_encode($return_arr);
 exit;
 ?>

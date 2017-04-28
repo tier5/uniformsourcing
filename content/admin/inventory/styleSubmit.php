@@ -11,7 +11,7 @@
 	$return_arr['name'] = "";
 	$return_arr['error'] = "";
 	$return_arr['id'] = "";
-	
+	//print_r($_POST['styleId']);
 if(isset($_POST['type']))
 {
 	if($styleNumber == "" && $type!='e')
@@ -158,6 +158,24 @@ if(isset($_POST['type']))
 			{
 				if($styleId > 0)
 				{
+					$sql='select * from "tbl_invStyle" where "styleId"='.$styleId;
+					if(!($result=pg_query($connection,$sql))){
+					print("Failed query1: " . pg_last_error($connection));
+					exit;
+					}
+					while($row = pg_fetch_array($result)){
+					$data_style=$row;
+					}
+					pg_free_result($result);
+					$queryx = "SELECT * from \"tbl_invColor\" where \"styleId\"='$styleId' order by \"colorId\"  asc";
+					if(!($resultx=pg_query($connection,$queryx))){
+						
+					}
+					while($rowx = pg_fetch_array($resultx)){
+						$data_colorx[] = $rowx;
+					}
+					pg_free_result($resultx);
+
                                     if(trim($barcode_name)!=""){
                             
                                      $newname=pathinfo($barcode_name,PATHINFO_FILENAME).".".strtolower(pathinfo($barcode_name, PATHINFO_EXTENSION));
@@ -181,6 +199,7 @@ if(isset($_POST['type']))
 					if(!($result=pg_query($connection,$query_Name))){
 						$return_arr['error'] = pg_last_error($connection);
 						echo json_encode($return_arr);
+						
 						return;
 					}
 					pg_free_result($result);
@@ -297,5 +316,150 @@ if(isset($_POST['type']))
 		}
 }
 echo json_encode($return_arr);
+if($return_arr['error']=="" && $type=="e"){
+		$sql='select * from "tbl_invStyle" where "styleId"='.$styleId;
+		if(!($result=pg_query($connection,$sql))){
+		}
+		while($row = pg_fetch_array($result)){
+		$data_style_new=$row;
+		}
+		pg_free_result($result);
+		$style_array=array();
+		if($data_style['styleNumber']!=$data_style_new['styleNumber']){
+			$style_array['Style Number'][0]=$data_style['styleNumber'];
+			$style_array['Style Number'][1]=$data_style_new['styleNumber'];
+		}
+		if($data_style['scaleNameId']!=$data_style_new['scaleNameId']){
+			if($data_style['scaleNameId']!=""){
+				$query1='Select Distinct "scaleName","scaleId" from "tbl_invScaleName" where "scaleId"='.$data_style['scaleNameId'];
+				if(!($result_cnt=pg_query($connection,$query1))){	
+				}
+				while($row_cnt = pg_fetch_array($result_cnt)){
+					$style_array['Scale Name'][0]=$row_cnt['scaleName'];
+				}
+				pg_free_result($result_cnt);
+			}else{
+				$style_array['Scale Name'][0]="";
+			}
+			if($data_style_new['scaleNameId']!=""){
+				$query1='Select Distinct "scaleName","scaleId" from "tbl_invScaleName" where "scaleId"='.$data_style_new['scaleNameId'];
+				if(!($result_cnt=pg_query($connection,$query1))){
+				}
+				while($row_cnt = pg_fetch_array($result_cnt)){
+					$style_array['Scale Name'][1]=$row_cnt['scaleName'];
+				}
+				pg_free_result($result_cnt);
+			}else{
+				$style_array['Scale Name'][1]="";
+			}	
+		}
+		if($data_style['garmentId']!=$data_style_new['garmentId']){
+			if($data_style['garmentId']!=""){
+				$query1='Select "garmentID","garmentName" from "tbl_garment" where "garmentID"='.$data_style['garmentId'];
+				if(!($result_cnt=pg_query($connection,$query1))){
+				}
+				while($row_cnt = pg_fetch_array($result_cnt)){
+					$style_array['Garment Name'][0]=$row_cnt['garmentName'];
+				}
+				pg_free_result($result_cnt);
+			}else{
+				$style_array['Garment Name'][0]="";
+			}
+			if($data_style_new['garmentId']!=""){
+				$query1='Select "garmentID","garmentName" from "tbl_garment" where "garmentID"='.$data_style_new['garmentId'];
+				if(!($result_cnt=pg_query($connection,$query1))){
+				}
+				while($row_cnt = pg_fetch_array($result_cnt)){
+					$style_array['Garment Name'][1]=$row_cnt['garmentName'];
+				}
+				pg_free_result($result_cnt);
+			}else{
+				$style_array['Garment Name'][1]="";
+			}
+		}
+		if($data_style['fabricId']!=$data_style_new['fabricId']){
+			if($data_style['fabricId']!=""){
+				$query1='Select "fabricID","fabName" from "tbl_fabrics" where "fabricID"='.$data_style['fabricId'];
+				if(!($result_cnt=pg_query($connection,$query1))){
+				}
+				while($row_cnt = pg_fetch_array($result_cnt)){
+					$style_array['Fabric Name'][0]=$row_cnt['fabName'];
+				}
+				pg_free_result($result_cnt);
+			}else{
+				$style_array['Fabric Name'][0]="";
+			}
+			if($data_style_new['fabricId']!=""){
+				$query1='Select "fabricID","fabName" from "tbl_fabrics" where "fabricID"='.$data_style_new['fabricId'];
+				if(!($result_cnt=pg_query($connection,$query1))){
+				}
+				while($row_cnt = pg_fetch_array($result_cnt)){
+					$style_array['Fabric Name'][1]=$row_cnt['fabName'];
+				}
+				pg_free_result($result_cnt);
+			}else{
+				$style_array['Fabric Name'][1]="";
+			}
+		}
+		if($data_style['sex']!=$data_style_new['sex']){
+			$style_array['Sex'][0]=$data_style['sex'];
+			$style_array['Sex'][1]=$data_style_new['sex'];
+		}
+		if($data_style['price']!=$data_style_new['price']){
+			$style_array['Price'][0]=$data_style['price'];
+			$style_array['Price'][1]=$data_style_new['price'];
+		}
+		if($data_style['notes']!=$data_style_new['notes']){
+			$style_array['Note'][0]=$data_style['notes'];
+			$style_array['Note'][1]=$data_style_new['notes'];
+		}
+		if($data_style['barcode']!=$data_style_new['barcode']){
+			$style_array['Barcode'][0]=$data_style['barcode'];
+			$style_array['Barcode'][1]=$data_style_new['barcode'];
+		}
+		$queryy = "SELECT * from \"tbl_invColor\" where \"styleId\"='$styleId' order by \"colorId\"  asc";
+					if(!($resulty=pg_query($connection,$queryy))){	
+					}
+					while($rowy = pg_fetch_array($resulty)){
+						$data_colory[] = $rowy;
+					}
+					pg_free_result($resulty);
+					foreach ($data_colory as $new_key => $color_new) {
+						foreach ($data_colorx as $old_key => $color_old) {
+							if($color_new['name']==$color_old['name'] && $color_new['image']==$color_old['image']){
+								unset($data_colory[$new_key]);
+								unset($data_colorx[$old_key]);
+							}
+						}
+					}
+					$color_array[0]=$data_colorx;
+					$color_array[1]=$data_colory;
+					if(!empty($style_array)){
+						$json_array['style']=$style_array;
+					}if(!empty($data_colorx) || !empty($data_colory)){
+						$json_array['color'][0]=$data_colorx;
+						$json_array['color'][1]=$data_colory;
+					}
+					if(!empty($json_array)){
+						$json_array=json_encode($json_array);
+						// print_r($json_array);
+						// print_r($_SESSION['employeeID']);
+						$sql = '';
+						$sql = "INSERT INTO \"tbl_log_updates\" (";
+						$sql .= " \"styleId\", \"createdBy\", \"createdDate\", \"updatedDate\", \"previous\", \"present\" ";
+						$sql .= " ) VALUES (";
+						$sql .= " '" . $styleId . "' ";
+						$sql .= ", '". $_SESSION['employeeID'] ."'";
+						$sql .= ", '". date('U') ."'";
+						$sql .= ", '". date('U') ."'";
+						$sql .= ", '".$json_array."'";
+						$sql .= ", 'style'";
+						$sql .= ")";
+						//echo $sql;
+						if(!($audit = pg_query($connection,$sql))){
+						$return_arr['error'] = pg_last_error($connection);
+						}		
+					}			
+}
 return;
 ?>
