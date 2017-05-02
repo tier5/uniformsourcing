@@ -2,6 +2,82 @@
 require('Application.php');
 require('../../jsonwrapper/jsonwrapper.php');
 require('../../header.php');?>
+<?php
+function logCheckOStyle($styleId) {
+	$server_URL = "http://127.0.0.1:4569";
+$db_server = "localhost";
+$db_name = "php_intranet_uniformsourcing";
+$db_uname= "globaluniformuser";    
+$db_pass= "globaluniformpassword";   
+try{
+	$connection = pg_connect("host = $db_server ".
+						 "dbname = $db_name ".
+						 "user = $db_uname ".
+						 "password = $db_pass");
+
+}
+catch(\Exception $e)
+{
+	var_dump($e->getMessage());
+}
+
+	$sql='';
+  	$sql='select * from "tbl_invScaleSize" where "sizeScaleId" ='.$styleId.'LIMIT 1';
+  	if(!($resultoldinv=pg_query($connection,$sql))){
+			//echo "no";
+		}
+		else{
+			//echo "yes";
+		}
+        $rowoldinv = pg_fetch_row($resultoldinv);
+        $oldinv=$rowoldinv;
+        pg_free_result($resultoldinv);
+        echo $oldinv['2'];
+      
+        
+}
+
+
+
+?>
+<?php
+function logCheckNStyle($styleId) {
+	$server_URL = "http://127.0.0.1:4569";
+$db_server = "localhost";
+$db_name = "php_intranet_uniformsourcing";
+$db_uname= "globaluniformuser";    
+$db_pass= "globaluniformpassword";   
+try{
+	$connection = pg_connect("host = $db_server ".
+						 "dbname = $db_name ".
+						 "user = $db_uname ".
+						 "password = $db_pass");
+
+}
+catch(\Exception $e)
+{
+	var_dump($e->getMessage());
+}
+
+	$sql='';
+  	$sql='select * from "tbl_invScaleSize" where "sizeScaleId" ='.$styleId.'LIMIT 1';
+  	if(!($resultoldinv=pg_query($connection,$sql))){
+			//echo "no";
+		}
+		else{
+			//echo "yes";
+		}
+        $rowoldinv = pg_fetch_row($resultoldinv);
+        $oldinv=$rowoldinv;
+        pg_free_result($resultoldinv);
+        echo $oldinv['3'];
+      
+        
+}
+
+
+
+?>
 <?php 
 
 $sql ='select * from "tbl_log_updates" where "Logid"='.$_GET['LogId'];
@@ -52,7 +128,7 @@ if($data_storage['present']=="inventory"){
                         <div align="center" id="message"></div>
                         </td></tr></tbody></table>
                         </center>
-                      <form name="validationForm" id="validationForm" method="post" action="">
+                      
                         <table width="80%" border="0">
                           <tbody><tr>
                             <td align="center"><p></p></td>
@@ -84,41 +160,23 @@ if($data_storage['present']=="inventory"){
                             <td align="left" valign="top">
                             	<table>
                             		<tr>
-                            			<td>Scale1</td>
+                            			<td>Scale1x</td>
                             			<td>Scale2</td>
                             			<td>Value</td>
                             			<td>Unit</td>
                             		</tr>
-                            		<?php $data=json_decode($data_storage['previous']);
-
-                            	foreach ($data as $key => $value) {
-                            		
-                            		foreach ($value[0] as $key => $previous) {
-                            			//print_r($previous);
-                            			$sqlinvx='select * from "tbl_invStorage" where "invId" ='.$previous->inventoryId.'  LIMIT 1';
-										if(!($resultoldinvx=pg_query($connection,$sqlinvx))){
-											//echo "no";
-										}
-										else{
-											//echo "yes";
-										}
-								        $rowoldinvx = pg_fetch_row($resultoldinvx);
-								        $oldinvx=$rowoldinvx;
-								        pg_free_result($resultoldinvx);
-								        //print_r($oldinvx);
+                            		<?php 
+                            		$data=json_decode($data_storage['previous']);
+                            		foreach ($data as $key => $prevalue) {
+                            			//print_r($prevalue);
                             			?>
-                            			
-                            			<tr>
-                            			<td><?php echo $previous->mainSize;?></td>
-                            			<td><?php echo $previous->rowSize;?></td>
-                            			<td><?php echo $previous->quantity;?></td>
-                            			<td><?php echo $oldinvx['26']?></td>
-                            			</tr>
-                            			<?php
-                            		}
-                            	}
-                            	?>
-                            		
+                            		<tr>
+                            			<td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
+                            			<td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
+                            			<td><?php echo $prevalue->oldinv;?></td>
+                            			<td><?php echo $prevalue->unit;?></td>
+                            		</tr>
+                            		<?php } ?>
                             	</table>
                             	
                             </td>
@@ -129,38 +187,23 @@ if($data_storage['present']=="inventory"){
                             <td align="left" valign="top">
                             	<table>
                             		<tr>
-                            			<td>Scale1</td>
+                            			<td>Scale1y</td>
                             			<td>Scale2</td>
                             			<td>Value</td>
                             			<td>Unit</td>
                             		</tr>
-                            	<?php $data=json_decode($data_storage['previous']);
-
-                            	foreach ($data as $key => $valuex) {
-                            		
-                            		foreach ($valuex[1] as $key => $present) {
-                            			$sqlinvx='select * from "tbl_invStorage" where "invId" ='.$present->inventoryId.'  LIMIT 1';
-										if(!($resultoldinvx=pg_query($connection,$sqlinvx))){
-											//echo "no";
-										}
-										else{
-											//echo "yes";
-										}
-								        $rowoldinvx = pg_fetch_row($resultoldinvx);
-								        $oldinvx=$rowoldinvx;
-								        pg_free_result($resultoldinvx);
+                            	<?php 
+                            		$data=json_decode($data_storage['previous']);
+                            		foreach ($data as $key => $prevalue) {
+                            			//print_r($prevalue);
                             			?>
-                            			
-                            			<tr>
-                            			<td><?php echo $present->mainSize;?></td>
-                            			<td><?php echo $present->rowSize;?></td>
-                            			<td><?php echo $present->quantity;?></td>
-                            			<td><?php echo $oldinvx['26']?></td>
-                            			</tr>
-                            			<?php
-                            		}
-                            	}
-                            	?>
+                            		<tr>
+                            			<td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
+                            			<td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
+                            			<td><?php echo $prevalue->wareHouseQty;?></td>
+                            			<td><?php echo $prevalue->unit;?></td>
+                            		</tr>
+                            		<?php } ?>
                             	</table>
                             </td>
                           	</tr>
@@ -168,7 +211,7 @@ if($data_storage['present']=="inventory"){
                         
                           
                         </tbody></table>
-                      </form></td>
+                      </td>
                 </tr>
               </tbody></table>
               <p>

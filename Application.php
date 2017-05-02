@@ -789,11 +789,115 @@ if(!($result=pg_query($connection,$sql)))
 
 
 
+$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_inventory' and column_name='oldinv')";
 
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+	$sql = 'ALTER TABLE "tbl_inventory" ADD COLUMN 
+			oldinv bigint';
+	// var_dump($sql);
+	// exit();
+	if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	//print_r('successfully added column slot');
+    	//exit();
+    }
+    pg_free_result($result);
 
+}
+$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_invStorage' and column_name='oldinv')";
 
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+	 $sql = 'ALTER TABLE "tbl_invStorage" ADD COLUMN 
+			oldinv bigint';
+	// var_dump($sql);
+	// exit();
+	if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	print_r('successfully added column slot');
+    	exit();
+    }
+    pg_free_result($result);
 
+}
 
+$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_log_updates' and column_name='warehouse')";
+
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+	 $sql = 'ALTER TABLE "tbl_log_updates" ADD COLUMN 
+			warehouse character varying(30)';
+	// var_dump($sql);
+	// exit();
+	if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	print_r('successfully added column slot');
+    	exit();
+    }
+    pg_free_result($result);
+
+}
 
 
 

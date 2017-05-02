@@ -103,7 +103,7 @@ for ($i=0;$i<$totalRow;$i++) {
             if ($data_inv1[$i]['opt2ScaleId'] != "")
                 $query .= ",\"opt1ScaleId\" = '" . $data_inv1[$i]['opt2ScaleId'] . "' ";
 
-
+            $query .=",\"oldinv\" ='".$data_storage['wareHouseQty']."'";
             $query .= ",\"updatedBy\" = '" . $_SESSION['employeeID'] . "' ";
             $query .= ",\"updatedDate\" = '" . date('U') . "' ";
             $query .= "  where \"storageId\"='" . $data_storage['storageId'] . "' ";
@@ -141,6 +141,7 @@ for ($i=0;$i<$totalRow;$i++) {
             $query .= " ,\"updatedBy\" ";
             $query .= " ,\"createdDate\" ";
             $query .= " ,\"updatedDate\" ";
+            $query .= " ,\"oldinv\" ";
             $query .= ")";
             $query .= " VALUES (";
             $query .= " '" . $data_inv1[$i]['inventoryId'] . "' ";
@@ -160,6 +161,7 @@ for ($i=0;$i<$totalRow;$i++) {
             $query .= " ,'" . $_SESSION['employeeID'] . "' ";
             $query .= " ,'" . date('U') . "' ";
             $query .= " ,'" . date('U') . "' ";
+            $query .= " ,'0' ";
             $query .= " )";
 
             //Log Tracking
@@ -235,13 +237,27 @@ for ($i=0;$i<$totalRow;$i++) {
         if(!empty($oldinv)||!empty($newinv)){
             $json_array['inventory'][0]=$oldinv;
             $json_array['inventory'][1]=$newinv;
-            if(!empty($json_array)){
-                $json_array=json_encode($json_array);
+            $setinv=array();
+            foreach ($oldinv as $key => $olgetinvstorage) {
+$sqlnewinv = "SELECT * FROM \"tbl_invStorage\" WHERE ";
+$sqlnewinv .= " \"styleId\"='".$_GET['styleId']."'";
+$sqlnewinv .= " and \"colorId\"='".$_GET['colorId']."'";
+$sqlnewinv .= " and \"invId\"='".$olgetinvstorage['inventoryId']."'";
+$sqlnewinv .= " and \"unit\"='".$unit."'";
+if(!($resultnewinv=pg_query($connection,$sqlnewinv))){
+            
+        }
+        while($rownewinv = pg_fetch_array($resultnewinv)){
+            $setinv[]=$rownewinv;}
+        pg_free_result($resultnewinv);
+            }
+            if(!empty($setinv)){
+                $json_array=json_encode($setinv);
                 // print_r($json_array);
                 // print_r($_SESSION['employeeID']);
                 $sql = '';
                 $sql = "INSERT INTO \"tbl_log_updates\" (";
-                $sql .= " \"styleId\", \"createdBy\", \"createdDate\", \"updatedDate\", \"previous\", \"present\" ";
+                $sql .= " \"styleId\", \"createdBy\", \"createdDate\", \"updatedDate\", \"previous\", \"present\", \"warehouse\"";
                 $sql .= " ) VALUES (";
                 $sql .= " '" . $_GET['styleId'] . "' ";
                 $sql .= ", '". $_SESSION['employeeID'] ."'";
@@ -249,6 +265,7 @@ for ($i=0;$i<$totalRow;$i++) {
                 $sql .= ", '". date('U') ."'";
                 $sql .= ", '".$json_array."'";
                 $sql .= ", 'inventory'";
+                $sql .= ", '".$unit."'";
                 $sql .= ")";
                 //echo $sql;$return_arr['set']=
                 if(!($audit = pg_query($connection,$sql))){

@@ -137,6 +137,7 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
                             $query = "UPDATE \"tbl_inventory\" SET ";
                             $query .="\"newQty\" = '".$qty[$i][$j][$k]."' ";
                             $query .=",\"isStorage\" = 0 ";
+                            
                             $query .=",\"updatedBy\" = '".$_SESSION['employeeID']."' ";
                             $query .=",\"updatedDate\" = '".date('U')."' ";
                             $query .="  where \"inventoryId\"='".$inv['inventoryId']."'";
