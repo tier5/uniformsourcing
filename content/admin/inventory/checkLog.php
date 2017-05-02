@@ -7,7 +7,7 @@ require('../../header.php');?>
 
 
 <?php 
-$sql = 'select * from "tbl_log_updates" where "styleId" ='.$_GET['ID'];
+$sql = 'select * from "tbl_log_updates" where "styleId" ='.$_GET['ID'].'order by "updatedDate" desc';
 if (!($resultProduct = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
