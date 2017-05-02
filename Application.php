@@ -226,6 +226,20 @@ if($tbl_log_updates_exists['exists'] === 'f')
     	// successfully built the table
     }
     pg_free_result($result);
+}else{
+	$sql ='DROP TABLE public.tbl_log_updates';
+	if(!($result=pg_query($connection,$sql)))
+    {
+        
+        print_r('Application.php -- error in insert tbl_log_updates');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	// successfully built the table
+    }
+    pg_free_result($result);
 }
 $sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'storage_map')";
 
