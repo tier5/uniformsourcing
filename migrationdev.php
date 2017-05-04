@@ -46,10 +46,10 @@ while($row = pg_fetch_array($result))
     $tbl_container_exists[]=$row['table_name'];
 }
 pg_free_result($row);
-echo "<pre>";
-print_r($tbl_container_exists);
-echo "<pre>";
-print_r($liveset);
+// echo "<pre>";
+// print_r($tbl_container_exists);
+// echo "<pre>";
+// print_r($liveset);
 $newtolive=array_diff($tbl_container_exists,$liveset);
 echo "newtolive";
 print_r($newtolive);
@@ -58,3 +58,21 @@ $livetonew=array_diff($liveset,$tbl_container_exists);
 echo "livetonew";
 print_r($livetonew);
 ?>
+
+<table style="width:100%">
+  <tr>
+    <th>Table Name</th>
+    <th>Structure</th> 
+    <th>Data</th>
+  </tr>
+  <?php foreach ($liveset as $key => echo $eachlivetable) {
+  	?>
+  
+  <tr>
+    <td><?php echo $eachlivetable;?></td>
+    <td><a href="http://internaldev.uniformsourcing.com/migrationstructure.php?table=<?php echo $eachlivetable;?>"><button type="button">Check Structure</button></a></td> 
+    <td><a href="http://internaldev.uniformsourcing.com/migrationdata.php?table=<?php echo $eachlivetable;?>"><button type="button">Check Structure</button></a></td>
+  </tr>
+  <?php } ?>
+</table>
+Try it Yourself »
