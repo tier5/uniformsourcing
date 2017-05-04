@@ -56,7 +56,7 @@ foreach ($livesetone as $livekey => $livevalue) {
 			$vinsertedvalue.=",'".$livevalue->$columvalue."'), ";
 		}
 		else{
-			$vinsertedvalue.=",'".$livevalue->$columvalue"'";
+			$vinsertedvalue.=",'".$livevalue->$columvalue."'";
 		}
 	}
 }
