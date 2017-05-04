@@ -60,7 +60,7 @@ foreach ($livesetone as $livekey => $livevalue) {
 		}
 	}
 }
-rtrim($vinsertedvalue,', ');
+$vinsertedvalue=rtrim($vinsertedvalue,', ');
 
 print_r($vinsertedvalue);
 ?>
