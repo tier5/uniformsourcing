@@ -18,7 +18,7 @@ curl_close($cSession);
 $liveset= json_decode($result);
 print_r($liveset);
 $query="insert into ".$_GET['table']." (";
-	foreach ($variable as $key => $value) {
+	foreach ($liveset as $key => $value) {
 		if($key==0){
 		$query.=$value->column_name;	
 		}else{
