@@ -50,4 +50,11 @@ echo "<pre>";
 print_r($tbl_container_exists);
 echo "<pre>";
 print_r($liveset);
+$newtolive=array_diff($tbl_container_exists,$liveset);
+echo "newtolive";
+print_r($newtolive);
+
+$livetonew=array_diff($liveset,$tbl_container_exists);
+echo "livetonew";
+print_r($livetonew);
 ?>
