@@ -52,13 +52,13 @@ foreach ($livesetone as $livekey => $livevalue) {
 		$execol=count($columset)-1;
 		if($columkey==0){
 			
-				if($livevalue->$columvalue==""){
+				if(preg_replace('/\s+/', '', $livevalue->$columvalue)==""){
 					$vinsertedvalue.="( '".$livevalue->$columvalue."' ";
 				}else{
 					$vinsertedvalue.="( ".$livevalue->$columvalue." ";
 				}
 		}elseif ($execol==$columkey) {
-			if($livevalue->$columvalue==""){
+			if(preg_replace('/\s+/', '', $livevalue->$columvalue)==""){
 				$vinsertedvalue.=", '".$livevalue->$columvalue."' ), ";
 			}else{
 				$vinsertedvalue.=", ".$livevalue->$columvalue." ), ";	
@@ -66,7 +66,7 @@ foreach ($livesetone as $livekey => $livevalue) {
 			
 		}
 		else{
-			if($livevalue->$columvalue==""){
+			if(preg_replace('/\s+/', '', $livevalue->$columvalue)=="" ){
 				$vinsertedvalue.=", '".$livevalue->$columvalue."' ";
 			}else{
 				$vinsertedvalue.=", ".$livevalue->$columvalue." ";
