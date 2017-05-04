@@ -30,7 +30,7 @@ $result=curl_exec($cSession);
 //step4
 curl_close($cSession);
 //step5
-echo $result;
+$liveset= json_decode($result);
 
 $sql="select table_name from information_schema.tables";
 
@@ -47,5 +47,7 @@ while($row = pg_fetch_array($result))
 }
 pg_free_result($row);
 echo "<pre>";
-json_encode($tbl_container_exists);
+print_r($tbl_container_exists);
+echo "<pre>";
+print_r($liveset);
 ?>
