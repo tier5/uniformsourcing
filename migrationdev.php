@@ -65,7 +65,7 @@ print_r($livetonew);
     <th>Structure</th> 
     <th>Data</th>
   </tr>
-  <?php foreach ($liveset as $key => echo $eachlivetable) {
+  <?php foreach ($liveset as $key => $eachlivetable) {
   	?>
   
   <tr>
@@ -75,4 +75,4 @@ print_r($livetonew);
   </tr>
   <?php } ?>
 </table>
-Try it Yourself »
+
