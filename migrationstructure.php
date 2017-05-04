@@ -49,7 +49,7 @@ $result=curl_exec($cSession);
 curl_close($cSession);
 //step5
 $liveset= json_decode($result);
-print_r($liveset);
+// print_r($liveset);
 ?>
 
 <table style="width:100%" border="1">
@@ -92,7 +92,7 @@ print_r($liveset);
 		  
 		  <tr>
 		    <td><?php echo $livekey; ?></td> 
-		    <td><?php  print_r($livevalue);?></td>
+		    // <td><?php  print_r($livevalue);?></td>
 		  </tr>
 		  <?php } ?>
 		</table>
