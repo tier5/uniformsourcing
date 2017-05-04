@@ -51,14 +51,16 @@ foreach ($livesetone as $livekey => $livevalue) {
 	foreach ($columset as $columkey => $columvalue) {
 		$execol=count($columset)-1;
 		if($columkey==0){
-			$vinsertedvalue.="(".$livevalue->$columvalue;
+			$vinsertedvalue.="('".$livevalue->$columvalue."'";
 		}elseif ($execol==$columkey) {
-			$vinsertedvalue.=",".$livevalue->$columvalue."), ";
+			$vinsertedvalue.=",'".$livevalue->$columvalue."'), ";
 		}
 		else{
-			$vinsertedvalue.=",".$livevalue->$columvalue;
+			$vinsertedvalue.=",'".$livevalue->$columvalue"'";
 		}
 	}
 }
+rtrim($vinsertedvalue,', ');
+
 print_r($vinsertedvalue);
 ?>
