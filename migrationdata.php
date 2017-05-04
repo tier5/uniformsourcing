@@ -1,5 +1,21 @@
 <?php
 echo $_GET['table'];
+$server_URL = "http://127.0.0.1:4569";  //Server address needed for sending sam$
+$db_server = "localhost";
+$db_name = "php_intranet_uniformsourcing";                          // database$
+$db_uname= "globaluniformuser";                              // username to con$
+$db_pass= "globaluniformpassword";  
+try{
+	$connection = pg_connect("host = $db_server ".
+						 "dbname = $db_name ".
+						 "user = $db_uname ".
+						 "password = $db_pass");
+
+}
+catch(\Exception $e)
+{
+	var_dump($e->getMessage());
+}
 $cSession = curl_init(); 
 //step2
 $url="http://internal.uniformsourcing.com/getstructure.php?table=".$_GET['table'];
@@ -63,4 +79,11 @@ foreach ($livesetone as $livekey => $livevalue) {
 $vinsertedvalue=rtrim($vinsertedvalue,', ');
 
 print_r($query.$vinsertedvalue);
+$newQuery=$query.$vinsertedvalue;
+if(!($result=pg_query($connection,$newQuery))){
+			$return_arr['error'] = pg_last_error($connection);
+			echo json_encode($return_arr);
+			return;
+		}
+		pg_free_result($result);
 ?>
