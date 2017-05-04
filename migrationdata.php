@@ -17,5 +17,16 @@ curl_close($cSession);
 //step5
 $liveset= json_decode($result);
 print_r($liveset);
+$query="insert into ".$_GET['table']." (";
+	foreach ($variable as $key => $value) {
+		if($key==0){
+		$query.=$value->column_name;	
+		}else{
+		$query.=",".$value->column_name;		
+		}
+	}
+	$query.=")";
+echo "<pre>";
+echo $query;
 
 ?>
