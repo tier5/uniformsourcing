@@ -79,7 +79,24 @@ print_r($liveset);
 		  <?php } ?>
 		</table>
     </td> 
-    <td></td>
+    <td>
+		<table style="width:100%" border="1">
+		  <tr>
+		    <th>id</th>
+		    <th>Details</th> 
+		    
+		  </tr>
+		  
+		  <?php foreach ($liveset as $livekey => $livevalue) {
+		  ?>
+		  
+		  <tr>
+		    <td><?php echo $livekey; ?></td> 
+		    <td><?php  print_r($livevalue);?></td>
+		  </tr>
+		  <?php } ?>
+		</table>
+    </td>
   </tr>
   
 </table>
