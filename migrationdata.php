@@ -62,5 +62,5 @@ foreach ($livesetone as $livekey => $livevalue) {
 }
 $vinsertedvalue=rtrim($vinsertedvalue,', ');
 
-print_r($vinsertedvalue);
+print_r($query.$vinsertedvalue);
 ?>
