@@ -1,11 +1,10 @@
 <?php
 
-$server_URL = "http://internal.uniformsourcing.com";  //Server address needed f$
-//$db_server = "localhost";
-$db_server = "74.80.222.58";
+$server_URL = "http://127.0.0.1:4569";  //Server address needed for sending sam$
+$db_server = "localhost";
 $db_name = "php_intranet_uniformsourcing";                          // database$
 $db_uname= "globaluniformuser";                              // username to con$
-$db_pass= "globaluniformpassword";   
+$db_pass= "globaluniformpassword";  
 try{
 	$connection = pg_connect("host = $db_server ".
 						 "dbname = $db_name ".
@@ -28,4 +27,21 @@ $result=curl_exec($cSession);
 curl_close($cSession);
 //step5
 echo $result;
+
+$sql="select table_name from information_schema.tables";
+
+$tbl_container_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+	
+    $tbl_container_exists[]=$row['table_name'];
+}
+pg_free_result($row);
+echo "<pre>";
+print_r($tbl_container_exists);
 ?>
