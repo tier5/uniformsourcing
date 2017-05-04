@@ -51,12 +51,12 @@ pg_free_result($row);
 // echo "<pre>";
 // print_r($liveset);
 $newtolive=array_diff($tbl_container_exists,$liveset);
-// echo "newtolive";
-// print_r($newtolive);
+echo "newtolive";
+print_r($newtolive);
 
 $livetonew=array_diff($liveset,$tbl_container_exists);
-// echo "livetonew";
-// print_r($livetonew);
+echo "livetonew";
+print_r($livetonew);
 ?>
 
 <table style="width:100%">
