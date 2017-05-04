@@ -29,4 +29,21 @@ $query="insert into ".$_GET['table']." (";
 echo "<pre>";
 echo $query;
 
+$urlone="http://internal.uniformsourcing.com/gettable_data.php?table=".$_GET['table'];
+curl_setopt($cSessionone,CURLOPT_URL,$urlone);
+curl_setopt($cSessionone,CURLOPT_RETURNTRANSFER,true);
+curl_setopt($cSessionone, CURLOPT_HTTPGET, true);
+curl_setopt($cSessionone, CURLOPT_HTTPHEADER, array(
+    'Content-Type: application/json',
+    'Accept: application/json'
+)); 
+//step3
+$resultone=curl_exec($cSessionone);
+//step4
+curl_close($cSessionone);
+//step5
+$livesetone= json_decode($resultone);
+print_r($livesetone);
+
+
 ?>
