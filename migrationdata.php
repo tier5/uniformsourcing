@@ -16,12 +16,14 @@ $result=curl_exec($cSession);
 curl_close($cSession);
 //step5
 $liveset= json_decode($result);
-//print_r($liveset);
+$columset=array();
 $query="insert into ".$_GET['table']." (";
 	foreach ($liveset as $key => $value) {
 		if($key==0){
+			$columset[]=$value->column_name;
 		$query.=$value->column_name;	
 		}else{
+			$columset[]=$value->column_name;
 		$query.=",".$value->column_name;		
 		}
 	}
@@ -43,7 +45,16 @@ $resultone=curl_exec($cSessionone);
 curl_close($cSessionone);
 //step5
 $livesetone= json_decode($resultone);
-print_r($livesetone);
-
-
+//print_r($livesetone);
+$vinsertedvalue="VALUES ";
+foreach ($livesetone as $livekey => $livevalue) {
+	foreach ($columset as $columkey => $columvalue) {
+		if($columkey==0){
+			$vinsertedvalue.="(".$livevalue->$columvalue;
+		}else{
+			$vinsertedvalue.=",".$livevalue->$columvalue;
+		}
+	}
+}
+print_r($vinsertedvalue);
 ?>
