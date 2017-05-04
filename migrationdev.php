@@ -20,7 +20,11 @@ $cSession = curl_init();
 //step2
 curl_setopt($cSession,CURLOPT_URL,"http://internal.uniformsourcing.com/test.php");
 curl_setopt($cSession,CURLOPT_RETURNTRANSFER,true);
-curl_setopt($cSession,CURLOPT_HEADER, false); 
+curl_setopt($cSession,CURLOPT_HEADER, false);
+curl_setopt($cSession, CURLOPT_HTTPHEADER, array(
+    'Content-Type: application/json',
+    'Accept: application/json'
+)); 
 //step3
 $result=curl_exec($cSession);
 //step4
