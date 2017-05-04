@@ -899,7 +899,112 @@ if($column_exists['exists'] === 'f')
 
 }
 
+// CREATE TABLE "locationDetails" (
+//     id integer NOT NULL,
+//     "locationId" character varying(30),
+//     warehouse character varying(50),
+//     container character varying(50),
+//     conveyor character varying(50)
+// );
 
 
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'locationDetails')";
+
+$locationDetails_data;
+
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $locationDetails_data=$row;
+}
+pg_free_result($row);
+if($locationDetails_data['exists'] === 'f')
+{
+	$sql =  'CREATE TABLE public."locationDetails"
+			(
+			  "id" SERIAL PRIMARY KEY,
+			  "locationId" character varying(50),
+			  "warehouse" character varying(50),
+			  "container" character varying(50),
+			  "conveyor" character varying(50)
+			)
+			WITH (
+			  OIDS=FALSE
+			);
+			ALTER TABLE public.locationDetails
+			  OWNER TO globaluniformuser';
+
+	if(!($result=pg_query($connection,$sql)))
+    {
+        
+        print_r('Application.php -- error in insert locationDetails');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	//print('successfully built the table
+    }
+
+    pg_free_result($result);
+
+}
+
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_invLocation')";
+
+$tbl_invLocation_data;
+
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $tbl_invLocation_data=$row;
+}
+pg_free_result($row);
+if($tbl_invLocation_data['exists'] === 'f')
+{
+	$sql = 'CREATE TABLE public."tbl_invLocation"
+			(
+				"locationId" bigint DEFAULT nextval((\'tbl_invLocation_locationId_seq\'::text)::regclass) NOT NULL,
+				name character varying(200),
+				"isActive" smallint DEFAULT 1,
+				identifier character varying(10)
+			)
+			WITH (
+			  OIDS=FALSE
+			);
+			ALTER TABLE public."tbl_invLocation"
+			  OWNER TO globaluniformuser';
+
+	if(!($result=pg_query($connection,$sql)))
+    {
+        
+        print_r('Application.php -- error in insert tbl_invLocation');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+    	//print('successfully built the table
+    }
+
+    pg_free_result($result);
+
+}
+
+
+// CREATE TABLE "tbl_invLocation" (
+//     "locationId" bigint DEFAULT nextval(('tbl_invLocation_locationId_seq'::text)::regclass) NOT NULL,
+//     name character varying(200),
+//     "isActive" smallint DEFAULT 1,
+//     identifier character varying(10)
+// );
 
 ?>
