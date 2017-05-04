@@ -35,7 +35,8 @@ if(!($result=pg_query($connection,$sqlone)))
 
 $cSession = curl_init(); 
 //step2
-curl_setopt($cSession,CURLOPT_URL,"http://internal.uniformsourcing.com/getstructure.php?table=<?php echo $_GET['table'];?>");
+$url="http://internal.uniformsourcing.com/getstructure.php?table=".$_GET['table'];
+curl_setopt($cSession,CURLOPT_URL,$url);
 curl_setopt($cSession,CURLOPT_RETURNTRANSFER,true);
 curl_setopt($cSession, CURLOPT_HTTPGET, true);
 curl_setopt($cSession, CURLOPT_HTTPHEADER, array(
