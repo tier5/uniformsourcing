@@ -43,5 +43,5 @@ while($row = pg_fetch_array($result))
 }
 pg_free_result($row);
 echo "<pre>";
-print_r($tbl_container_exists);
+json_encode($tbl_container_exists);
 ?>
