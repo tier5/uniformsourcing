@@ -71,7 +71,7 @@ print_r($livetonew);
   <tr>
     <td><?php echo $eachlivetable;?></td>
     <td><a href="http://internaldev.uniformsourcing.com/migrationstructure.php?table=<?php echo $eachlivetable;?>"><button type="button">Check Structure</button></a></td> 
-    <td><a href="http://internaldev.uniformsourcing.com/migrationdata.php?table=<?php echo $eachlivetable;?>"><button type="button">Check Structure</button></a></td>
+    <td><a href="http://internaldev.uniformsourcing.com/migrationdata.php?table=<?php echo $eachlivetable;?>"><button type="button">Get Data</button></a></td>
   </tr>
   <?php } ?>
 </table>
