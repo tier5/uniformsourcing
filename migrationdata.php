@@ -29,7 +29,7 @@ $query="insert into ".$_GET['table']." (";
 echo "<pre>";
 echo $query;
 
-$urlone="http://internal.uniformsourcing.com/gettable_data.php?table=".$_GET['table'];
+$urlone="http://internal.uniformsourcing.com/getstructure.php?table=".$_GET['table'];
 curl_setopt($cSessionone,CURLOPT_URL,$urlone);
 curl_setopt($cSessionone,CURLOPT_RETURNTRANSFER,true);
 curl_setopt($cSessionone, CURLOPT_HTTPGET, true);
