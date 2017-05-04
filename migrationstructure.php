@@ -92,7 +92,7 @@ $liveset= json_decode($result);
 		  
 		  <tr>
 		    <td><?php echo $livekey; ?></td> 
-		    // <td><?php  print_r($livevalue);?></td>
+		   <td><?php  print_r($livevalue);?></td>
 		  </tr>
 		  <?php } ?>
 		</table>
