@@ -45,22 +45,22 @@ $resultone=curl_exec($cSessionone);
 curl_close($cSessionone);
 //step5
 $livesetone= json_decode($resultone);
-//print_r($livesetone);
-$vinsertedvalue="VALUES ";
-foreach ($livesetone as $livekey => $livevalue) {
-	foreach ($columset as $columkey => $columvalue) {
-		$execol=count($columset)-1;
-		if($columkey==0){
-			$vinsertedvalue.="('".$livevalue->$columvalue."'";
-		}elseif ($execol==$columkey) {
-			$vinsertedvalue.=",'".$livevalue->$columvalue."'), ";
-		}
-		else{
-			$vinsertedvalue.=",'".$livevalue->$columvalue."'";
-		}
-	}
-}
-$vinsertedvalue=rtrim($vinsertedvalue,', ');
+print_r($livesetone);
+// $vinsertedvalue="VALUES ";
+// foreach ($livesetone as $livekey => $livevalue) {
+// 	foreach ($columset as $columkey => $columvalue) {
+// 		$execol=count($columset)-1;
+// 		if($columkey==0){
+// 			$vinsertedvalue.="('".$livevalue->$columvalue."'";
+// 		}elseif ($execol==$columkey) {
+// 			$vinsertedvalue.=",'".$livevalue->$columvalue."'), ";
+// 		}
+// 		else{
+// 			$vinsertedvalue.=",'".$livevalue->$columvalue."'";
+// 		}
+// 	}
+// }
+// $vinsertedvalue=rtrim($vinsertedvalue,', ');
 
-print_r($vinsertedvalue);
+// print_r($vinsertedvalue);
 ?>
