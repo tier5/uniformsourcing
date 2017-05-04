@@ -32,6 +32,23 @@ if(!($result=pg_query($connection,$sqlone)))
 				$tbl_struct_exist[]=$row;
 			}
 				pg_free_result($row);
+
+$cSession = curl_init(); 
+//step2
+curl_setopt($cSession,CURLOPT_URL,"http://internal.uniformsourcing.com/getstructure.php?table=<?php echo $_GET['table'];?>");
+curl_setopt($cSession,CURLOPT_RETURNTRANSFER,true);
+curl_setopt($cSession, CURLOPT_HTTPGET, true);
+curl_setopt($cSession, CURLOPT_HTTPHEADER, array(
+    'Content-Type: application/json',
+    'Accept: application/json'
+)); 
+//step3
+$result=curl_exec($cSession);
+//step4
+curl_close($cSession);
+//step5
+$liveset= json_decode($result);
+print_r($liveset);
 ?>
 
 <table style="width:100%" border="1">
