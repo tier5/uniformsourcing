@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php
 
 echo "<title>$compname Internal Intranet</title>";
@@ -135,7 +136,7 @@ echo "<td width=\"200\" height=\"19\" align=\"center\" class=\"color2\"><div ali
 echo "</tr>";
 echo "<tr><td colspan=\"2\">";
 //<!-------------------------------- menu -------------------------------------->
-echo "<table width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"1\">";
+echo "<table  width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"1\">";
 echo "<tr>";
   
  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" 		            onClick=\"parent.location='$mydirectory/directory/directorytoc.php'\">Internal Directory</td>";

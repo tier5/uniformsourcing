@@ -30,7 +30,7 @@ require('../../jsonwrapper/jsonwrapper.php');?>
 function logCheckvival($styleId) {
 	$server_URL = "http://127.0.0.1:4569";
 $db_server = "localhost";
-$db_name = "php_intranet_uniformsourcing";
+$db_name = "php_intranet_uniformsourcing_new";
 $db_uname= "globaluniformuser";    
 $db_pass= "globaluniformpassword";   
 try{
@@ -680,6 +680,7 @@ if(count($datalist))
 		echo '<td class="grid001">'.$datalist[$i]['notes'].'</td>';
 
 		?>
+
 		<td class="grid001"><?php logCheckvival($datalist[$i]['styleId']); ?></td>
 		<td class="grid001">
 			<a href="reportViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">

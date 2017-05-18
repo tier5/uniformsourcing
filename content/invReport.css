@@ -137,3 +137,108 @@ padding-left:3px;
  height:10px;
  float:right;
  vertical-align:top;}
+
+/**********************************/
+/*table,tbody, tr {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+img{
+	max-width: 100%;
+	display: block;
+}*/
+.inventory-box{
+	margin: 0 15px;
+	border: 1px solid #666;
+	padding: 20px;
+}
+
+.inventory-box .sidebar{
+	display: inline-block;
+	vertical-align: top;
+    padding: 0 10px;
+}
+
+/*.inventory-box .left-sidebar{
+    width: 20%;
+}*/
+
+.inventory-box .left-sidebar img{
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.inventory-box{
+	text-align: center;
+}
+
+.inventory-table{
+	width: 860px;
+    overflow: hidden;
+}
+
+.each-section{
+    background: #ccc;
+    border-bottom: 1px solid #333;
+}
+
+.each-section:last-child{
+	border: none;
+}
+
+.each-section span{
+	padding: 10px;
+	display: block;
+	text-align: center;
+}
+
+.title-section{
+	background: #333;
+	color: #fff;
+	display: inline-block;
+	width: 100%;
+}
+
+.title-section p{
+	text-align: center;
+    padding: 10px;
+    margin: 0;
+}
+
+.nopadding{
+	padding: 0 !important;
+}
+
+.col-xs-2 .row:last-child{
+	display: none !important;
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px){
+	.inventory-table {
+	    width: 770px;
+	}
+	.each-section span{
+		width: 75px;
+	}
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+	.inventory-table {
+	    width: 770px;
+	}
+	.each-section span {
+	    width: 105px;
+	}
+}
+
+@media screen and (max-width: 767px){
+	.inventory-box .sidebar{
+		width: 100%;
+	}
+	.inventory-table {
+	    width: 425px;
+	}
+}
+
