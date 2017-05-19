@@ -1304,7 +1304,7 @@
                                                         </tr>
                                                         <tr>
                                                             <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                            <td colspan="2" class="gridHeaderReportGrids4"><?php echo $data_optionName['opt1Name']; ?></td>
+                                                            <td colspan="2" class="gridHeaderReportGrids4"> <?php echo $data_optionName['opt1Name']; ?></td>
                                                         </tr>
                                                         <tr>
                                                             <td class="gridHeaderReportGrids3">&nbsp;</td>
@@ -1357,7 +1357,7 @@
                                                                 if ($locArr[$i] == $data_loc[$loc_i]['locationId'])
                                                                     break;
                                                             }
-                                                            ?>
+                                                ?>
                                                 <tr>
                                                     <td class="gridHeaderReportGrids3"><?php //echo $data_loc[$loc_i]['name'];
                                                         $loc_identity = $loc_i; ?></td>
@@ -1394,8 +1394,8 @@
                                                 </tr>
                                                 <?php
                                                     }//LocArr for
-                                                    }//locArr if
-                                                    ?>
+                                                }//locArr if
+                                            ?>
                                             </table>
                                         </div>
                                         <?php if (count($data_opt1Size) > 0){ ?>
@@ -1493,43 +1493,10 @@
                 </div>
                 <div class="col-md-9 right-sidebar">
                     <div class="inventory-table">
-                        <div class="col-xs-2">
-                            <div class="row">
-                                <div class="title-section">
-                                    <div class="col-md-12 nopadding">
-                                        <p>sizes</p>
-                                    </div>
-                                </div>
-                                <div class="title-section">
-                                    <div class="col-md-12 nopadding">
-                                        <p>prices</p>
-                                    </div>
-                                </div>
-                                <div class="title-section">
-                                    <div class="col-md-12 nopadding">
-                                        <p>Petite</p>
-                                    </div>
-                                </div>
-                                <div class="title-section">
-                                    <div class="col-md-12 nopadding">
-                                        <p>Short</p>
-                                    </div>
-                                </div>
-                                <div class="title-section">
-                                    <div class="col-md-12 nopadding">
-                                        <p>Reg</p>
-                                    </div>
-                                </div>
-                                <div class="title-section">
-                                    <div class="col-md-12 nopadding">
-                                        <p>Tall</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="col-xs-2"></div>
                         <div class="col-xs-10">
                             <div class="row">
-                                <div class="col-xs-3 nopadding">
+                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
                                     <div class="each-section">
                                         <span>XXXS</span>
                                         <span>40</span>
@@ -1539,7 +1506,7 @@
                                         <span>40</span>
                                     </div>
                                 </div>
-                                <div class="col-xs-3 nopadding">
+                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
                                     <div class="each-section">
                                         <span>XXS</span>
                                         <span>30</span>
@@ -1549,7 +1516,7 @@
                                         <span>30</span>
                                     </div>
                                 </div>
-                                <div class="col-xs-3 nopadding">
+                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
                                     <div class="each-section">
                                         <span>XS</span>
                                         <span>20</span>
@@ -1559,7 +1526,7 @@
                                         <span>20</span>
                                     </div>
                                 </div>
-                                <div class="col-xs-3 nopadding">
+                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
                                     <div class="each-section">
                                         <span>S</span>
                                         <span>10</span>
@@ -1569,9 +1536,9 @@
                                         <span>10</span>
                                     </div>
                                 </div>
-                                <div class="col-xs-3 nopadding">
+                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
                                     <div class="each-section">
-                                        <span>S</span>
+                                        <span>M</span>
                                         <span>10</span>
                                         <span>10</span>
                                         <span>10</span>
@@ -1603,20 +1570,40 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function(){
-        $(".col-xs-3").each(function(i){
+/*
+===================================
+    Inventory table responsive
+===================================
+*/
+$(document).ready(function(){
+    var windowWidth = $(window).width();
+    $(".inventory-table .col-md-3").each(function(i){
 
-            var data = "<div class='row'><div class='title-section'><div class='col-md-12 nopadding'><p>sizes</p></div></div><div class='title-section'><div class='col-md-12 nopadding'><p>prices</p></div></div><div class='title-section'><div class='col-md-12 nopadding'><p>Petite</p></div></div><div class='title-section'><div class='col-md-12 nopadding'><p>Short</p></div></div><div class='title-section'><div class='col-md-12 nopadding'><p>Reg</p></div></div><div class='title-section'><div class='col-md-12 nopadding'><p>Tall</p></div></div></div>"
+        var data = "<div class='row'><div class='title-section'><div class='col-md-12 nopadding'><p>sizes</p></div></div><div class='title-section'><div c00lass='col-md-12 nopadding'><p>prices</p></div></div><div class='title-section'><div class='col-md-12 nopadding'><p>Petite</p></div></div><div class='title-section'><div class='col-md-12 nopadding'><p>Short</p></div></div><div class='title-section'><div class='col-md-12 nopadding'><p>Reg</p></div></div><div class='title-section'><div class='col-md-12 nopadding'><p>Tall</p></div></div></div>"
 
+        if(windowWidth > 991){
             if( i % 4 === 0 ) {
-                $(".col-xs-2").append(data);
+                $(".inventory-table .col-xs-2").append(data);
             }
-            else{
-                return;
+        }
+
+        if(windowWidth > 767 && windowWidth <= 991){
+            if( i % 3 === 0 ) {
+                $(".inventory-table .col-xs-2").append(data);
             }
-            
-        });
+        }
+
+        if(windowWidth <= 767){
+            if( i % 2 === 0 ) {
+                $(".inventory-table .col-xs-2").append(data);
+            }
+        }
+        
     });
+});
+/*
+=============================================
+*/
 </script>
 <script>
     $(document).ready(function(){

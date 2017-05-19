@@ -139,30 +139,12 @@ padding-left:3px;
  vertical-align:top;}
 
 /**********************************/
-/*table,tbody, tr {
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
-}
-img{
-	max-width: 100%;
-	display: block;
-}*/
 .inventory-box{
 	margin: 0 15px;
 	border: 1px solid #666;
 	padding: 20px;
+	text-align: center;
 }
-
-.inventory-box .sidebar{
-	display: inline-block;
-	vertical-align: top;
-    padding: 0 10px;
-}
-
-/*.inventory-box .left-sidebar{
-    width: 20%;
-}*/
 
 .inventory-box .left-sidebar img{
     display: block;
@@ -170,28 +152,13 @@ img{
     height: auto;
 }
 
-.inventory-box{
-	text-align: center;
-}
-
-.inventory-table{
-	width: 860px;
-    overflow: hidden;
-}
-
 .each-section{
     background: #ccc;
-    border-bottom: 1px solid #333;
-}
-
-.each-section:last-child{
-	border: none;
 }
 
 .each-section span{
 	padding: 10px;
 	display: block;
-	text-align: center;
 }
 
 .title-section{
@@ -211,34 +178,20 @@ img{
 	padding: 0 !important;
 }
 
-.col-xs-2 .row:last-child{
-	display: none !important;
+.inventory-table .col-xs-2 .row, .col-md-3{
+	margin-bottom: 10px;
 }
 
-@media screen and (min-width: 992px) and (max-width: 1199px){
-	.inventory-table {
-	    width: 770px;
-	}
-	.each-section span{
-		width: 75px;
-	}
+.inventory-table .col-md-3 .each-section span:first-child{
+	background: #333;
+	color: #fff;
+	border-bottom: 1px solid #fff;
 }
 
-@media screen and (min-width: 768px) and (max-width: 991px){
-	.inventory-table {
-	    width: 770px;
-	}
-	.each-section span {
-	    width: 105px;
-	}
+.inventory-table .col-xs-2 .row > .title-section p{
+	border-right: 1px solid #fff;
 }
 
-@media screen and (max-width: 767px){
-	.inventory-box .sidebar{
-		width: 100%;
-	}
-	.inventory-table {
-	    width: 425px;
-	}
+.inventory-table .col-xs-2 .row > .title-section:first-child p{
+	border-bottom: 1px solid #fff;
 }
-
