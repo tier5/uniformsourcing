@@ -861,8 +861,8 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                     </select>&nbsp;&nbsp;&nbsp;</div>
                             </td>
                             <td>
-                                unit #:&nbsp;<select name="unit_num" id="unit_num">
-                                    <option value="0">---- All units # ----</option>
+                                box #:&nbsp;<select name="unit_num" id="unit_num">
+                                    <option value="0">---- All box # ----</option>
                                     <?php
                                     for ($i = 0; $i < count($data_storage); $i++) {
                                         if ($data_storage[$i]['unit'] != "")

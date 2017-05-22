@@ -27,10 +27,11 @@
 require('Application.php');
 require('../../jsonwrapper/jsonwrapper.php');?>
 <?php
-function logCheckvival($styleId) {
+function logCheckvival($styleId) 
+{
 	$server_URL = "http://127.0.0.1:4569";
 $db_server = "localhost";
-$db_name = "php_intranet_uniformsourcing";
+$db_name = $GLOBALS['global_database'];
 $db_uname= "globaluniformuser";    
 $db_pass= "globaluniformpassword";   
 try{
