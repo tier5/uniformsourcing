@@ -27,6 +27,11 @@
 require('Application.php');
 require('../../jsonwrapper/jsonwrapper.php');?>
 <?php
+// if($_POST)
+// {
+// 	echo "<pre>";
+// 	var_dump($_POST);
+// }
 function logCheckvival($styleId) 
 {
 	$server_URL = "http://127.0.0.1:4569";
@@ -215,7 +220,8 @@ while($row_cnt8 = pg_fetch_array($result_cnt8)){
 pg_free_result($result_cnt8);
 
 
-$sql='select  distinct box from "tbl_invStorage" order by box asc';
+//$sql='select  distinct box from "tbl_invStorage" order by box asc';
+$sql='select distinct unit from "tbl_invStorage" order by unit asc';
 	if(!($result_cnt9=pg_query($connection,$sql))){
 		print("Failed InvData: " . pg_last_error($connection));
 		exit;
@@ -224,6 +230,7 @@ $sql='select  distinct box from "tbl_invStorage" order by box asc';
 		$data_storage[]=$row_cnt9;
 	}
 pg_free_result($result_cnt9);
+
 
 $sql = 'select "name","containerId" from "tbl_container" ';
 $sql='select  distinct box from "tbl_invStorage" order by box asc';
@@ -309,6 +316,8 @@ if(isset($_REQUEST['notes']) && $_REQUEST['notes']!="") {
 	}
 }
 if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']!="") {
+	//echo $_REQUEST['box_num'];
+	//exit();
 	$search_sql .=' and storage."box" ILIKE \'%' .$_REQUEST['box_num'].'%\' ';
 	if($search_uri)  {
 		 $search_uri.="&notes=".$_REQUEST['box_num'];
@@ -318,6 +327,15 @@ if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']!="") {
 }
 $sql='select DISTINCT st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" '.
         ' left join "tbl_invStorage" as storage  on storage."styleId"=st."styleId" where st."isActive"=1'.$search_sql.' order by st."styleId" desc';
+
+
+        // if($search_sql != '')
+        // {
+        // 	echo $search_sql;
+        // 	exit();
+        // }
+        
+
 if(!($result=pg_query($connection,$sql))){
 	print("Failed queryd: " . pg_last_error($connection));
 	exit;
@@ -582,11 +600,13 @@ $(document).ready(function()
                 <td class="grid001"><select name="fabric" id="fabric">
                   <option value="">---- Select Fabric ----</option>
                    <?php 
-                  for($i=0; $i < count($data_fab); $i++){
+                  for($i=0; $i < count($data_fab); $i++)
+                  {
                     echo '<option value="'.$data_fab[$i]['fabricID'].'"';
-                  if(isset($_REQUEST['fabric']) && $_REQUEST['fabric']==$data_fab[$i]['fabricID'])   
-                  echo ' selected="selected" ';
-               echo '>'.$data_fab[$i]['fabName'].'</option>';}
+                    if(isset($_REQUEST['fabric']) && $_REQUEST['fabric']==$data_fab[$i]['fabricID'])   
+                      echo ' selected="selected" ';
+                    echo '>'.$data_fab[$i]['fabName'].'</option>';
+                  }
                   ?>
                                         </select></td>
                 <td class="grid001">&nbsp;</td>
@@ -597,13 +617,16 @@ $(document).ready(function()
              <tr>
                 <td class="grid001">Box #:</td>
                 <td class="grid001"><select name="box_num" id="box_num">
+
                   <option value="">---- Select Box # ----</option>
                    <?php 
-                  for($i=0; $i < count($data_storage); $i++){
-                    if($data_storage[$i]['box']!="")  
-                    echo '<option value="'.$data_storage[$i]['box'].'"';
-                    if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']==$data_storage[$i]['box']) echo ' selected="selected" '; 
-                    echo '>'.$data_storage[$i]['box'].'</option>';}
+                  for($i=0; $i < count($data_storage); $i++)
+                  {
+                    if($data_storage[$i]['unit']!="")  
+                    echo '<option value="'.$data_storage[$i]['unit'].'"';
+                    if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']==$data_storage[$i]['unit']) echo ' selected="selected" '; 
+                    echo '>'.$data_storage[$i]['unit'].'</option>';
+                  }
                   ?>
                                         </select></td>
                 <td class="grid001">&nbsp;</td>
@@ -614,12 +637,12 @@ $(document).ready(function()
 
               <tr>
                 <td class="grid001">Container #:</td>
-                <td class="grid001"><select name="box_num" id="box_num">
+                <td class="grid001"><select name="container" id="container">
                   <option value="">---- Select Containers # ----</option>
                    <?php 
                   	for($i=0; $i < count($data_container); $i++)
                   	{
-	                    if($data_container[$i]['box']!="")  
+	                    if($data_container[$i]['container']!="")  
 	                    	echo '<option value="'.$data_container[$i]['name'].'"';
 	                    if(isset($_REQUEST['container']) && $_REQUEST['container']==$data_container[$i]['name']) 
 	                    	echo ' selected="selected" '; 
@@ -700,7 +723,7 @@ if(count($datalist))
 	} }
 	echo 	'</tbody><tr>
 			<td width="100%" class="grid001" colspan="10">'.$p->show().'</td>			
-		  </tr>';	
+		  </tr>';
 } 
 else 
 {
