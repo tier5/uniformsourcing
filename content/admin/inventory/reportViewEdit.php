@@ -522,10 +522,13 @@ if (!($resultProduct = pg_query($connection, $query))) {
     if (!isset($_GET['unitId']) || $_GET['unitId'] == '0')
     {
         $bckup_data_inv = $data_inv;
+        //echo "<pre>";print_r($data_inv);
+        //exit();
         $hash = array();
         for ($i = 0 ; $i<count($data_inv) ; $i++) 
         {
-            if(isset($data_inv[$i]['opt1ScaleId']) && isset($data_inv[$i]['sizeScaleId']))
+            //if(isset($data_inv[$i]['opt1ScaleId']) && isset($data_inv[$i]['sizeScaleId']))
+            if(isset($data_inv[$i]['sizeScaleId']))
             {
                 $y = $data_inv[$i]['opt1ScaleId'].'_'.$data_inv[$i]['sizeScaleId'];
                 if(!isset($hash[$y]))
@@ -540,22 +543,23 @@ if (!($resultProduct = pg_query($connection, $query))) {
                 }
             }
         }
+        // echo "<pre>";print_r($hash);
+        // exit();
 
         for($i=0; $i<count($data_inv); $i++)
         {
-
-            
-            if(isset($data_inv[$i]['opt1ScaleId']) && isset($data_inv[$i]['sizeScaleId']))
+            if(isset($data_inv[$i]['sizeScaleId']))
             {
 
                 $x = $data_inv[$i]['opt1ScaleId'].'_'.$data_inv[$i]['sizeScaleId'];
                 $data_inv[$i]['quantity'] = $hash[$x];
             }
         }
-
         $locArr = array();
         $locArr[0] = 1;
     }
+    // echo "<pre>";print_r($data_inv);
+    //exit();
     
 
 
