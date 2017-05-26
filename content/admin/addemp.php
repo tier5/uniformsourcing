@@ -32,27 +32,26 @@ pg_free_result($result1);
         </tr>
         <tr>
             <td><font face="arial" color="red">*(r)</font><font face="arial"><b>Employee Type </b></font></td>
-            <td><input type="radio" name="employeeType" value="0"  onclick="setVisibility('');" checked="checked"/>
-                Employee
-                <input type="radio" name="employeeType" value="1" onclick="setVisibility('vendor');"/> 
-                Vendor
-                <input type="radio" name="employeeType" value="2" onclick="setVisibility('client');"/> 
-                Client 
-				<input type="radio" name="employeeType" value="3" onclick="setVisibility('');"/> 
-                Sales
-                <input type="radio" name="employeeType" value="4" onclick="setVisibility('');"/> 
-                Inventory Group
-				</td>
+            <td>
+                <input type="radio" name="employeeType" value="0"  onclick="setVisibility('');" checked="checked"/>Employee
+                <input type="radio" name="employeeType" value="1" onclick="setVisibility('vendor');"/>Vendor
+                <input type="radio" name="employeeType" value="2" onclick="setVisibility('client');"/>Client 
+                <input type="radio" name="employeeType" value="3" onclick="setVisibility('');"/>Sales
+                <input type="radio" name="employeeType" value="4" onclick="setVisibility('');"/>Inventory Group
+                <input type="radio" name="employeeType" value="5" onclick="setVisibility('');"/>Sales Person
+            </td>
         </tr>
         <tr id="vendor" style="display:none">
             <td><font face="arial" color="red">*(r)</font><font face="arial"><b>Vendor Name </b></font></td>
-            <td><select name="vendorName">
+            <td>
+                <select name="vendorName">
                     <?php
                     for ($i = 0; $i < count($data_Vendr); $i++) {
                         echo '<option value="' . $data_Vendr[$i]['vendorID'] . '">' . $data_Vendr[$i]['vendorName'] . '</option>';
                     }
                     ?> 
-                </select> </td>
+                </select> 
+            </td>
         </tr>
         <tr id="client" style="display:none">
             <td><font face="arial" color="red">*(r)</font><font face="arial"><b>Client Name </b></font></td>

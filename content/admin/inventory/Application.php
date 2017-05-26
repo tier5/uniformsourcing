@@ -6,6 +6,8 @@ $upload_dir = $mydirectory."/uploadFiles/inventory/";
 $upload_dir_image = $mydirectory."/uploadFiles/inventory/images/";
 $upload_dir_general = $mydirectory."/uploadFiles/inventory/general/";
 if(isset($_SESSION['perm_admin']) AND $_SESSION['perm_admin'] == "on" OR (isset($_SESSION['employeeType']) AND $_SESSION['employeeType']==4)){
+}else if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] == 5){
+    
 }else{
 	require('../../header.php');
 	echo "<body bgcolor=\"#FFFFFF\">";

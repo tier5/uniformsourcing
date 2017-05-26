@@ -5,6 +5,7 @@ $path = $mydirectory."/uploadFiles/reports/";
 $filename = "project_mgm_csvfile.csv";
 $fullPath = $path.$filename;
 $return_arr = array();
+$emp_sql = '';
 
 $return_arr['fileName'] = "";
 if(file_exists($fullPath))
@@ -61,9 +62,13 @@ if(isset($_REQUEST['manager_id']) && $_REQUEST['manager_id']!="")
 
 //$sql='
  //select Distinct(prj.projectname),prj_shipping.tracking_number,c.client,prj.pid,prj.order_placeon,prj.status,emp.firstname,prch.pt_invoice,mile.prdtntrgtdelvry,prc.prjquote,prj.project_budget,prj.bid_number,vendor."vendorName" from tbl_newproject as  prj left join tbl_prmilestone as mile on mile.pid = prj.pid left join tbl_prjorder_shipping as  prj_shipping on prj_shipping.shipping_id=(select tbl_prjorder_shipping.shipping_id from tbl_prjorder_shipping inner join tbl_newproject on tbl_prjorder_shipping.pid = prj.pid order by tbl_prjorder_shipping.shipping_id desc) left join tbl_prjpurchase as prch on prch.pid = prj.pid left join tbl_prjpricing as prc on prc.pid = prj.pid  left join "employeeDB" as emp on emp."employeeID"= prj.project_manager inner join "clientDB" c on prj.client=c."ID"  left join tbl_prjvendor as prj_vendor on prj_vendor.pid=prj.pid left join vendor on vendor."vendorID"=prj_vendor.vid where prch.purchaseorder IS NULL and prj.status =1 '.$search_sql.' order by prj."pid" desc ';
+else if (isset($_SESSION['employee_type_id']) AND ($_SESSION['employeeType'] == 5)){    
+    $emp_id = $_SESSION['employeeID'];
+    $emp_sql = ' and (prj."project_manager" = '.$emp_id.' or prj."project_manager1" = '.$emp_id.' or prj."project_manager2" = '.$emp_id.' )';
+//    $is_session = 1;
+}
 
-
-$sql='select Distinct(prj.projectname),pro.prdtntrgtdelvry,prc.prj_est_profit,prc.prj_estimatecost,c.client,prj.pid,prj.order_placeon,emp.firstname,emp.lastname,mile.prdtntrgtdelvry,prc.prjquote,prj.project_budget,tbl_carriers.weblink,prch.purchaseorder,prch.pt_invoice,prch.purchaseduedate,prj.bid_number,prj_shipping.tracking_number from tbl_newproject as  prj left join tbl_prmilestone as mile on mile.pid = prj.pid  left join tbl_prmilestone as pro on pro.pid = prj.pid  left join tbl_prjpurchase as prch on prch.pid = prj.pid left join tbl_prjpricing as prc on prc.pid = prj.pid  left join "employeeDB" as emp on emp."employeeID"= prj.project_manager inner join "clientDB" c on prj.client=c."ID" left join tbl_prjvendor as prj_vendor on prj_vendor.pid=prj.pid left join tbl_prjorder_shipping as  prj_shipping on prj_shipping.shipping_id=(select tbl_prjorder_shipping.shipping_id from tbl_prjorder_shipping inner join tbl_newproject on tbl_prjorder_shipping.pid = prj.pid order by tbl_prjorder_shipping.shipping_id desc limit 1)left join tbl_carriers on tbl_carriers.carrier_id = prj_shipping.carrier_id where prj.status =1  and prch.purchaseorder IS NULL order by prj."pid" desc';
+$sql='select Distinct(prj.projectname),pro.prdtntrgtdelvry,prc.prj_est_profit,prc.prj_estimatecost,c.client,prj.pid,prj.order_placeon,emp.firstname,emp.lastname,mile.prdtntrgtdelvry,prc.prjquote,prj.project_budget,tbl_carriers.weblink,prch.purchaseorder,prch.pt_invoice,prch.purchaseduedate,prj.bid_number,prj_shipping.tracking_number from tbl_newproject as  prj left join tbl_prmilestone as mile on mile.pid = prj.pid  left join tbl_prmilestone as pro on pro.pid = prj.pid  left join tbl_prjpurchase as prch on prch.pid = prj.pid left join tbl_prjpricing as prc on prc.pid = prj.pid  left join "employeeDB" as emp on emp."employeeID"= prj.project_manager inner join "clientDB" c on prj.client=c."ID" left join tbl_prjvendor as prj_vendor on prj_vendor.pid=prj.pid left join tbl_prjorder_shipping as  prj_shipping on prj_shipping.shipping_id=(select tbl_prjorder_shipping.shipping_id from tbl_prjorder_shipping inner join tbl_newproject on tbl_prjorder_shipping.pid = prj.pid order by tbl_prjorder_shipping.shipping_id desc limit 1)left join tbl_carriers on tbl_carriers.carrier_id = prj_shipping.carrier_id where prj.status =1  and prch.purchaseorder IS NULL '.$emp_sql.' order by prj."pid" desc';
 
 	//echo $sql;
 if(!($result=pg_query($connection,$sql))){

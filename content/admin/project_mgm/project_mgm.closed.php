@@ -3,6 +3,7 @@ require('Application.php');
 $current_page ="project_mgm.closed.php";
 $type = "project_purchase";
 $paging = 'paging=';
+$sales_person = '';
 if(isset($_POST['cancel']))
 {
 	$sql="";
@@ -244,13 +245,18 @@ while($row1 = pg_fetch_array($result1)){
 	$data1[]=$row1;
 }
 include('../../pagination.class.php');
+
+if(isset($_SESSION['employeeType']) && $_SESSION['employeeType'] == 5){
+    $emp_id = $_SESSION['employeeID'];
+    $sales_person = ' and (prj."project_manager" = '.$emp_id.' or prj."project_manager1" = '.$emp_id.' or prj."project_manager2" = '.$emp_id.')';
+}
 //$sql=' select Distinct(prj.projectname),c.client,prj.pid,prj.order_placeon,prj.status, tbl_prj_style.style,emp.firstname,emp.lastname,prch.purchaseorder,prc.prjquote,prc.prjcost,prc.prj_completioncost,prc.prj_estimatecost,prc.prj_completioncost from tbl_newproject as prj left join tbl_prjpurchase as prch on prch.pid = prj.pid left join tbl_prjpricing as prc on prc.pid = prj.pid left join "employeeDB" as emp on emp."employeeID"= prj.project_manager left join "clientDB" c on prj.client=c."ID" left join tbl_prj_style on tbl_prj_style.prj_style_id = (select tbl_prj_style.prj_style_id from tbl_prj_style inner join tbl_newproject on tbl_prj_style.pid = prj.pid order by tbl_prj_style.prj_style_id desc limit 1) where prch.purchaseorder IS NULL and prj.status =0 '.$search_sql.' order by prj."pid"  desc ';
 $sql=' select Distinct(prj.projectname),c.client,prj.pid,prj.order_placeon,prj.status, emp.firstname,emp.lastname'.
 ',prch.purchaseorder,prc.prjquote,prc.prjcost,prc.prj_completioncost,prc.prj_estimatecost,prc.prj_completioncost '.
 'from tbl_newproject_closed as prj left join tbl_prjpurchase_closed as prch on prch.pid = prj.pid left join tbl_prjpricing_closed '.
 'as prc on prc.pid = prj.pid left join "employeeDB" as emp on emp."employeeID"= prj.project_manager left join "clientDB" c on prj.client=c."ID" '.
   ' where prch.purchaseorder '
-      .'IS NULL  '.$search_sql.' order by prj."pid"  desc ';
+      .'IS NULL  '.$search_sql.''.$sales_person.' order by prj."pid"  desc ';
 //echo $sql;
 if(!($resultp=pg_query($connection,$sql))){
 	print("Failed queryd: " . pg_last_error($connection));

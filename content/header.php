@@ -137,19 +137,19 @@ echo "<tr><td colspan=\"2\">";
 //<!-------------------------------- menu -------------------------------------->
 echo "<table width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"1\">";
 echo "<tr>";
-  
- echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" 		            onClick=\"parent.location='$mydirectory/directory/directorytoc.php'\">Internal Directory</td>";
- echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\"   onClick=\"parent.location='$mydirectory/officecal/list_calendar.php'\">Office Calendar</td>";
-  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/accounting/'\">Accounting</td>";
-  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/production/productiontoc.php'\">Production</td>";
-  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='http://mail.i2net.com/sqwebmail'\">E-Mail</td>";
-  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/sales/'\">Sales</td>";
-  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/operations/'\">Operations</td>";
-  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/humanresources/'\">Human Resources</td>";
-  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/support/'\">Support</td>";
-  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/admin/'\">Administration</td>";
-  echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\"  onclick=\"window.open('http://www.uniforms.net/', 'frame1');\">WWW Site</td></tr>";
- 
+if($_SESSION['employeeType'] <> 5){
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" 		            onClick=\"parent.location='$mydirectory/directory/directorytoc.php'\">Internal Directory</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\"   onClick=\"parent.location='$mydirectory/officecal/list_calendar.php'\">Office Calendar</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/accounting/'\">Accounting</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/production/productiontoc.php'\">Production</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='http://mail.i2net.com/sqwebmail'\">E-Mail</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/sales/'\">Sales</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/operations/'\">Operations</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/humanresources/'\">Human Resources</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/support/'\">Support</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\" onClick=\"parent.location='$mydirectory/admin/'\">Administration</td>";
+    echo "<td class=\"menu\" onmouseover=\"this.className='menu_on';\" onmouseout=\"this.className='menu'\"  onclick=\"window.open('http://www.uniforms.net/', 'frame1');\">WWW Site</td></tr>";
+}
 echo "</table>";
 //<!----------------------- menu end ---------------------------->
 echo "</td></tr>";

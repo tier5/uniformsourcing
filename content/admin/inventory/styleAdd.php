@@ -54,7 +54,7 @@ if(isset($_GET['type']))
 			break;
 		}
 	}
-}	
+}
 $query1='Select Distinct "scaleName","scaleId" from "tbl_invScaleName" where "isActive"=1';
 if(!($result_cnt=pg_query($connection,$query1))){
 				print("Failed query1: " . pg_last_error($connection));
@@ -321,8 +321,9 @@ else { echo '<option value="'.$data_client[$i]['ID'].'" selected="selected">'.$d
                             <input id="styleId" name="styleId" type="hidden" value="<?php echo $styleId;?>"/>
                             <?php if(isset($_SESSION['employeeType']) && $_SESSION['employeeType']!=4){ ?>
                             <input id="isEdit" type="hidden" value="<?php echo $isEdit;?>"/>
+                            <?php if(isset($_SESSION['employeeType']) && $_SESSION['employeeType'] != 5){ ?>
                            <?php if($isEdit){?> <input name="submit" type="submit" onMouseOver="this.style.cursor = 'pointer';" value="Edit Style"  /><?php }else{ ?>  <input name="submit" type="submit" onMouseOver="this.style.cursor = 'pointer';" value="Save Style"  /><?php }?>
-                          <?php }?>
+                            <?php } } ?>
                            <input name="cancel" onclick="javascript:location.href='reports.php';" type="button" onMouseOver="this.style.cursor = 'pointer';" value="Cancel"  />
                            </td>
                           </tr>
@@ -486,8 +487,9 @@ else
 <?php 
 }
 ?>
+<?php if(isset($_SESSION['employeeType']) && $_SESSION['employeeType'] != 5){ ?>      
 cell9.innerHTML="<a class=\"alink\" href=\"javascript:;\" onClick=\"DeleteCurrentRow(this<?php if($isEdit){?>,'"+imgName+"',"+clrId+"<?php } ?>);\">Delete</a>";
-
+<?php } ?>
 }
 function DeleteCurrentRow(obj<?php if($isEdit) {?>,imgName,clrId<?php }?>)
 {	//alert("sizeId= "+sizeId+" type= "+type+" size= "+size+" isDb= "+isDb);	

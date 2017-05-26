@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('Application.php');
+$sales_person = '';
 if (isset($_GET['qid']) && isset($_GET['opt']) && $_GET['opt'] == 1) {
     $id = $_GET['qid'];
     $sql = "Delete from tbl_quote_items where qid = " . $id . ";";
@@ -198,7 +199,11 @@ if(isset($_GET['sort'])&&$_GET['sort']!="")
   // unset($_SESSION['sort']); 
 }
 //echo $search_sql;
-$query = "SELECT q.*,cmp.company,c.client FROM tbl_quote q left join \"clientDB\" c on q.client_id=c.\"ID\" left join tbl_quot_company as cmp on q.company_id = cmp.company_id where q.status = 1 ".$search_sql." ";
+if(isset($_SESSION['employeeType']) && $_SESSION['employeeType'] == 5){
+    $id = $_SESSION['employeeID'];
+    $sales_person = ' and q."createdby"='.$id.' or q."sales_rep" = '.$id;
+}
+$query = "SELECT q.*,cmp.company,c.client FROM tbl_quote q left join \"clientDB\" c on q.client_id=c.\"ID\" left join tbl_quot_company as cmp on q.company_id = cmp.company_id where q.status = 1 ".$search_sql."".$sales_person." ";
 if(isset($sort)&&$sort!="")
   $query.=$sort;
 else  $query.="ORDER BY q.po_date DESC";

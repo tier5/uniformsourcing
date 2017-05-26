@@ -45,6 +45,11 @@ else if(isset($_SESSION['employee_type_id']) AND ($_SESSION['employeeType'] >0 &
 	$emp_sql = ' and c."ID" ='.$emp_id;
 	$is_session = 1;
 }
+else if (isset($_SESSION['employee_type_id']) AND ($_SESSION['employeeType'] == 5)){    
+    $emp_id = $_SESSION['employeeID'];
+    $emp_sql = ' and (prj."project_manager" = '.$emp_id.' or prj."project_manager1" = '.$emp_id.' or prj."project_manager2" = '.$emp_id.' )';
+//    $is_session = 1;
+}
 if(isset($_GET['close']))
 {
     $qName='';

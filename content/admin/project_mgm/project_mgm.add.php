@@ -95,6 +95,12 @@ else if(isset($_SESSION['employee_type_id']) AND ($_SESSION['employeeType'] >0 &
 	$is_session = 1;
 	$style_price = ' disabled="disabled"';
 }
+else if(isset($_SESSION['employee_type_id']) AND ($_SESSION['employeeType'] >0 && $_SESSION['employeeType'] == 5)) {
+	$emp_type = $_SESSION['employeeType'] ;
+	$emp_id = $_SESSION['employeeID'];
+//	$is_session = 1;
+//	$style_price = ' disabled="disabled"';
+}
 $isEdit = 0;
 $selectedtab = 0;
 $pid= 0;
@@ -253,8 +259,10 @@ pg_free_result($result);
 if($emp_type != 2&&$emp_type != 1)
 {
 ?>
+<?php if($emp_type != 5): ?>
 <li onClick="javascript:load_tab('2'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content2">Vendor</a></li>
 <li onClick="javascript:load_div('14'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content14">BID</a></li>
+<?php endif; ?>
 <li onClick="javascript:load_tab('3'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content3">Samples</a></li>
 <?php
 }
@@ -290,9 +298,11 @@ if($emp_type != 2)
 }?>
 
 <li onClick="javascript:load_tab('13'); document.getElementById('message').innerHTML = '';"><a href="#" rel="proj_content13">Styles</a></li>
+<?php if($emp_type != 5): ?>
 <li onClick="javascript: load_div('12'); document.getElementById('message').innerHTML = '';"><a href="#" rel="proj_content12">Inventory</a></li>
 <?php
-if($emp_type != 1 && $emp_type != 2)
+endif;
+if($emp_type != 1 && $emp_type != 2 && $emp_type != 5)
 {
 ?>
 <li onClick="javascript:load_tab('10'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content10">Notification</a></li>

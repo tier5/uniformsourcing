@@ -93,9 +93,18 @@
             </table>
            
 <?php
+        }else if(isset($_SESSION['employeeType']) && $_SESSION['employeeType'] ==5 ){
+?>
+        <table width="50%">
+            <tr valign="top">
+                <td align="center"><a href="admin/project_mgm/project_mgm.list.php"><img src="images/projectmanagement.jpg" alt="Quote" width="165" height="99" border="0" /></a></td>
+                <td align="center"><a href="admin/project_mgm/project_purchase.list.php"><img src="images/projects.jpg" alt="projects" width="165" height="99" border="0" /></a></td>
+                <td align="center"><a href="admin/generate_request/quoteList.php"><img src="images/generateRequest.jpg" alt="generate_request" width="165" height="99" border="0" /></a></td>
+                <td align="center"><a href="admin/inventory/inventory.php"><img src="images/inventory.jpg" alt="inventory" width="165" height="99" border="0" /></a></td>
+            </tr>
+        </table> 
+<?php   
         }
-
-
 	echo "</center>";
 	require('trailer.php');
 ?>

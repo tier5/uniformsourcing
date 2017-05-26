@@ -3,6 +3,8 @@ $appdir="../../";
 require('../../Application.php');
 $mydirectory="../..";
 if(isset($_SESSION['perm_admin']) AND $_SESSION['perm_admin'] == "on"){
+}else if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] == 5){
+    
 }else{
 	require('../../header.php');
 	echo "<body bgcolor=\"#FFFFFF\">";

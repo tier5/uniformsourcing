@@ -38,6 +38,11 @@ if (isset($_SESSION['employee_type_id']) AND ($_SESSION['employeeType'] > 0 && $
     $emp_sql = ' and c."ID" =' . $emp_id;
     $is_session = 1;
 }
+else if (isset($_SESSION['employee_type_id']) AND ($_SESSION['employeeType'] == 5)){    
+    $emp_id = $_SESSION['employeeID'];
+    $emp_sql = ' and (prj."project_manager" = '.$emp_id.' or prj."project_manager1" = '.$emp_id.' or prj."project_manager2" = '.$emp_id.' )';
+//    $is_session = 1;
+}
 if (isset($_GET['close'])) {
     $qName='';
    
@@ -340,6 +345,7 @@ $sql = 'select Distinct(prj.projectname),ship.carrier_id,track_nos.tracking_no, 
         .' left join vendor  on v."vendorID"=pv.vid where prch.purchaseorder IS NULL and prj.status =1   ' 
         . $search_sql . $emp_sql . ' order by prj."pid" desc ';
 //echo $sql;
+//die();
 if (!($resultp = pg_query($connection, $sql))) {
     print("Failed queryd: " . pg_last_error($connection));
     exit;
