@@ -120,7 +120,7 @@ require('../header.php');
 echo "<form action=\"newemp1.php\" method=\"post\">";
 echo "<table width=\"80%\">";
 echo "<tr>";
-echo "<td colspan=\"5\" bgcolor=\"white\"><b>$firstname1 $lastname1's Permissions</b></td>";
+echo "<td colspan=\"5\" bgcolor=\"white\"><b>$firstnamenew $lastnamenew's Permissions</b></td>";
 echo "</tr>";
 echo "<tr>";
 echo "<td><font face=\"arial\" size=\"-1\">Accounting</font></td>";
