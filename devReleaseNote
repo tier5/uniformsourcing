@@ -6,3 +6,8 @@ Sales Person V1.0 Stable Released
 
 Sales Person V1.1 Stable Released	
 	Fixed first name and last name once an user has been registered
+
+Inventory V1.0 Stable Released
+	Removed table scroll
+	Implemented new table in repsonsive format
+	Rebuilt update inventory functionality with new table

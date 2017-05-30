@@ -7,12 +7,34 @@ if($debug == "on"){
 		if($key!="submit") { echo "$key = $value<br/>"; }
 	}
 }
+function MainSize($arrMain,$keyMain)
+{
+    foreach ($arrMain as $valueMain) {
+        if($valueMain['scaleSize'] == $keyMain){
+            return $valueMain['mainSizeId'];
+        }
+    }
+    return 0;
+}
+function Opt1Size($arrOpt,$keyOpt)
+{
+    /*print_r($arrOpt);
+    echo '||';
+    print_r($keyOpt);
+    die();*/
+    foreach ($arrOpt as $valueOpt1) {
+       if(strtolower($valueOpt1['opt1Size']) == strtolower($keyOpt)){
+            return $valueOpt1['opt1SizeId'];
+       }
+    }
+    return 0;
+}
 $return_arr = array();
 
 $return_arr[0]['name'] = "";
 $return_arr[0]['error'] = "";
 $return_arr[0]['flag'] = 0;
-
+//print_r($_POST);die();
 if(isset($_POST['type']) && $_POST['type'] == "e")
 {
     $sqloldinv = "SELECT * FROM \"tbl_inventory\" WHERE ";
@@ -99,7 +121,109 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 		{
 			$locArr = explode(",",$data_style['locationIds']);
 		}
-		for($i=0;$i<$locCount;$i++)
+        /*$optNew = Opt1Size($data_opt1Size,$new_size_data[1]);*/
+        /*print_r($optNew);die();*/
+		foreach ($is_change as $key => $value) {
+            if($value == 1){
+
+                $query = '';
+                $query .= "SELECT * FROM \"tbl_inventory\" WHERE ";
+                $query .= " \"styleId\"='".$data_style['styleId']."'";
+                $query .= " and \"styleNumber\"='".$data_style['styleNumber']."'";
+                $query .= " and \"scaleId\"='".$data_style['scaleNameId']."'";
+                $query .= " and \"mainSize\"='".$new_type_data[$key]."'";
+                $query .= " and \"rowSize\"='".$new_size_data[$key]."'";
+                $query .= " and \"isStorage\"='1'";
+
+                if(isset($_POST['location_id']))
+                    $query .= "and \"locationId\"='".$_POST['location_id']."'";
+                    if(!($result=pg_query($connection,$query))){
+                            $return_arr[0]['error'] = pg_last_error($connection);
+                            echo json_encode($return_arr);
+                            return;
+                        }
+                    $row = pg_fetch_array($result);
+                     $inv=$row;
+                     
+                    pg_free_result($result);
+                    if($inv != null){
+                        $query = "";
+                        $query = "UPDATE \"tbl_inventory\" SET ";
+                        $query .="\"newQty\" = '".$new_qty_data[$key]."' ";
+                        $query .=",\"isStorage\" = 0 ";
+                        $query .=",\"updatedBy\" = '".$_SESSION['employeeID']."' ";
+                        $query .=",\"updatedDate\" = '".date('U')."' ";
+                        $query .="  where \"inventoryId\"='".$inv['inventoryId']."'";
+                    } else {
+                        /*die($new_type_data[$key]);*/
+                        $mainSize = MainSize($data_mainSize,$new_type_data[$key]);
+                        $opt1 = Opt1Size($data_opt1Size,$new_size_data[$key]);
+                        $notes = 'auto inventory';
+                            $query = "";
+                            $query = "INSERT INTO \"tbl_inventory\" (";
+                            $query .=" \"styleId\" ";
+                            $query .=" ,\"styleNumber\" ";
+                            $query .=" ,\"scaleId\" ";
+                            //$query .=", \"price\" ";
+                            $query .=", \"locationId\" ";
+                            $query .=", \"quantity\" ";
+                            $query .=", \"newQty\" ";
+                            if($mainSize)$query .=", \"sizeScaleId\" ";
+                            $query .=", \"colorId\" ";
+                            if($opt1)$query .=", \"opt1ScaleId\" ";
+                            //if($k < count($data_opt2Size))$query .=", \"opt2ScaleId\" ";
+                            $query .=", \"notes\" ";
+                            $query .=", \"mainSize\" ";
+                            $query .=", \"rowSize\" ";
+                            //if($k < count($data_opt2Size))$query .=", \"columnSize\" ";
+                            $query .=", \"isStorage\" ";
+                            $query .=", \"createdBy\" ";
+                            $query .=", \"updatedBy\" ";
+                            $query .=", \"createdDate\" ";
+                            $query .=", \"updatedDate\" ";
+                            $query .=")";
+                            $query .=" VALUES (";
+                            $query .=" '".$data_style['styleId']."' ";
+                            $query .=" ,'".$data_style['styleNumber']."' ";
+                            $query .=", '".$data_style['scaleNameId']."' ";
+                            //$query .=" ,'".."' ";
+                            $query .=" ,'".$_POST['location_id']."' ";
+                            $query .=" ,0 ";
+                            $query .=" ,'".$new_qty_data[$key]."' ";
+                            if($mainSize)$query .=", '".$mainSize."' ";
+                            $query .=", '$colorId' ";
+                            if($opt1)$query .=", '".$opt1."' ";
+                            //if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2SizeId']."' ";
+                            $query .=" ,'$notes' ";
+                            $query .=", '".$new_type_data[$key]."' ";
+                            $query .=", '".$new_size_data[$key]."' ";
+                            //if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2Size']."' ";
+                            $query .=" ,0 ";
+                            $query .=" ,'".$_SESSION['employeeID']."' ";
+                            $query .=" ,'".$_SESSION['employeeID']."' ";
+                            $query .=" ,'".date('U')."' ";
+                            $query .=" ,'".date('U')."' ";
+                            $query .=" )";    
+                    } 
+                    if($query != "")
+                        {
+
+                            // echo $query;
+                            // exit();
+
+                            $return_arr[0]['flag'] = 1;
+                            if(!($result=pg_query($connection,$query))){
+                                $return_arr[0]['error'] = pg_last_error($connection);
+                                echo json_encode($return_arr);
+                                return;
+                            }
+                            pg_free_result($result);
+                            $query = "";
+                        }  
+            }
+        }
+        /*die();*/
+       /* for($i=0;$i<$locCount;$i++)
 		{
 			for($j=0; $j < $rowCount; $j++)
 			{
@@ -312,11 +436,11 @@ if(isset($_POST['type']) && $_POST['type'] == "e")
 							}
 							pg_free_result($result);
 							$query = "";
-						}*/
+						}
 					}
 				}
 			}
-		}
+		}*/
 	}		
 }
 

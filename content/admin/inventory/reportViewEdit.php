@@ -888,7 +888,11 @@ if (!($resultProduct = pg_query($connection, $query))) {
                             <!--<td>&nbsp;<input  type="button" name="del_qnt" id="del_qnt" value="Delete All Quantities"
                                          onclick="javascript:delAllQnts();" class="ui-button ui-widget ui-state-default ui-corner-all"/></td>-->
                         </form>
-                        <td><input type="button" value="Main Inventory" onclick="main_inv();"/></td>
+                        <td>
+                        <?php if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5){ ?>
+                        <input type="button" value="Main Inventory" onclick="main_inv();"/>
+                        <?php } ?>
+                        </td>
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
@@ -909,12 +913,14 @@ if (!($resultProduct = pg_query($connection, $query))) {
                         <td>Rack: <input type="text" id="updaterack" value="<?php echo $data_product[0]['rack']; ?>" /></td>
                         <td>Shelf: <input type="text" id="updateshelf" value="<?php echo $data_product[0]['shelf']; ?>" /></strong></td>
                         <td>
+                            <?php if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5){ ?>
                             <button type="button" onclick="Update()" class="btn btn-success" style="color: #0c00d2">
                                 Update
                             </button>
                             <button type="button" onclick="Delete()" class="btn btn-danger" style="color: #cd0a0a">
                                 Delete
                             </button>
+                            <?php } ?>
                         </td>
                     </tr>
                     <?php } ?>
@@ -932,11 +938,11 @@ if (!($resultProduct = pg_query($connection, $query))) {
                     <?php } ?>
                     <tr id="hide">
 
-
+                        <?php if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5){ ?>
                         
                         <button class="pull-left" type="button" id="addinventory_new">Add Inventory</button>
 
-
+                        <?php } ?>
                         <!-- <td>
                             <button type="button" id="newInventory" onclick="addInventory()"
                                     class="btn btn-success">Add new Inventory
@@ -1266,7 +1272,7 @@ pg_free_result($resultProduct);
 }
 
 ?>
-            <form id="inventoryForm">
+            <form id="inventoryForm" style="display: none;">
 
 
             <?php
@@ -1595,14 +1601,19 @@ pg_free_result($resultProduct);
 <div class="inventory-box">
     <div class="container">
         <div class="row">
-            <form id="inventoryForm">
+            <form id="inventoryFormNew">
                 <div class="col-md-3 left-sidebar">
                     <img id="imgView" src="<?php echo $upload_dir_image . trim($imageName); ?>" alt="thumbnail" width="150" height="230" border="1" class="mouseover_left"/>
                 </div>
                 <div class="col-md-9 right-sidebar">
                     <div class="inventory-table">
                         <div class="col-xs-2">
-                            
+                              <input type="hidden" name="scaleNameId"
+                                           value="<?php echo $data_style['scaleNameId']; ?>"/>
+                            <input type="hidden" id="styleId" name="styleId"
+                                           value="<?php echo $styleId; ?>"/>
+                                    <input type="hidden" id="colorId" name="colorId" value="<?php echo $clrId; ?>"/>
+
                             <?php
                             // echo "<pre>";print_r($data_style);
                             // exit();
@@ -1647,26 +1658,33 @@ pg_free_result($resultProduct);
                                 $mainsize_div_end = '</div></div>';
                                 $data = '';
                                 $element = '';
+
                                 foreach($data_mainSizeIdHash as $key1=>$val1)
                                 {
                                     $element .= '<span>'.$val1.'</span>'; //for sizes
                                     $price = isset($data_style['price']) 
                                                  ? $data_style['price']
                                                  : ' '; 
-                                    $element .= '<span>'.$price.'</span>'; //for prices
+                                    $element .= '<span><input type="text" value="'.$price.'" readonly></span>'; //for prices
 
                                     foreach($opt1SizeIdHash as $key2=>$val2)
                                     {
                                         //var_dump(isset($data_set[$key1][$key2]));exit();
                                         if(isset($data_set[$key1][$key2]))
                                         {
+                                                   
                                           //$element .= '<span>'.$data_set[$key1][$key2].'</span>';
-                                            $element .= '<input type="text" value="'.$data_set[$key1][$key2].'">';
+                                            $element .= '<span><input class="clicked" id="input_'.$key1.'_'.$key2.'" type="text" id="" value="'.$data_set[$key1][$key2].'" name="new_qty_data[]"></span>';
+                                            $element .= '<input type="hidden" value="'.$val1.'" name="new_type_data[]">';
+                                            $element .= '<input type="hidden" value="'.$val2.'" name="new_size_data[]">';
+                                            $element .= '<input type="hidden" id="_'.$key1.'_'.$key2.'" value="0" name="is_change[]">';
                                         }
                                         else
                                         {
-                                          //$element .= '<span>0</span>';
-                                            $element .= '<input type="text" value="0">';
+                                            $element .= '<span><input class="clicked" id="input_'.$key1.'_'.$key2.'" type="text" value="0" name="new_qty_data[]"></span>';
+                                            $element .= '<input type="hidden" value="'.$val1.'" name="new_type_data[]">';
+                                            $element .= '<input type="hidden" value="'.$val2.'" name="new_size_data[]">';
+                                                $element .= '<input id="_'.$key1.'_'.$key2.'" type="hidden" value="0" name="is_change[]">';
                                         }
                                     }
                                     $data .= $mainsize_div.$element.$mainsize_div_end;
@@ -1690,10 +1708,16 @@ pg_free_result($resultProduct);
 
                                 ?>
                             </div>
+
                         </div>
                     </div>
                 </div>
-
+                    <?php if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5){ ?>
+                    <input id="update_inventory_new" width="117" height="98"
+                                                   type="image"
+                                                   src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg"
+                                                   alt="Submit button"/>
+                    <?php } ?>
             </form>
         </div>
     </div>
@@ -2588,6 +2612,7 @@ window.onclick = function(event) {
 
             if ($('#unit_num').val() == 0 || $('#unit_num').val() == 'undefined') {
                 $('#update_inventory').hide();
+                $('#update_inventory_new').hide();
                 $('#print').hide();
             }
             if ($('#unit_num').val() == 0 || $('#unit_num').val() == 'undefined') {
@@ -2950,7 +2975,7 @@ window.onclick = function(event) {
 
     <script type="text/javascript">
         $(function () {
-            $("#inventoryForm").submit(function (e) {
+            $("#inventoryFormNew").submit(function (e) {
                 
                 var location_id = $('#_location_id').val();
                 //var inventory_id = $('#_inventory_id').val();
@@ -2969,7 +2994,7 @@ window.onclick = function(event) {
                 var shelf = "<?php echo $data_product[0]['shelf']; ?>";
                 var rack = "<?php echo $data_product[0]['rack']; ?>";
                 
-                dataString = $("#inventoryForm").serialize();
+                dataString = $("#inventoryFormNew").serialize();
                 dataString += "&type=e";
                 dataString += "&unitId=" + unitId;
                 dataString += "&location_id=" + location_id;
@@ -3092,7 +3117,11 @@ window.onclick = function(event) {
                 return false;
             });
         });
-
+        $('.clicked').keyup(function(){
+               var id = this.id;
+               var change = id.slice(5);
+               $('#'+change).val(1);
+        });
 
         function delAllQnts() {
             var url = location.href;

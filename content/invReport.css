@@ -170,6 +170,14 @@ padding-left:3px;
 	padding: 8px 4px;
 	display: block;
 }
+.each-section span input{
+    padding: 0;
+    display: block;
+    border: none;
+    width: 100%;
+    background: none;
+    text-align: center;
+}
 
 .title-section{
 	background: #333;
