@@ -70,6 +70,7 @@ pg_free_result($result1);
                     Client <input type="radio" name="employeeType" value="2" onclick="setVisibility('client');"/> 
                     Sales <input type="radio" name="employeeType" value="3"  onclick="setVisibility('');"/>
                     Inventory <input type="radio" name="employeeType" value="4"  onclick="setVisibility('');" />
+                    Sales Person  <input type="radio" name="employeeType" value="5"  onclick="setVisibility('');" />
 <?php 
 				}
 				else if($data1['employeeType']==0)
@@ -80,6 +81,7 @@ pg_free_result($result1);
                     Client <input type="radio" name="employeeType" value="2" onclick="setVisibility('client');"/> 
                     Sales <input type="radio" name="employeeType" value="3"  onclick="setVisibility('');"/>
                     Inventory <input type="radio" name="employeeType" value="4"  onclick="setVisibility('');" />
+                    Sales Person  <input type="radio" name="employeeType" value="5"  onclick="setVisibility('');" />
 <?php
 				}
 				else if($data1['employeeType']==2)
@@ -90,6 +92,7 @@ pg_free_result($result1);
                     Client <input type="radio" name="employeeType" value="2" onclick="setVisibility('client');" checked="checked"/> 
                     Sales <input type="radio" name="employeeType" value="3"  onclick="setVisibility('');"/>
                     Inventory <input type="radio" name="employeeType" value="4"  onclick="setVisibility('');" />
+                    Sales Person  <input type="radio" name="employeeType" value="5"  onclick="setVisibility('');" />
 <?php
 				}
 				else if($data1['employeeType']==3)
@@ -99,7 +102,8 @@ pg_free_result($result1);
                     Vendor  <input type="radio" name="employeeType" value="1" onclick="setVisibility('vendor');"/> 
                     Client <input type="radio" name="employeeType" value="2" onclick="setVisibility('client');" />
                     Sales <input type="radio" name="employeeType" value="3"  onclick="setVisibility('');" checked="checked"/> 
-                    Inventory <input type="radio" name="employeeType" value="4"  onclick="setVisibility('');" />  
+                    Inventory <input type="radio" name="employeeType" value="4"  onclick="setVisibility('');" />
+                    Sales Person  <input type="radio" name="employeeType" value="5"  onclick="setVisibility('');" />  
 <?php
 				}
 				else if($data1['employeeType']==4)
@@ -109,7 +113,18 @@ pg_free_result($result1);
                     Vendor  <input type="radio" name="employeeType" value="1" onclick="setVisibility('vendor');"/> 
                     Client <input type="radio" name="employeeType" value="2" onclick="setVisibility('client');" />
                     Sales <input type="radio" name="employeeType" value="3"  onclick="setVisibility('');"/>
-                    Inventory <input type="radio" name="employeeType" value="4"  onclick="setVisibility('');" checked="checked" />  
+                    Inventory <input type="radio" name="employeeType" value="4"  onclick="setVisibility('');" checked="checked" />
+                    Sales Person  <input type="radio" name="employeeType" value="5"  onclick="setVisibility('');" />  
+ <?php                    
+}else if($data1['employeeType']==5)
+				{
+?>
+                    Employee<input type="radio" name="employeeType" value="0"  onclick="setVisibility('');" />
+                    Vendor  <input type="radio" name="employeeType" value="1" onclick="setVisibility('vendor');"/> 
+                    Client <input type="radio" name="employeeType" value="2" onclick="setVisibility('client');" />
+                    Sales <input type="radio" name="employeeType" value="3"  onclick="setVisibility('');"/>
+                    Inventory <input type="radio" name="employeeType" value="4"  onclick="setVisibility('');"/>
+                    Sales Person  <input type="radio" name="employeeType" value="5"  onclick="setVisibility('');" checked="checked" />
 <?php
 				}
 ?>
