@@ -14,3 +14,6 @@ Inventory V1.0 Stable Released
 
 Sales Person V1.2 Stable Released
         Need ablity to edit current employee to a sales person .
+
+Application Configuration V1.0 Stable Released
+	Added config file to application and changed in inventor reports to make global scope

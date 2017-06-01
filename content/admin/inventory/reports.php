@@ -34,11 +34,7 @@ require('../../jsonwrapper/jsonwrapper.php');?>
 // }
 function logCheckvival($styleId) 
 {
-	$server_URL = "http://127.0.0.1:4569";
-$db_server = "localhost";
-$db_name = $GLOBALS['global_database'];
-$db_uname= "globaluniformuser";    
-$db_pass= "globaluniformpassword";   
+    global $server_URL, $db_server, $db_name, $db_uname, $db_pass;   
 try{
 	$connection = pg_connect("host = $db_server ".
 						 "dbname = $db_name ".

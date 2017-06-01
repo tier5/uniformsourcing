@@ -1,11 +1,6 @@
 <?php
 //error_reporting(E_ALL); ini_set('display_errors', '1'); 
-$GLOBALS['global_database'] = 'php_intranet_uniformsourcing_new';
-$server_URL = "http://127.0.0.1:4569";  //Server address needed for sending sample request email 
-$db_server = "localhost";
-$db_name = $GLOBALS['global_database'];                          // database name
-$db_uname= "globaluniformuser";                              // username to connect to database
-$db_pass= "globaluniformpassword";                                // password of username to connecto to database
+require_once 'config.php';
 $debug="off";                                   // set to on for the little debug code i have set on/off
 $PHPLIBDIR="/var/www/html/phplib/";               // base dir for getting libs
 $PHPLIB=$PHPLIBDIR;
