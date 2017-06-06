@@ -62,7 +62,8 @@ if(!($result=pg_query($connection,$query))){
     return;
 }
 while($row = pg_fetch_array($result)){
-    $data_inv[]=$row;}
+    $data_inv[]=$row;
+}
 pg_free_result($result);
 
 $query='select * from "tbl_invLocation" order by "locationId"';

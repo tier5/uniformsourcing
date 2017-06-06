@@ -213,3 +213,32 @@ padding-left:3px;
 .inventory-table .col-xs-2 .row > .title-section:first-child p{
 	border-bottom: 1px solid #fff;
 }
+
+
+.inventory-table{overflow-y: auto;}
+.inventory-table-main{width: 1000px;}
+.title-section p{line-height:15px;}
+
+.inventory-table tr td{border:1px solid #fff;}
+
+.inventory-table .each-section span{border-top:1px solid #fff; text-align:center;}
+h2.custom-head{text-align:center; font-size:22px}
+
+.top-table{background: #ddd; border: 1px solid #ccc; padding: 10px;}
+.top-table tr td{padding: 7px;}
+
+.top-table .btn-danger{color:#fff !important;}
+
+table.my-table tr td{padding: 0;}
+
+
+
+
+
+
+
+
+
+
+
+

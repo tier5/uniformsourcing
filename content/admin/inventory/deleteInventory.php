@@ -1,6 +1,7 @@
 <?php
 require('Application.php');
-$sql = "SELECT * FROM \"tbl_invStorage\" WHERE unit='".$_REQUEST['unitId']."' and \"styleId\"='".$_REQUEST['styleId']."' ";
+
+$sql = "SELECT * FROM \"tbl_invStorage\" WHERE unit='".$_POST['unitId']."' and \"styleId\"='".$_POST['styleId']."' ";
 if (!($resultProduct = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
@@ -8,36 +9,58 @@ if (!($resultProduct = pg_query($connection, $sql))) {
 while ($row = pg_fetch_array($resultProduct)) {
     $data_storage[] = $row;
 }
-if(count($data_storage)){
+$count =0;
+if(count($data_storage) > 0){
     for($i=0;$i<count($data_storage);$i++){
-        $query = 'DELETE FROM "tbl_invStorage"';
-        $query .=" where unit='".$_REQUEST['unitId']."' and \"styleId\"='".$_REQUEST['styleId']."' and \"wareHouseQty\"='0' RETURNING *";
-        if (!($resultProduct = pg_query($connection, $query))) {
+        $sql = '';
+        $sql = 'SELECT SUM(quantity) FROM "tbl_inventory" where "inventoryId"='.$data_storage[$i]['invId'];
+        if (!($resultProduct = pg_query($connection, $sql))) {
             print("Failed invQuery: " . pg_last_error($connection));
             exit;
         }
-        $row = pg_fetch_array($resultProduct);
-        $data_inv = $row;
-        pg_free_result($result);
+        $row = pg_fetch_row($resultProduct);
+        $count = $count + $row[0];
     }
-}
-if($data_inv) {
-    $sql = '';
-    $sql = "INSERT INTO \"audit_logs\" (";
-    $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
-    $sql .= " \"log\") VALUES (";
-    $sql .= " '".$data_storage['invId']."' ";
-    $sql .= ", '". $_SESSION['employeeID'] ."'";
-    $sql .= ", '". date('U') ."'";
-    $sql .= ", 'Delete Box: ".$_REQUEST['boxId']."'";
-    $sql .= ")";
-    if(!($audit = pg_query($connection,$sql))){
-        $return_arr['error'] = pg_last_error($connection);
+    if($count == 0){
+        for ($i=0;$i<count($data_storage);$i++){
+            $sql = '';
+            $sql = 'DELETE FROM "tbl_inventory" WHERE "inventoryId"='.$data_storage[$i]['invId'].'RETURNING *';
+            if (!($resultProduct = pg_query($connection, $sql))) {
+                print("Failed invQuery: " . pg_last_error($connection));
+                exit;
+            }
+            $row = pg_fetch_array($resultProduct);
+            $data_inv = $row;
+            if($data_inv){
+                $query = 'DELETE FROM "tbl_invStorage" WHERE "storageId"='.$data_storage[$i]['storageId'];
+                if (!($resultProduct = pg_query($connection, $query))) {
+                    print("Failed invQuery: " . pg_last_error($connection));
+                    exit;
+                }
+                $row = pg_fetch_array($resultProduct);
+                $data_str = $row;
+            }
+        }
+        $sql = '';
+        $sql = "INSERT INTO \"audit_logs\" (";
+        $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+        $sql .= " \"log\") VALUES (";
+        $sql .= " '".$_POST['styleId']."' ";
+        $sql .= ", '". $_SESSION['employeeID'] ."'";
+        $sql .= ", '". date('U') ."'";
+        $sql .= ", 'Delete Box: ".$_POST['unitId']."'";
+        $sql .= ")";
+        if(!($audit = pg_query($connection,$sql))){
+            $return_arr['error'] = pg_last_error($connection);
+        }
+        echo 1;//Deleted
+        exit;
+    } else {
+        echo 2;//Please Empty the table first
+        return;
     }
-    echo 1;
-    exit;
 } else {
-    echo 'No Result Found';
-    exit;
+    echo 3;//No Result Found
+    return;
 }
 ?>

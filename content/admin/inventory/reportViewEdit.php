@@ -1,10 +1,50 @@
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+    .container{width:95%;}
+</style>
 <?php
 require('Application.php');
 require('../../header.php');
 //$sql='select st."styleId" st."styleNumber",st."scaleNameId",st."scaleNameId" from "tbl_invStyle" st left join tbl_inventory inv on st."styleId"=inv."styleId" where st."styleId"='.$_GET['StyleId'];
+function locationDetails($locId,$connection){
+    $sql = 'SELECT * from "tbl_invLocation" WHERE "locationId"='.$locId;
+    if (!($result2 = pg_query($connection, $sql))) {
+        print("Failed OptionQuery: " . pg_last_error($connection));
+        exit;
+    }
+    $row2 = pg_fetch_array($result2);
+    $data_locationFun = $row2;
+    $sql = '';
+    $sql = "SELECT * from \"locationDetails\" where \"warehouse\" is not null and  \"locationId\"='".$locId."'";
+    if (!($result2 = pg_query($connection, $sql))) {
+        print("Failed OptionQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row2 = pg_fetch_array($result2)) {
+        $data[] = $data_locationFun['identifier'].'_'.$row2['warehouse'];
+    }
 
+    $sql = '';
+    $sql = "SELECT * from \"locationDetails\" where \"container\" is not null and \"locationId\"='".$locId."'";
+    if (!($result2 = pg_query($connection, $sql))) {
+        print("Failed OptionQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row2 = pg_fetch_array($result2)) {
+        $data[] = $data_locationFun['identifier'].'_'.$row2['container'];
+    }
+    $sql = '';
+    $sql = "SELECT * from \"locationDetails\" where \"conveyor\" is not null and \"locationId\"='".$locId."'";
+    if (!($result2 = pg_query($connection, $sql))) {
+        print("Failed OptionQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row2 = pg_fetch_array($result2)) {
+        $data[] = $data_locationFun['identifier'].'_'.$row2['conveyor'];
+    }
+    return $data;
+}
 
 $loc_identity = 0;
 if (isset($_GET["del"]) && $_GET["del"] == "true") {
@@ -58,11 +98,13 @@ if (isset($_GET['styleId'])) {
     if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
         $search .= " and st.\"unit\"='" . $_GET['unitId'] . "'";
     }
-
+    if(isset($_GET['location']) && $_GET['location'] != '0'){
+        $search .= " and sti.unit LIKE '".$_GET['location']."%'";
+    }
 
 }
 
-$sql = 'select "styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds" from "tbl_invStyle" where "styleId"=' . $styleId;
+$sql = 'select "styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds", "clientId" from "tbl_invStyle" where "styleId"=' . $styleId;
 if (!($result = pg_query($connection, $sql))) {
     print("Failed StyleQuery: " . pg_last_error($connection));
     exit;
@@ -71,8 +113,7 @@ $row = pg_fetch_array($result);
 $data_style = $row; //--------------------------- data style----------------
 
 
-
-//echo "<pre>";print_r($data_style['sex']);
+//echo "<pre>";print_r($data_style);
 
 pg_free_result($result);
 $query2 = 'Select * from "tbl_invColor" where "styleId"=' . $data_style['styleId'];
@@ -126,8 +167,6 @@ if ($data_style['scaleNameId'] != "") {
     pg_free_result($result2);
 
 
-
-    
     $sql = 'select distinct unit from "tbl_invStorage" where "styleId"=' . $_GET['styleId'];
 
     //$sql = 'select distinct unit from "tbl_invStorage" where "styleId"=' . $_GET['styleId'];
@@ -136,7 +175,11 @@ if ($data_style['scaleNameId'] != "") {
     } else if (count($data_color) > 0) {
         $sql .= ' and "colorId"=' . $data_color[0]['colorId'];
     }
+    if(isset($_GET['location']) && $_GET['location'] != '0'){
+        $sql .= " and unit LIKE '".$_GET['location']."%'";
+    }
     $sql .= ' order by unit asc';
+   // print_r($sql);die();
     if (!($result_cnt9 = pg_query($connection, $sql))) {
         print("Failed InvData: " . pg_last_error($connection));
         exit;
@@ -155,13 +198,12 @@ $totalScale = count($data_mainSize);
 $tableWidth = 0;
 
 
-
 $tableWidth = $totalScale * 100;
 
 
 //query changed -- added 'where "styleId"='.$_GET['styleId']';
 
-$sql = 'select "inventoryId",quantity,"newQty","isStorage","warehouse_id" from "tbl_inventory" where "styleId"='.$_GET['styleId'];
+$sql = 'select "inventoryId",quantity,"newQty","isStorage","warehouse_id" from "tbl_inventory" where "styleId"=' . $_GET['styleId'];
 
 if (!($result = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
@@ -172,21 +214,15 @@ while ($row = pg_fetch_array($result)) {
 }
 
 
-
-
-
 for ($i = 0; $i < count($data_inv); $i++) {
-    if ($data_inv[$i]['newQty'] > 0) 
-    {
-        if (($data_inv[$i]['quantity'] != "" && $data_inv[$i]['quantity'] > 0)) 
-        {
+    if ($data_inv[$i]['newQty'] > 0) {
+        if (($data_inv[$i]['quantity'] != "" && $data_inv[$i]['quantity'] > 0)) {
             $sql = 'update "tbl_inventory" set "isStorage"=1 ,"newQty"=0';
             if (!($result = pg_query($connection, $sql))) {
                 print("Failed invUpdateQuery: " . pg_last_error($connection));
                 exit;
             }
-        } else if (($data_inv[$i]['quantity'] == "" || $data_inv[$i]['quantity'] == 0)) 
-        {
+        } else if (($data_inv[$i]['quantity'] == "" || $data_inv[$i]['quantity'] == 0)) {
             $sql = 'Delete from "tbl_inventory" where "inventoryId"=' . $data_inv[$i]['inventoryId'];
             if (!($result = pg_query($connection, $sql))) {
                 print("Failed deleteInvQuery: " . pg_last_error($connection));
@@ -197,53 +233,50 @@ for ($i = 0; $i < count($data_inv); $i++) {
 }
 
 
-
 if (count($data_color) > 0) {
-    if ($search != "") 
-    {
+    if ($search != "") {
         $query = 'select inv."inventoryId", inv."sizeScaleId", inv.price, inv."locationId",inv."opt1ScaleId", inv."opt2ScaleId"';
         if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             $query .= ',st."wareHouseQty" as st_quantity ';
         }
-
-        $query .= ',inv.quantity, inv."newQty" from "tbl_inventory" as inv ';
+        if(isset($_GET['location']) && $_GET['location'] != '0'){
+            $query .= ',sti."wareHouseQty" as sti_quantity ';
+        }
+        $query .= ', inv."updatedBy",inv."updatedDate",inv.quantity, inv."newQty" from "tbl_inventory" as inv ';
         if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             $query .= ' left join "tbl_invStorage" as st on st."invId"=inv."inventoryId" ';
         }
-        $query .= ' where inv."styleId"=' . $data_style['styleId'] . ' and inv."isActive"=1' . $search . ' order by "inventoryId"';
-    } 
-    else {
+        if(isset($_GET['location']) && $_GET['location'] != '0'){
+            $query .=" left join \"tbl_invStorage\" as sti on sti.\"invId\"=inv.\"inventoryId\"";
+        }
+        $query .= ' where inv."styleId"=' . $data_style['styleId'] . ' and inv."isActive"=1 '.$search.' order by "inventoryId"';
+    } else {
         $clrId = $data_color[0]['colorId'];
-        $query = 'select "inventoryId", "sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty" from "tbl_inventory" where "styleId"=' . $data_style['styleId'] . ' and "colorId"=' . $data_color[0]['colorId'] . '  and "isActive"=1 order by "inventoryId"';
+        $query = 'select "updatedBy","updatedDate","inventoryId", "sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty" from "tbl_inventory" where "styleId"=' . $data_style['styleId'] . ' and "colorId"=' . $data_color[0]['colorId'] . '  and "isActive"=1 order by "inventoryId"';
     }
-    // echo $query;
-    // exit();
+     /*echo $query;
+     exit();*/
     if (!($result = pg_query($connection, $query))) {
         print("Failed invQuery: " . pg_last_error($connection));
         exit;
     }
     while ($row = pg_fetch_array($result)) {
         $data_inv[] = $row;
+        $data_inv_new[] = $row;
     }
-   
-
-
     pg_free_result($result);
-    if (count($data_inv) > 0) 
-    {
-        for ($l = 0; $l < count($data_inv); $l++) 
-        {
-            if (isset($data_inv[$l]['st_quantity']) && $data_inv[$l]['st_quantity'] != '')
-            {
+    if (count($data_inv) > 0) {
+        for ($l = 0; $l < count($data_inv); $l++) {
+            if (isset($data_inv[$l]['st_quantity']) && $data_inv[$l]['st_quantity'] != '') {
                 $data_inv[$l]['quantity'] = $data_inv[$l]['st_quantity'];
+            }
+            if (isset($data_inv[$l]['sti_quantity']) && $data_inv[$l]['sti_quantity'] != '') {
+                $data_inv[$l]['quantity'] = $data_inv[$l]['sti_quantity'];
             }
         }
     }
-
-    
-
-    
-
+    /*echo '<pre>';
+    print_r($data_inv);*/
 
 
     $sql = 'select distinct warehouse , "locationId" from "locationDetails" where warehouse != \'null\'';
@@ -260,14 +293,14 @@ if (count($data_color) > 0) {
 
     $location_string = " ";
     foreach ($all_location_inv as $key => $value) {
-        if($location_string == " ") 
+        if ($location_string == " ")
             $location_string .= $value['locationId'];
         else
-            $location_string .= ','.$value['locationId'];
+            $location_string .= ',' . $value['locationId'];
     }
     // echo "<pre>"; print_r($location_string);
     // exit();
-    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.') order by "locationId"';
+    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
 
     $warehouse_info;
     if (!($result = pg_query($connection, $sql))) {
@@ -279,8 +312,6 @@ if (count($data_color) > 0) {
     }
     // echo "<pre>"; print_r($warehouse_info);
     // exit();
-
-
 
 
     $sql = 'select distinct container , "locationId" from "locationDetails" where container != \'null\'';
@@ -295,12 +326,12 @@ if (count($data_color) > 0) {
     }
     $location_string = " ";
     foreach ($containers as $key => $value) {
-        if($location_string == " ") 
+        if ($location_string == " ")
             $location_string .= $value['locationId'];
         else
-            $location_string .= ','.$value['locationId'];
+            $location_string .= ',' . $value['locationId'];
     }
-    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.') order by "locationId"';
+    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
 
     $containers_location;
     if (!($result = pg_query($connection, $sql))) {
@@ -312,7 +343,6 @@ if (count($data_color) > 0) {
     }
     // echo "<pre>"; print_r( $containers_location);
     // exit();
-
 
 
     $sql = 'select distinct conveyor , "locationId" from "locationDetails" where conveyor != \'null\'';
@@ -329,12 +359,12 @@ if (count($data_color) > 0) {
 
     $location_string = " ";
     foreach ($conveyors as $key => $value) {
-        if($location_string == " ") 
+        if ($location_string == " ")
             $location_string .= $value['locationId'];
         else
-            $location_string .= ','.$value['locationId'];
+            $location_string .= ',' . $value['locationId'];
     }
-    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in ('.$location_string.') order by "locationId"';
+    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
 
     $conveyors_location;
     if (!($result = pg_query($connection, $sql))) {
@@ -345,7 +375,7 @@ if (count($data_color) > 0) {
         $conveyors_location[] = $row;
     }
 
-    
+
 }
 
 $query = 'select * from "tbl_invLocation" order by "locationId"';
@@ -363,62 +393,61 @@ $locArr = array();
 // }
 
 
-if (isset($_GET['unitId']) && $_GET['unitId'] != '0')
-    {
+if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
 
-       $sql = 'select "locationId" from "tbl_invStorage" where unit = \''.$_GET['unitId'].'\' LIMIT 1';
-       if (!($result = pg_query($connection, $sql))) 
-       {
-            print("Failed invQuery: " . pg_last_error($connection));
-            exit;
-        }
-        $row = pg_fetch_array($result);
-            $this_location[] = $row;
-        
-        pg_free_result($row);
-
-
-        $locArr[0]=$this_location[0]['locationId'];
-
-        //var_dump($this_location[0]['locationId']);
-        //exit();
-
-
+    $sql = 'select "locationId" from "tbl_invStorage" where unit = \'' . $_GET['unitId'] . '\' LIMIT 1';
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
     }
-    else
-    {
-        if ($data_style['locationIds'] != "") {
-            $locArr = explode(",", $data_style['locationIds']);
-        }
+    $row = pg_fetch_array($result);
+    $this_location[] = $row;
+
+    pg_free_result($row);
+
+
+    $locArr[0] = $this_location[0]['locationId'];
+
+    //var_dump($this_location[0]['locationId']);
+    //exit();
+
+
+} else {
+    if ($data_style['locationIds'] != "") {
+        $locArr = explode(",", $data_style['locationIds']);
     }
+}
 
-    // print_r($locArr);
-    // exit();
-
-
-
+// print_r($locArr);
+// exit();
 
 
+$sql = '';
+$sql = 'SELECT * FROM "tbl_invLocation" WHERE "locationId"=' . $locArr[0];
+if (!($resultClient = pg_query($connection, $sql))) {
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+$row = pg_fetch_array($resultClient);
+$data_LocationName = $row;
 
-    $is_slot = false;
+
+$is_slot = false;
 
 if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
 
-    $temp = explode('_',$_GET['unitId']);
+    $temp = explode('_', $_GET['unitId']);
 
-    if(isset($temp[1]))
-    {
-        $tmp = substr($temp[1], 0,2);
-        if($tmp == 'CV' || substr($temp[1], 0,1) == 'C')
-        {
+    if (isset($temp[1])) {
+        $tmp = substr($temp[1], 0, 2);
+        if ($tmp == 'CV' || substr($temp[1], 0, 1) == 'C') {
             $is_slot = true;
         }
     }
 
     //var_dump ($is_slot);
     //exit();
-    
-    
+
 
     $query = 'select * from "tbl_invStorage" WHERE unit=' . "'" . $_GET['unitId'] . "'";
 
@@ -432,146 +461,266 @@ if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
     pg_free_result($rowProduct);
 
     // echo "<pre>"; print_r($data_product);
-    // exit(); 
+    // exit();
 
 }
 
 
-
-    $sql = 'select distinct "unit" , "wareHouseQty" as "quantity",
+$sql = 'select distinct "unit" , "wareHouseQty" as "quantity",
            "opt1ScaleId",
            "sizeScaleId" as "mainSizeId",
-           "invId","styleId" from "tbl_invStorage" where "styleId"='.$_GET['styleId'].' ORDER BY unit';
-    if(!($result=pg_query($connection,$sql)))
-    {
-        print("Failed StyleQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while($row = pg_fetch_array($result))
-    {
-        $_store[]=$row; // -------------------------- data_color ---------
-    }
-    // echo "<pre>"; print_r($_store);
-    // exit();
-    //----------------------------------Location-----------------------
-    $query = '';
-    $query = "SELECT * from \"locationDetails\"";
-    $query .= "  where \"locationId\"='" . $data_style['locationIds'] . "' ";
-  //  $query .= " INNER JOIN \"tbl_invLocation\" ON (\"locationDetails.locationId\"=\"tbl_invLocation.locationId\")";
+           "invId","styleId" from "tbl_invStorage" where "styleId"=' . $_GET['styleId'] . ' ORDER BY unit';
+if (!($result = pg_query($connection, $sql))) {
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while ($row = pg_fetch_array($result)) {
+    $_store[] = $row; // -------------------------- data_color ---------
+}
+// echo "<pre>"; print_r($_store);
+// exit();
+//----------------------------------Location-----------------------
+$query = '';
+$query = "SELECT * from \"locationDetails\"";
+$query .= "  where \"locationId\"='" . $data_style['locationIds'] . "' ";
+//  $query .= " INNER JOIN \"tbl_invLocation\" ON (\"locationDetails.locationId\"=\"tbl_invLocation.locationId\")";
 if (!($resultProduct = pg_query($connection, $query))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row = pg_fetch_array($resultProduct)) {
-        $data_location[] = $row;
-    }
-    pg_free_result($resultProduct);
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+while ($row = pg_fetch_array($resultProduct)) {
+    $data_location[] = $row;
+}
+pg_free_result($resultProduct);
 
 
-    if (!isset($_GET['unitId']) || $_GET['unitId'] == '0')
-    {
-        $bckup_data_inv = $data_inv;
-        //echo "<pre>";print_r($data_inv);
-        //exit();
-        $hash = array();
-        for ($i = 0 ; $i<count($data_inv) ; $i++) 
-        {
-            //if(isset($data_inv[$i]['opt1ScaleId']) && isset($data_inv[$i]['sizeScaleId']))
-            if(isset($data_inv[$i]['sizeScaleId']))
-            {
-                $y = $data_inv[$i]['opt1ScaleId'].'_'.$data_inv[$i]['sizeScaleId'];
-                if(!isset($hash[$y]))
-                {
-                    $hash[$y] = (int)$data_inv[$i]['quantity'];
-                    $data_inv[$i]['locationId'] = 1;
-                }
-                else
-                {
-                    $hash[$y] = $hash[$y]+$data_inv[$i]['quantity'];
-                    $data_inv[$i]['locationId'] = 1;
-                }
-            }
-        }
-        // echo "<pre>";print_r($hash);
-        // exit();
-
-        for($i=0; $i<count($data_inv); $i++)
-        {
-            if(isset($data_inv[$i]['sizeScaleId']))
-            {
-
-                $x = $data_inv[$i]['opt1ScaleId'].'_'.$data_inv[$i]['sizeScaleId'];
-                $data_inv[$i]['quantity'] = $hash[$x];
-            }
-        }
-        $locArr = array();
-        $locArr[0] = 1;
-    }
-
-    
-
-    // echo "<pre>";print_r($data_mainSize);
-    // exit();
-
-    // echo "<pre>";print_r($data_inv);
-    // exit();
-
-    // echo "<pre>";print_r($data_opt1Size);
-    // exit();
-
-    // echo "<pre>";print_r($locArr);
-    // exit();
-    
-    // echo "<pre>";print_r($data_style);
-    // exit();
-
-    $locHash           = array_flip($locArr);
-    $opt1SizeIdHash     = array();
-    foreach($data_opt1Size as $key=>$val)
-        if(isset($val['opt1SizeId']))
-            $opt1SizeIdHash[(int)$val['opt1SizeId']]=$val['opt1Size'];
-
-    // echo "<pre>";print_r($opt1SizeIdHash);
-    // exit();
-        
-    $data_mainSizeIdHash = array();
-    foreach($data_mainSize as $key=>$val)
-        if(isset($val['mainSizeId']))
-            $data_mainSizeIdHash[(int)$val['mainSizeId']]=$val['scaleSize'];
-
-    $data_set = array();
-    $data_set_price = array();
-    $d_i = 0;
-    $d_j = 0;
-    foreach ($data_inv as $key => $val) 
-    {
-        if(isset($locHash[$val['locationId']]) 
-            && isset($opt1SizeIdHash[$val['opt1ScaleId']])
-            && isset($data_mainSizeIdHash[$val['sizeScaleId']]))
-        {
-            $data_set[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['quantity'];
-            $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null; 
-        }
-    }
-
-
-
-    //echo "<pre>";print_r($data_set);exit();
-
-    //echo "<pre>";print_r($data_mainSizeIdHash);
+if (!isset($_GET['unitId']) || $_GET['unitId'] == '0' /*|| !isset($_GET['location']) || $_GET['location'] == '0'*/) {
+    $bckup_data_inv = $data_inv;
+    //echo "<pre>";print_r($data_inv);
     //exit();
-    
-    // echo "<pre>";print_r($locHash );
+    $hash = array();
+    for ($i = 0; $i < count($data_inv); $i++) {
+        //if(isset($data_inv[$i]['opt1ScaleId']) && isset($data_inv[$i]['sizeScaleId']))
+        if (isset($data_inv[$i]['sizeScaleId'])) {
+            $y = $data_inv[$i]['opt1ScaleId'] . '_' . $data_inv[$i]['sizeScaleId'];
+            if (!isset($hash[$y])) {
+                $hash[$y] = (int)$data_inv[$i]['quantity'];
+                $data_inv[$i]['locationId'] = 1;
+            } else {
+                $hash[$y] = $hash[$y] + $data_inv[$i]['quantity'];
+                $data_inv[$i]['locationId'] = 1;
+            }
+        }
+    }
+    // echo "<pre>";print_r($hash);
     // exit();
 
-    // echo "<pre>";print_r($opt1SizeIdHash);
-    // exit();
-    
+    for ($i = 0; $i < count($data_inv); $i++) {
+        if (isset($data_inv[$i]['sizeScaleId'])) {
 
-    
-    
+            $x = $data_inv[$i]['opt1ScaleId'] . '_' . $data_inv[$i]['sizeScaleId'];
+            $data_inv[$i]['quantity'] = $hash[$x];
+        }
+    }
+    $locArr = array();
+    $locArr[0] = 1;
+}
 
 
+// echo "<pre>";print_r($data_mainSize);
+// exit();
+
+//echo "<pre>";print_r($data_inv);
+//exit();
+
+// echo "<pre>";print_r($data_opt1Size);
+// exit();
+
+// echo "<pre>";print_r($locArr);
+// exit();
+
+// echo "<pre>";print_r($data_style);
+// exit();
+
+$locHash = array_flip($locArr);
+$opt1SizeIdHash = array();
+foreach ($data_opt1Size as $key => $val)
+    if (isset($val['opt1SizeId']))
+        $opt1SizeIdHash[(int)$val['opt1SizeId']] = $val['opt1Size'];
+
+// echo "<pre>";print_r($opt1SizeIdHash);
+// exit();
+
+$data_mainSizeIdHash = array();
+foreach ($data_mainSize as $key => $val)
+    if (isset($val['mainSizeId']))
+        $data_mainSizeIdHash[(int)$val['mainSizeId']] = $val['scaleSize'];
+
+$data_set = array();
+$data_set_price = array();
+$d_i = 0;
+$d_j = 0;
+foreach ($data_inv as $key => $val) {
+    if (isset($locHash[$val['locationId']])
+        && isset($opt1SizeIdHash[$val['opt1ScaleId']])
+        && isset($data_mainSizeIdHash[$val['sizeScaleId']])
+    ) {
+        $data_set[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['quantity'];
+        $data_invNew[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['inventoryId'];
+        $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null;
+    }
+}
+
+//echo "<pre>";print_r($data_invNew);exit();
+
+//echo "<pre>";print_r($data_mainSizeIdHash);
+//exit();
+
+//echo "<pre>";print_r($data_product );
+//exit();
+$sql = '';
+$sql = 'select * from "tbl_garment" where "garmentID"=' . $data_style["garmentId"];
+if (!($result = pg_query($connection, $sql))) {
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+$row = pg_fetch_array($result);
+$data_garment = $row;
+
+$sql = '';
+$sql = 'SELECT * FROM "clientDB" where "ID"=' . $data_style['clientId'];
+if (!($resultClient = pg_query($connection, $sql))) {
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+$row = pg_fetch_array($resultClient);
+$data_client = $row;
+$latest = 0;
+if (isset($_GET['unitId']) && $_GET['unitId'] != '0' ) {
+    if(count($data_product) > 0){
+        $key_product = 0;
+        foreach ($data_product as $dk => $dv) {
+            if ($dv['updatedDate'] > $latest) {
+                $latest = $dv['updatedDate'];
+                $key_product = $dk;
+            }
+        }
+        $sql = '';
+        $sql = 'SELECT * FROM "employeeDB" where "employeeID"=' . $data_product[$key_product]['updatedBy'];
+        if (!($resultClient = pg_query($connection, $sql))) {
+            print("Failed StyleQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $row = pg_fetch_array($resultClient);
+        $data_employee = $row;
+        $sql = '';
+        $sql = "SELECT type from \"tbl_invStorage\" WHERE unit='" . $_GET['unitId'] . "'";
+        if (!($resultClient = pg_query($connection, $sql))) {
+            print("Failed StyleQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $row = pg_fetch_array($resultClient);
+        $data_type = $row[0];
+    } else {
+        $data_employee = '';
+        $data_type = 'All';
+    }
+    
+} else {
+    if(count($data_inv_new) > 0){
+        $key_inv = 0;
+        foreach ($data_inv_new as $ik => $iv) {
+            if ($iv['updatedDate'] > $latest) {
+                $latest = $iv['updatedDate'];
+                $key_inv = $ik;
+            }
+        }
+        $sql = '';
+        $sql = 'SELECT * FROM "employeeDB" where "employeeID"=' . $data_inv_new[$key_inv]['updatedBy'];
+        if (!($resultClient = pg_query($connection, $sql))) {
+            print("Failed StyleQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $row = pg_fetch_array($resultClient);
+        $data_employee = $row;
+        $data_type = 'All';
+    } else {
+        $data_employee = '';
+        $data_type = 'All';
+    }
+
+}
+$sql = '';
+$sql = 'SELECT "locationId" FROM "tbl_invStorage" WHERE "styleId"='.$data_style['styleId'];
+if (!($result = pg_query($connection, $sql))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+while ($row = pg_fetch_array($result)) {
+    $data_locDrop[] = $row;
+}
+
+$userdupe=array();
+
+foreach ($data_locDrop as $index=>$t) {
+    if (isset($userdupe[$t["locationId"]])) {
+        unset($data_locDrop[$index]);
+        continue;
+    }
+    $userdupe[$t["locationId"]]=true;
+}
+foreach ($data_locDrop as $keyDrop=>$valueDrop){
+    $loc_d[] = locationDetails($valueDrop['locationId'],$connection);
+}
+/*
+echo '<pre>';
+print_r($loc_d);
+die();
+*/
+$arr_location = call_user_func_array('array_merge', $loc_d);
+
+
+$sql = '';
+$sql = 'SELECT * FROM "locationDetails"';
+if (!($result = pg_query($connection, $sql))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+while ($row = pg_fetch_array($result)) {
+    $data_all_loc[] = $row;
+}
+
+$all_loc=array();
+
+foreach ($data_all_loc as $index=>$allL) {
+    if (isset($all_loc[$allL["locationId"]])) {
+        unset($data_all_loc[$index]);
+        continue;
+    }
+    $all_loc[$allL["locationId"]]=true;
+}
+foreach ($data_all_loc as $keyAll=>$valueAll){
+    $loc_all_new[] = locationDetails($valueAll['locationId'],$connection);
+}
+$arr_all_location = call_user_func_array('array_merge', $loc_all_new);
+$newAllLocation = [];
+foreach ($arr_all_location as $arrAllLocationKey => $arrAlllocationValue){
+    $exp = explode('_',$arrAlllocationValue);
+    $keyAllLoc = preg_replace('/\d/', '', $exp[1] );
+    if($keyAllLoc == 'W'){
+        $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
+        $newAllLocation[$arrAllLocationKey]['type'] = 'warehouse';
+    } elseif ($keyAllLoc == 'C'){
+        $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
+        $newAllLocation[$arrAllLocationKey]['type'] = 'container';
+    } else {
+        $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
+        $newAllLocation[$arrAllLocationKey]['type'] = 'conveyor';
+    }
+}
+/*echo '<pre>';
+print_r($newAllLocation);
+die();*/
 ?>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/jquery-ui.min-1.8.2.js"></script>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/samplerequest.js"></script>
@@ -581,7 +730,9 @@ if (!($resultProduct = pg_query($connection, $query))) {
 
 <link href="<?php echo $mydirectory; ?>/css/style.css" rel="stylesheet">
 
-
+<div class="container">
+<div class="row">
+<div class="col-md-12 col-sm-12">
 <table width="90%" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td align="left"><input type="button" value="Back" onclick="location.href='reports.php'"/></td>
@@ -591,223 +742,306 @@ if (!($resultProduct = pg_query($connection, $query))) {
                 &nbsp;&nbsp; </label></td>
     </tr>
 </table>
-
-
-
-
-
-
-
+</div>
+</div>
+</div>
 <!-- Trigger/Open The Modal -->
 <!-- <button id="myBtn">Open Modal</button>
  -->
 <!-- The Modal -->
 <div id="myModal" class="modal">
 
-  <!-- Modal content -->
-  <div class="modal-content">
-    <span id="close_warehouse_f" class="close">&times;</span>
-    
-    <div class="main-form">
-        <div class="form-left" >
-           <ul id="tab">
-            <li class="active">
-                <h2>Warehouse Form <span id="warehouse_err_msg" style="display: none; color: brown;"></span> </h2>
-                <form id="warehouse_new_form" method="post" action="addNewInventory.php">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span id="close_warehouse_f" class="close">&times;</span>
+        <div class="modal-header">
+                <h4 class="modal-title" style="text-align: center;">ADD INVENTORY</h4>
+             </div>
+        <div class="modal-body">
+            <div class="inventory-box">
+                <div class="container">
+                    <br/><br/>
+                    <div class="wrapper">
+                        <div class="top-table">
+                            <table width="100%" cellpadding="0" cellspacing="0">
 
-                <input type="hidden" name="styleId" value="<?php echo $_GET['styleId']; ?>">
+                                <tr>
+                                    <td style="width: 30%">Style #:
+                                        <strong>
+                                            <?php echo $data_style['styleNumber']; ?>
+                                        </strong>
+                                        <input type="hidden" id="styleNumberAdd" name="styleNumber" value="<?php echo $data_style['styleNumber']; ?>">
+                                    </td>
+                                    <td style="width: 30%">Garment Type:
+                                        <strong><?php echo $data_garment["garmentName"]; ?></strong>
+                                    </td>
+                                    <td style="width: 35%">Gender :<strong><?php echo(" " . $data_style['sex']); ?></strong></td>
+                                    <td>Client: <strong><?php echo $data_client['client'] ?></strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 35%">Color:<strong>
+                                            <select name="col_new" id="col_new_add">
+                                                <option value="">---Select a Color</option>
+                                            <?php
+                                            for ($i = 0; $i < count($data_color); $i++) {
+                                                echo '<option value="'.$data_color[$i]['colorId'].'">'.$data_color[$i]['name'].'</option>';
+                                            }
+                                            ?>
+                                            </select>
+                                        </strong>
+                                    </td>
+                                    <td style="width: 10%">Location:
+                                        <strong>
+                                            <select name="add_new_location" id="add_new_location">
+                                                <option value="0">All Location</option>
+                                                <?php
+                                                foreach ($newAllLocation as $arrallKey=>$arrallValue) {
+                                                    echo '<option value="' . $arrallValue['location'] . '"';
+                                                    if (isset($_REQUEST['location']) && $_REQUEST['location'] == $arrallValue['location']) echo ' selected="selected" ';
+                                                    echo '>' . $arrallValue['location'] . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </strong>
+                                    </td>
+                                    <td colspan="2" id="box_add" style="display: none;">
+                                        Box#:<strong>
+                                            <input type="text" name="add_new_box" id="add_new_box"/>
+                                        </strong>
+                                    </td>
+                                    <td colspan="2" id="slot_add" style="display: none;">
+                                        Slot:<strong>
+                                            <input type="text" name="add_new_slot" id="add_new_slot">
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="row_add" style="display: none;">
+                                        Row:<strong>
+                                            <input type="text" name="add_new_row" id="add_new_row">
+                                        </strong>
+                                    </td>
+                                    <td id="rack_add" style="display: none;">
+                                        Rack:<strong>
+                                            <input type="text" name="add_new_rack" id="add_new_rack">
+                                        </strong>
+                                    </td>
+                                    <td id="shelf_add" style="display: none;">
+                                        Shelf:<strong>
+                                            <input type="text" name="add_new_shelf" id="add_new_shelf">
+                                        </strong>
+                                    </td>
 
-                  <table cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                        <td>
-                          Location
-                        </td>
-                        <td>
-                          <select id="location_dropdown" name="location" class="location_dropdown">
-                          <option value="0">--All Location--</option>
-                            <?php foreach($warehouse_info as $k_info=>$each_info){ ?>
-                            <option value="<?php echo $each_info['locationId']; ?>"><?php echo $each_info['name']; ?></option>
-                             <?php } ?>
-                          </select>
-                        </td>
-                    </tr>
-                    <tr id="warehouse_td" style="display: none">
-                        <td>
-                          Warehouse
-                        </td>
-                        <td>
-                          <select name="warehouse" id="warehouse_dropdown">
-                          </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                          Row
-                        </td>
-                        <td>
-                          <input id="warehouse_form_row" type="text" name="row">
-                        </td>
-                    </tr> 
-                    <tr>
-                        <td>
-                          Rack
-                        </td>
-                        <td>
-                          <input id="warehouse_form_rack" type="text" name="rack">
-                        </td>
-                    </tr> 
-                    <tr>
-                        <td>
-                          Shelf
-                        </td>
-                        <td>
-                          <input id="warehouse_form_shelf" type="text" name="shelf">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                          box#
-                        </td>
-                        <td id="location_unit">
-                          <input id="warehouse_form_unit" type="text" name="unit">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                         &nbsp;
-                        </td>
-                        <td>
-                          <input class="save-btn" type="submit" value="Save" name="">
-                        </td>
-                    </tr>
-                  </table>
+                                </tr>
+                            </table>
+                        </div>
+                        <br/><br/>
+                        <div class="row">
+                                <form id="inventoryFormNewAdd">  
+                                <div class="col-md-12 right-sidebar">
+                                    <div class="inventory-table">
+                                        <div class="table-responsive">
 
-                </form>
-            </li>
-            <li>
-                <h2>Container Form <span id="cont_err_msg" style="display: none; color: brown;"></span> </h2>
-                <form id="new_container_form">
-                  <table cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                        <td>
-                          Location
-                        </td>
-                        <td>
-                          <select id="container_loc_dropdown">
-                            <option value="0">--All Location--</option>
-                            <?php foreach($containers_location as $k_con=>$k_con_val){ ?>
-                            <option value="<?php echo $k_con_val['locationId']; ?>" ><?php echo $k_con_val['name']; ?></option>
+                                            <!--<div class="my-table">
+                                                <table class="table">
+                                                    <tr>
+                                                        <th>1</th>
+                                                        <td></td>
+                                                    </tr>
 
-                            <?php } ?>
-                          </select>
-                        </td>
-                    </tr>
-                    <tr id="container_td" style="display:none">
-                        <td>
-                          Container
-                        </td>
-                        <td>
-                          <select id="container_dropdown">
-                            
-                          </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                          box#
-                        </td>
-                        <td>
-                          <input type="text" id="co_unit" name="co_unit">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                         &nbsp;
-                        </td>
-                        <td>
-                          <input class="save-btn" type="submit" value="Save" name="">
-                        </td>
-                    </tr>
-                  </table>
-                </form>
-            </li>
-            <li>
-                <h2>Conveyor Form <span id="conv_err_msg" style="display: none; color: brown;"></span> </h2>
-                <form id="new_conveyor_form">
-                  <table cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                        <td>
-                          Location
-                        </td>
-                        <td>
-                          <select id="conveyor_loc_dropdown">
-                            <option value="0">--All Location--</option>
-                            <?php foreach($conveyors_location as $k_conv=>$k_conv_val){ ?>
-                            <option value="<?php echo $k_conv_val['locationId']; ?>" ><?php echo $k_conv_val['name']; ?></option>
+                                                </table>
+                                            </div>-->
+                                            <table class="table my-table">
+                                                <tr>
+                                                    <td>
+                                                        <input type="hidden" name="scaleNameId"
+                                                               value="<?php echo $data_style['scaleNameId']; ?>"/>
+                                                        <input type="hidden" id="styleId1" name="styleId"
+                                                               value="<?php echo $styleId; ?>"/>
+                                                        <table class="table ">
+                                                        <?php
+                                                        // echo "<pre>";print_r($data_style);
+                                                        $len1 = sizeof($data_mainSizeIdHash);
+                                                        $row1= $len1 / sizeof($data_mainSizeIdHash);
+                                                        $row1 += $len1 % 4 == 0 ? 0 : 1;
+                                                        $row1 = 1;
 
-                            <?php } ?>
-                          </select>
-                        </td>
-                    </tr>
-                    <tr id="conveyor_td" style="display:none">
-                        <td>
-                          Conveyor
-                        </td>
-                        <td>
-                          <select id="conveyor_dropdown">
-                            
-                          </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                          Slot#
-                        </td>
-                        <td>
-                          <input type="text" name="cv_slot">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                         &nbsp;
-                        </td>
-                        <td>
-                          <input class="save-btn" type="submit" value="Save" name="">
-                        </td>
-                    </tr>
-                  </table>
-                </form>
-            </li>
-            
-        </ul> 
+                                                        $start_head1 = "<div class='row1'>";
+                                                        $end1 = "</div>";
+                                                        $start_div1 = "<tr><td><div class='title-section'><div class='col-md-12 nopadding'>";
+                                                        $end_div1 = "</div></div></td></tr>";
+                                                        $data_div1 = $start_div1 . '<p>sizes</p>' . $end_div1;
+                                                        /*$data_div .= $start_div . '<p>prices</p>' . $end_div;*/
+                                                        $cnt1 = 0;
+                                                        foreach ($opt1SizeIdHash as $key1 => $value1) {
+                                                            $cnt1++;
+                                                            $data_div1 .= $start_div1 . "<p>" . $value1 . "</p>" . $end_div1;
+                                                            //echo $data_div."<br>";
+                                                        }
+                                                        //var_dump($row);exit();
+                                                        while ($row1--) {
+                                                            echo $start_head1 . $data_div1 . $end1;
+                                                        }
+                                                        ?>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table>
+                                                            <?php
+                                                            $mainsize_div1 = '<td><div class="each-section">';
+                                                            $mainsize_div_end1 = '</div></td>';
+                                                            $data1 = '';
+                                                            $element1 = '';
+                                                            $count = 0;
+                                                            foreach ($data_mainSizeIdHash as $key11 => $val11) {
+                                                                $element1 .= '<span>' . $val11 . '</span>';
+                                                                foreach ($opt1SizeIdHash as $key21 => $val21) {
+                                                                        $element1 .= '<span><input class="clicked_new" id="input_' . $key11 . '_' . $key21 . '" type="text" value="0" name="new_qty_data[]"></span>';
+                                                                        $element1 .= '<input type="hidden" value="' . $val11 . '" name="new_type_data[]">';
+                                                                        $element1 .= '<input type="hidden" value="' . $val21 . '" name="new_size_data[]">';
+                                                                        if($count == 0){
+                                                                            $element1 .= '<input id="h_' . $key11 . '_' . $key21 . '" type="hidden" value="1" name="is_change_new[]">';
+                                                                        } else {
+                                                                            $element1 .= '<input id="h_' . $key11 . '_' . $key21 . '" type="hidden" value="0" name="is_change_new[]">';
+                                                                        }
+                                                                        $count++;
+                                                                }
+                                                                $data1 .= $mainsize_div1 . $element1 . $mainsize_div_end1;
+                                                                $element1 = '';
+                                                            }
+                                                            echo $data1;
+                                                            ?>
+                                                        </table>
+                                                    </td>
+                                                </tr>
 
 
 
-
+                                            </table>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        <div class="row col-md-12 align-right">
+                            <div id="message_add"></div>
+                        </div>
+                                <div class="row col-md-12 align-right">
+                                    <button class="btn btn-success btn-lg" id="add_inventory_new">Add Inventory</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
         </div>
-        <div class="form-right">
-        <ul id="tabs">
-            <li id="warehouse_link" class="active">Warehouse</li>
-            <li id="container_link">container</li>
-            <li id="conveyor_link">conveyor</li>
-        </ul>
-
         </div>
-        <div class="clearfix"></div>
-
-    </div>  
-
-  </div>
-
+    </div>
 </div>
 
 
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <h2 class="custom-head">Report View/Edit </h2>
+            <div align="center" id="message"></div>
+            <form id="optForm" method="post">
+            <table class="table">
+                <tr>
+                    <td>Style: <h4><?php echo $data_style['styleNumber']; ?></h4>
+
+                    </td>
+                  
+                    <td>
+                        Color:&nbsp;<br>
+                        <select class="color-option" name="color" id="color">
+
+
+                            <?php
+                            for ($i = 0; $i < count($data_color); $i++) {
+                                if ($data_color[$i]['name'] != "") {
+                                    if ($data_color[$i]['colorId'] == $clrId) {
+                                        $imageName = $data_color[$i]['image'];
+                                        echo '<option selected="selected" data-color="' . $data_color[$i]['name'] . '" value="' . $data_color[$i]['colorId'] . '">' . $data_color[$i]['name'] . '</option>';
+                                        continue;
+                                    }
+                                    echo '<option value="' . $data_color[$i]['colorId'] . '">' . $data_color[$i]['name'] . '</option>';
+                                }
+                            }
+                            ?>
+                        </select>&nbsp;
+
+                    </td>
+                    <td>
+                        box #:&nbsp;<br><select name="unit_num" id="unit_num" class="unit_num">
+                            <option value="0">---- All box # ----</option>
+                            <?php
+                            for ($i = 0; $i < count($data_storage); $i++) {
+                                if ($data_storage[$i]['unit'] != "")
+                                    echo '<option value="' . $data_storage[$i]['unit'] . '"';
+                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] == $data_storage[$i]['unit']) echo ' selected="selected" ';
+                                echo '>' . $data_storage[$i]['unit'] . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </td>
+                    <td>
+                        <?php if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { ?>
+                            <input type="button" value="Main Inventory" onclick="main_inv();"/>
+                        <?php } ?>
+                    </td>
+                    <td>
+                        <button id="print"
+                                onclick="print_content('<?php echo $_GET['styleId']; ?>'
+                                        ,'<?php echo $data_loc[$loc_identity]['name'] ?>'
+                                        ,'<?php if (isset($_GET['unitId'])) echo $_GET['unitId'];
+                                else echo 'null' ?>')"
+                        >Print
+                        </button>
+                    </td>
+                    <td>
+                        <img id="imgView" src="<?php echo $upload_dir_image . trim($imageName); ?>" alt="thumbnail"
+                             width="150" height="230" border="1" class="mouseover_left"/>
+                    </td>
+                </tr>
+                <tr>
+                <tr id="hide">
+                    <td>
+                    <?php if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { ?>
+
+                        <button class="pull-left" type="button" id="addinventory_new">Add Inventory</button>
+
+                    <?php } ?>
+                    </td>
+                </tr>
+                    <td colspan="2">
+                        <?php if ($data_style['barcode'] != "") { ?>
+
+                    Barcode:
+
+                    <h1><img width="100" height="100"
+                                 src="../../uploadFiles/inventory/images/<?php echo $data_style['barcode']; ?>">
+                        </h1>
+                    <?php } ?>
+                    </td>
+
+                </tr>
+
+
+
+            </table>
+            </form>
+
+
+
+           <!-- <div class="table-responsive">
 
 
 
 
-<table width="100%">
-    <tr>
+
+
+
+            <table class="table" width="100%">-->
+<!--    <tr>
         <td>
             <center>
                 <table>
@@ -822,44 +1056,37 @@ if (!($resultProduct = pg_query($connection, $query))) {
     </tr>
     <tr>
         <td align="center"><font size="5">Report</font><font size="5"> View/Edit <br>
-                <br>
+                <br>-->
             </font>
             <fieldset style="margin:10px;">
-                <table width="95%" border="0" cellspacing="0" cellpadding="0">
+                <table class="table" width="95%" border="0" cellspacing="0" cellpadding="0">
 
                     <tr>
 
 
                         <!-- print functionality -->
-                        <button class="pull-right" id="print"
-                                onclick="print_content('<?php echo $_GET['styleId']; ?>'
-                                    ,'<?php echo $data_loc[$loc_identity]['name'] ?>'
-                                    ,'<?php if (isset($_GET['unitId'])) echo $_GET['unitId'];
-                                else echo 'null' ?>')"
-                                class="pull-right">Print
-                        </button>
 
 
-                        <form id="optForm" method="post">
+                       <!-- <form id="optForm" method="post">
                             <td>Style:</td>
 
-                            <td><h1><?php echo $data_style['styleNumber']; ?></h1></td>
+                            <td><h1><?php /*echo $data_style['styleNumber']; */?></h1></td>
 
-                            <?php if ($data_style['barcode'] != "") { ?>
+                            <?php /*if ($data_style['barcode'] != "") { */?>
 
                                 <td width="60">Barcode:</td>
 
                                 <td><h1><img width="100" height="100"
-                                             src="../../uploadFiles/inventory/images/<?php echo $data_style['barcode']; ?>">
+                                             src="../../uploadFiles/inventory/images/<?php /*echo $data_style['barcode']; */?>">
                                     </h1></td>
-                            <?php } ?>
+                            <?php /*} */?>
                             <td width="100px">
                                 <div class="color">Color:&nbsp;
                                     <select class="color-option" name="color" id="color">
 
 
                                         <?php
-                                        for ($i = 0; $i < count($data_color); $i++) {
+/*                                        for ($i = 0; $i < count($data_color); $i++) {
                                             if ($data_color[$i]['name'] != "") {
                                                 if ($data_color[$i]['colorId'] == $clrId) {
                                                     $imageName = $data_color[$i]['image'];
@@ -869,80 +1096,83 @@ if (!($resultProduct = pg_query($connection, $query))) {
                                                 echo '<option value="' . $data_color[$i]['colorId'] . '">' . $data_color[$i]['name'] . '</option>';
                                             }
                                         }
-                                        ?>
-                                    </select>&nbsp;&nbsp;&nbsp;</div>
+                                        */?>
+                                    </select>&nbsp;&nbsp;&nbsp;
+                                </div>
                             </td>
                             <td>
-                                box #:&nbsp;<select name="unit_num" id="unit_num">
+                                box #:&nbsp;<select name="unit_num" id="unit_num" class="unit_num">
                                     <option value="0">---- All box # ----</option>
                                     <?php
-                                    for ($i = 0; $i < count($data_storage); $i++) {
+/*                                    for ($i = 0; $i < count($data_storage); $i++) {
                                         if ($data_storage[$i]['unit'] != "")
                                             echo '<option value="' . $data_storage[$i]['unit'] . '"';
                                         if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] == $data_storage[$i]['unit']) echo ' selected="selected" ';
                                         echo '>' . $data_storage[$i]['unit'] . '</option>';
                                     }
-                                    ?>
+                                    */?>
                                 </select>
                             </td>
                             <!--<td>&nbsp;<input  type="button" name="del_qnt" id="del_qnt" value="Delete All Quantities"
                                          onclick="javascript:delAllQnts();" class="ui-button ui-widget ui-state-default ui-corner-all"/></td>-->
-                        </form>
-                        <td>
-                        <?php if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5){ ?>
-                        <input type="button" value="Main Inventory" onclick="main_inv();"/>
-                        <?php } ?>
+                        <!--/form-->
+                        <!--td-->
+                            <?php /*if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { */?>
+                                <!--input type="button" value="Main Inventory" onclick="main_inv();"/-->
+                            <?php /*} */?>
+                        <!--/td-->
+                        <!--td>
+                            <button id="print"
+                                    onclick="print_content('<?php /*echo $_GET['styleId']; */?>'
+                                            ,'<?php /*echo $data_loc[$loc_identity]['name'] */?>'
+                                            ,'<?php /*if (isset($_GET['unitId'])) echo $_GET['unitId'];
+                                    else echo 'null' */?>')"
+                            >Print
+                            </button>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
+                        <td class="col-md-3 pull-right">
+                            <img id="imgView" src="<?php /*echo $upload_dir_image . trim($imageName); */?>" alt="thumbnail"
+                                 width="150" height="230" border="1" class="mouseover_left"/>
+                        </td>
+                    </tr-->
+
                     <tr>
                         <?php
                         if (!isset($_GET['unitId']) || $_GET['unitId'] != '0')
                         {
                         ?>
-                        <?php if(!$is_slot){ ?>
-                    <tr id="view_details">
-                        <td style="display: none;">Room: <input type="text" id="updateroom" value="<?php //echo $data_product[0]['room']; ?>"/></td>
-                        <td>Row: <input type="text" id="updaterow" value="<?php echo $data_product[0]['row']; ?>" /></td>
-                        <td>Rack: <input type="text" id="updaterack" value="<?php echo $data_product[0]['rack']; ?>" /></td>
-                        <td>Shelf: <input type="text" id="updateshelf" value="<?php echo $data_product[0]['shelf']; ?>" /></strong></td>
-                        <td>
-                            <?php if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5){ ?>
-                            <button type="button" onclick="Update()" class="btn btn-success" style="color: #0c00d2">
-                                Update
-                            </button>
-                            <button type="button" onclick="Delete()" class="btn btn-danger" style="color: #cd0a0a">
-                                Delete
-                            </button>
-                            <?php } ?>
+                        <?php if (!$is_slot){ ?>
+                    <!--<tr id="view_details">
+                        <td style="display: none;">Room: <input type="text" id="updateroom"
+                                                                value="<?php /*//echo $data_product[0]['room']; */?>"/></td>
+                        <td>Row: <input type="text" id="updaterow" value="<?php /*echo $data_product[0]['row']; */?>"/></td>
+                        <td>Rack: <input type="text" id="updaterack" value="<?php /*echo $data_product[0]['rack']; */?>"/>
                         </td>
-                    </tr>
+                        <td>Shelf: <input type="text" id="updateshelf"
+                                          value="<?php /*echo $data_product[0]['shelf']; */?>"/></strong></td>
+                        <td>
+                            <?php /*if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { */?>
+                                <button type="button" onclick="Update()" class="btn btn-success" style="color: #0c00d2">
+                                    Update
+                                </button>
+                                <button type="button" onclick="Delete()" class="btn btn-danger" style="color: #cd0a0a">
+                                    Delete
+                                </button>
+                            <?php /*} */?>
+                        </td>
+                    </tr>-->
                     <?php } ?>
                     <?php
                     } else {
                         ?>
-                        <tr>
-                            <td>
-                                <!--button type="button" id="newInventory" class="btn btn-success">Add new Inventory</button--> </td>
-                            <td>&nbsp; </td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp; </td>
-                            <td>&nbsp;</td>
-                        </tr>
                     <?php } ?>
-                    <tr id="hide">
+<!--                    <tr id="hide">
 
-                        <?php if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5){ ?>
-                        
-                        <button class="pull-left" type="button" id="addinventory_new">Add Inventory</button>
+                        <?php /*if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { */?>
 
-                        <?php } ?>
+                            <button class="pull-left" type="button" id="addinventory_new">Add Inventory</button>
+
+                        <?php /*} */?>
                         <!-- <td>
                             <button type="button" id="newInventory" onclick="addInventory()"
                                     class="btn btn-success">Add new Inventory
@@ -952,7 +1182,7 @@ if (!($resultProduct = pg_query($connection, $query))) {
                         <td>&nbsp;</td>
                         <td>&nbsp; </td>
                         <td>&nbsp;</td> -->
-                    </tr>
+                    <!--</tr>-->
                     <tr id="inventoryDetails" style="display: none">
                         <!-- <td>unit Name: <input type="text" id="newunit"></td>
                         <td>Room: <input type="text" id="newRoom"></td>
@@ -972,362 +1202,355 @@ if (!($resultProduct = pg_query($connection, $query))) {
 
                 </table>
             </fieldset>
-            <?php 
-
-
-if(isset($_GET['styleId']) && (!isset($_GET['unitId']) ||$_GET['unitId'] == '0')){
-    $sql ='select * from "tbl_date_interval_setting"';
-            if (!($resultProduct = pg_query($connection, $sql))) {
-            print("Failed invQuery: " . pg_last_error($connection));
-            exit;
-            }
-            while ($row = pg_fetch_array($resultProduct)) {
-                
-            $interval[]=$row;
-           
-            }
-            foreach ($interval as $key => $valueint) {
-               if($valueint['color']=="green"){
-                $green=$valueint['interval'];
-               }
-               if($valueint['color']=="yellow"){
-                $yellow=$valueint['interval'];
-               }
-               if($valueint['color']=="red"){
-                $red=$valueint['interval'];
-               }
-            }
-pg_free_result($resultProduct); 
-
-//pg_free_result($resultoldinv);
-    $sql='';
-    $sql='select * from "tbl_log_updates" where "styleId" ='.$_GET['styleId'].' and "present" = '."'".inventory."'".' order by "updatedDate" desc LIMIT 1';
-        if(!($resultoldinv=pg_query($connection,$sql))){
-           
-        }
-        else{
-            
-        }
-        $rowoldinv = pg_fetch_row($resultoldinv);
-        $oldinv=$rowoldinv;
-        //print_r($oldinv);
-        pg_free_result($resultoldinv);
-        
-        if($oldinv){
-            $empsql='select * from "employeeDB" where "employeeID" ='.$oldinv['2'].' LIMIT 1';
-            if(!($resultemp=pg_query($connection,$empsql))){
-            
-            }
-            else{
-            
-            }
-            $rowemp = pg_fetch_row($resultemp);
-            $oldemp=$rowemp;
-            pg_free_result($resultemp);
-?>
-<fieldset style="margin:10px;">
-<table width="98%" border="0" cellspacing="1" cellpadding="1">
-                          <tbody>
-                            <tr>
-                            <td width="355" height="25" align="right" valign="top">Date: <br></td>
-                            <td width="10">&nbsp;</td>
-                            <td align="left" valign="top">
-                                <?php echo date('m/d/Y h:i:s',$oldinv['3']);?>
-                                <?php 
-                                $date2=date('U');
-                                $date1=$oldinv['4'];
-                                if($oldinv['4']){
-            $resultday=round(abs($date1-$date2)/86400);
-            if($resultday<=$green){
-                $colo= "green";
-            }
-            if($resultday<=$yellow && $resultday>$green){
-                $colo= "yellow";
-            }
-            if($resultday>$yellow){
-                $colo= "red";
-            }
-            echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"></div>';
-        }
-                                ?>
-                            </td>
-                            </tr>
-                            <tr>
-                            
-                            <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
-                            <td width="10">&nbsp;</td>
-                            <td align="left" valign="top">
-                                <?php echo $oldemp['1']." ".$oldemp['2'];?>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td width="355" height="25" align="right" valign="top">Previous: <br></td>
-                            <td width="10">&nbsp;</td>
-                            <td align="left" valign="top">
-                                <table>
-                                    <tr>
-                                        <td>Scale1x</td>
-                                        <td>Scale2</td>
-                                        <td>Value</td>
-                                        <td>Unit</td>
-                                    </tr>
-                                    <?php 
-                                     $data=json_decode($oldinv['5']);
-                                    foreach ($data as $key => $prevalue) {
-                                        //print_r($prevalue);
-                                        ?>
-                                    <tr>
-                                        <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
-                                        <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
-                                        <td><?php echo $prevalue->oldinv;?></td>
-                                        <td><?php echo $prevalue->unit;?></td>
-                                    </tr>
-                                    <?php } ?>
-                                </table>
-                                
-                            </td>
-                            </tr>
-                            <tr>
-                            <td width="355" height="25" align="right" valign="top">Present: <br></td>
-                            <td width="10">&nbsp;</td>
-                            <td align="left" valign="top">
-                                <table>
-                                    <tr>
-                                        <td>Scale1y</td>
-                                        <td>Scale2</td>
-                                        <td>Value</td>
-                                        <td>Unit</td>
-                                    </tr>
-                                <?php 
-                                    $data=json_decode($oldinv['5']);
-                                    foreach ($data as $key => $prevalue) {
-                                        //print_r($prevalue);
-                                        ?>
-                                    <tr>
-                                        <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
-                                        <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
-                                        <td><?php echo $prevalue->wareHouseQty;?></td>
-                                        <td><?php echo $prevalue->unit;?></td>
-                                    </tr>
-                                    <?php } ?>
-                                </table>
-                            </td>
-                            </tr>
-                          
-                        
-                          
-                        </tbody></table>
-
-</fieldset>
-<?php
-        }
-
-}
-if(isset($_GET['styleId']) && (isset($_GET['unitId']) && $_GET['unitId'] != '0')){
-    $sql ='select * from "tbl_date_interval_setting"';
-            if (!($resultProduct = pg_query($connection, $sql))) {
-            print("Failed invQuery: " . pg_last_error($connection));
-            exit;
-            }
-            while ($row = pg_fetch_array($resultProduct)) {
-                
-            $interval[]=$row;
-           
-            }
-            foreach ($interval as $key => $valueint) {
-               if($valueint['color']=="green"){
-                $green=$valueint['interval'];
-               }
-               if($valueint['color']=="yellow"){
-                $yellow=$valueint['interval'];
-               }
-               if($valueint['color']=="red"){
-                $red=$valueint['interval'];
-               }
-            }
-pg_free_result($resultProduct); 
-
-//pg_free_result($resultoldinv);
-    $sql='';
-    $sql='select * from "tbl_log_updates" where "styleId" ='.$_GET['styleId'].' and  "warehouse" ='."'".$_GET['unitId']."'".' and "present" = '."'".inventory."'".' order by "updatedDate" desc LIMIT 1';
-        if(!($resultoldinv=pg_query($connection,$sql))){
-            
-        }
-        else{
-            
-        }
-        $rowoldinv = pg_fetch_row($resultoldinv);
-        $oldinv=$rowoldinv;
-        //print_r($oldinv);
-        pg_free_result($resultoldinv);
-        
-        if($oldinv){
-            $empsql='select * from "employeeDB" where "employeeID" ='.$oldinv['2'].' LIMIT 1';
-            if(!($resultemp=pg_query($connection,$empsql))){
-            
-            }
-            else{
-            
-            }
-            $rowemp = pg_fetch_row($resultemp);
-            $oldemp=$rowemp;
-            pg_free_result($resultemp);?>
-            <fieldset style="margin:10px;">
-<table width="98%" border="0" cellspacing="1" cellpadding="1">
-                          <tbody>
-                            <tr>
-                            <td width="355" height="25" align="right" valign="top">Date: <br></td>
-                            <td width="10">&nbsp;</td>
-                            <td align="left" valign="top">
-                                <?php echo date('m/d/Y h:i:s',$oldinv['4']);?>
-                                <?php 
-                                $date2=date('U');
-                                $date1=$oldinv['4'];
-                                if($oldinv['4']){
-            $resultday=round(abs($date1-$date2)/86400);
-            if($resultday<=$green){
-                $colo= "green";
-            }
-            if($resultday<=$yellow && $resultday>$green){
-                $colo= "yellow";
-            }
-            if($resultday>$yellow){
-                $colo= "red";
-            }
-            echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"></div>';
-        }
-                                ?>
-                            </td>
-                            </tr>
-                            <tr>
-                            
-                            <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
-                            <td width="10">&nbsp;</td>
-                            <td align="left" valign="top">
-                                <?php echo $oldemp['1']." ".$oldemp['2'];?>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td width="355" height="25" align="right" valign="top">Previous: <br></td>
-                            <td width="10">&nbsp;</td>
-                            <td align="left" valign="top">
-                                <table>
-                                    <tr>
-                                        <td>Scale1x</td>
-                                        <td>Scale2</td>
-                                        <td>Value</td>
-                                        <td>Unit</td>
-                                    </tr>
-                                    <?php 
-                                     $data=json_decode($oldinv['5']);
-                                    foreach ($data as $key => $prevalue) {
-                                        //print_r($prevalue);
-                                        ?>
-                                    <tr>
-                                        <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
-                                        <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
-                                        <td><?php echo $prevalue->oldinv;?></td>
-                                        <td><?php echo $prevalue->unit;?></td>
-                                    </tr>
-                                    <?php } ?>
-                                </table>
-                                
-                            </td>
-                            </tr>
-                            <tr>
-                            <td width="355" height="25" align="right" valign="top">Present: <br></td>
-                            <td width="10">&nbsp;</td>
-                            <td align="left" valign="top">
-                                <table>
-                                    <tr>
-                                        <td>Scale1y</td>
-                                        <td>Scale2</td>
-                                        <td>Value</td>
-                                        <td>Unit</td>
-                                    </tr>
-                                <?php 
-                                    $data=json_decode($oldinv['5']);
-                                    foreach ($data as $key => $prevalue) {
-                                        //print_r($prevalue);
-                                        ?>
-                                    <tr>
-                                        <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
-                                        <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
-                                        <td><?php echo $prevalue->wareHouseQty;?></td>
-                                        <td><?php echo $prevalue->unit;?></td>
-                                    </tr>
-                                    <?php } ?>
-                                </table>
-                            </td>
-                            </tr>
-                          
-                        
-                          
-                        </tbody></table>
-
-</fieldset>
-
-    <?php
-}
-}
-
-?>
-            <form id="inventoryForm" style="display: none;">
-
-
             <?php
 
 
-            if(isset($_GET['unitId']) && $_GET['unitId'] != '0'){
-
-                //$my_data;
-
-                
-                $sql = 'select str."locationId" , inv.location_details_id from "tbl_invStorage" as str  left join "tbl_inventory" as inv on inv."inventoryId" = str."invId" where str.unit = \''.$_GET['unitId'].'\' ';
-
-
-
-                if (!($result = pg_query($connection, $sql))) 
-                {
+            if (isset($_GET['styleId']) && (!isset($_GET['unitId']) || $_GET['unitId'] == '0')) {
+                $sql = 'select * from "tbl_date_interval_setting"';
+                if (!($resultProduct = pg_query($connection, $sql))) {
                     print("Failed invQuery: " . pg_last_error($connection));
                     exit;
                 }
-                while ($row = pg_fetch_array($result)) {
-                    $my_data[] = $row;
+                while ($row = pg_fetch_array($resultProduct)) {
+
+                    $interval[] = $row;
+
+                }
+                foreach ($interval as $key => $valueint) {
+                    if ($valueint['color'] == "green") {
+                        $green = $valueint['interval'];
+                    }
+                    if ($valueint['color'] == "yellow") {
+                        $yellow = $valueint['interval'];
+                    }
+                    if ($valueint['color'] == "red") {
+                        $red = $valueint['interval'];
+                    }
+                }
+                pg_free_result($resultProduct);
+
+//pg_free_result($resultoldinv);
+                $sql = '';
+                $sql = 'select * from "tbl_log_updates" where "styleId" =' . $_GET['styleId'] . ' and "present" = ' . "'" . inventory . "'" . ' order by "updatedDate" desc LIMIT 1';
+                if (!($resultoldinv = pg_query($connection, $sql))) {
+
+                } else {
+
+                }
+                $rowoldinv = pg_fetch_row($resultoldinv);
+                $oldinv = $rowoldinv;
+                //print_r($oldinv);
+                pg_free_result($resultoldinv);
+
+                if ($oldinv) {
+                    $empsql = 'select * from "employeeDB" where "employeeID" =' . $oldinv['2'] . ' LIMIT 1';
+                    if (!($resultemp = pg_query($connection, $empsql))) {
+
+                    } else {
+
+                    }
+                    $rowemp = pg_fetch_row($resultemp);
+                    $oldemp = $rowemp;
+                    pg_free_result($resultemp);
+                    ?>
+                    <fieldset style="margin:10px;">
+                        <table width="98%" border="0" cellspacing="1" cellpadding="1">
+                            <tbody>
+                            <tr>
+                                <td width="355" height="25" align="right" valign="top">Date: <br></td>
+                                <td width="10">&nbsp;</td>
+                                <td align="left" valign="top">
+                                    <?php echo date('m/d/Y h:i:s', $oldinv['3']); ?>
+                                    <?php
+                                    $date2 = date('U');
+                                    $date1 = $oldinv['4'];
+                                    if ($oldinv['4']) {
+                                        $resultday = round(abs($date1 - $date2) / 86400);
+                                        if ($resultday <= $green) {
+                                            $colo = "green";
+                                        }
+                                        if ($resultday <= $yellow && $resultday > $green) {
+                                            $colo = "yellow";
+                                        }
+                                        if ($resultday > $yellow) {
+                                            $colo = "red";
+                                        }
+                                        echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:' . $colo . ';"></div>';
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
+                                <td width="10">&nbsp;</td>
+                                <td align="left" valign="top">
+                                    <?php echo $oldemp['1'] . " " . $oldemp['2']; ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="355" height="25" align="right" valign="top">Previous: <br></td>
+                                <td width="10">&nbsp;</td>
+                                <td align="left" valign="top">
+                                    <table>
+                                        <tr>
+                                            <td>Scale1x</td>
+                                            <td>Scale2</td>
+                                            <td>Value</td>
+                                            <td>Unit</td>
+                                        </tr>
+                                        <?php
+                                        $data = json_decode($oldinv['5']);
+                                        foreach ($data as $key => $prevalue) {
+                                            //print_r($prevalue);
+                                            ?>
+                                            <tr>
+                                                <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
+                                                <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
+                                                <td><?php echo $prevalue->oldinv; ?></td>
+                                                <td><?php echo $prevalue->unit; ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                    </table>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="355" height="25" align="right" valign="top">Present: <br></td>
+                                <td width="10">&nbsp;</td>
+                                <td align="left" valign="top">
+                                    <table>
+                                        <tr>
+                                            <td>Scale1y</td>
+                                            <td>Scale2</td>
+                                            <td>Value</td>
+                                            <td>Unit</td>
+                                        </tr>
+                                        <?php
+                                        $data = json_decode($oldinv['5']);
+                                        foreach ($data as $key => $prevalue) {
+                                            //print_r($prevalue);
+                                            ?>
+                                            <tr>
+                                                <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
+                                                <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
+                                                <td><?php echo $prevalue->wareHouseQty; ?></td>
+                                                <td><?php echo $prevalue->unit; ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                    </table>
+                                </td>
+                            </tr>
+
+
+                            </tbody>
+                        </table>
+
+                    </fieldset>
+                    <?php
                 }
 
-                $location_id = '';
-                $location_details_id = '';
-                foreach ($my_data as $key => $value)
-                {
-
-                    $location_id = $value['locationId'];
-                    if($value['location_details_id'] != '')
-                    $location_details_id = $value['location_details_id'];
-                }
-
-                
-                //$location_id = $my_data[0]['locationId'];
-                //$inventory_id = $my_data[0]['invId'];
-                //$location_details_id = $my_data[0]['location_details_id'];
-
-                // echo $location_id.'=='.$location_details_id;
-                // exit();
-
-                // echo "<pre>";print_r($my_data);
-                // exit();
             }
-            
+            if (isset($_GET['styleId']) && (isset($_GET['unitId']) && $_GET['unitId'] != '0')) {
+                $sql = 'select * from "tbl_date_interval_setting"';
+                if (!($resultProduct = pg_query($connection, $sql))) {
+                    print("Failed invQuery: " . pg_last_error($connection));
+                    exit;
+                }
+                while ($row = pg_fetch_array($resultProduct)) {
+
+                    $interval[] = $row;
+
+                }
+                foreach ($interval as $key => $valueint) {
+                    if ($valueint['color'] == "green") {
+                        $green = $valueint['interval'];
+                    }
+                    if ($valueint['color'] == "yellow") {
+                        $yellow = $valueint['interval'];
+                    }
+                    if ($valueint['color'] == "red") {
+                        $red = $valueint['interval'];
+                    }
+                }
+                pg_free_result($resultProduct);
+                $sql = '';
+                $sql = 'select * from "tbl_log_updates" where "styleId" =' . $_GET['styleId'] . ' and  "warehouse" =' . "'" . $_GET['unitId'] . "'" . ' and "present" = ' . "'" . inventory . "'" . ' order by "updatedDate" desc LIMIT 1';
+                if (!($resultoldinv = pg_query($connection, $sql))) {
+
+                } else {
+
+                }
+                $rowoldinv = pg_fetch_row($resultoldinv);
+                $oldinv = $rowoldinv;
+                //print_r($oldinv);
+                pg_free_result($resultoldinv);
+
+                if ($oldinv) {
+                    $empsql = 'select * from "employeeDB" where "employeeID" =' . $oldinv['2'] . ' LIMIT 1';
+                    if (!($resultemp = pg_query($connection, $empsql))) {
+
+                    } else {
+
+                    }
+                    $rowemp = pg_fetch_row($resultemp);
+                    $oldemp = $rowemp;
+                    pg_free_result($resultemp); ?>
+                    <fieldset style="margin:10px;">
+                        <table width="98%" border="0" cellspacing="1" cellpadding="1">
+                            <tbody>
+                            <tr>
+                                <td width="355" height="25" align="right" valign="top">Date: <br></td>
+                                <td width="10">&nbsp;</td>
+                                <td align="left" valign="top">
+                                    <?php echo date('m/d/Y h:i:s', $oldinv['4']); ?>
+                                    <?php
+                                    $date2 = date('U');
+                                    $date1 = $oldinv['4'];
+                                    if ($oldinv['4']) {
+                                        $resultday = round(abs($date1 - $date2) / 86400);
+                                        if ($resultday <= $green) {
+                                            $colo = "green";
+                                        }
+                                        if ($resultday <= $yellow && $resultday > $green) {
+                                            $colo = "yellow";
+                                        }
+                                        if ($resultday > $yellow) {
+                                            $colo = "red";
+                                        }
+                                        echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:' . $colo . ';"></div>';
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
+                                <td width="10">&nbsp;</td>
+                                <td align="left" valign="top">
+                                    <?php echo $oldemp['1'] . " " . $oldemp['2']; ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="355" height="25" align="right" valign="top">Previous: <br></td>
+                                <td width="10">&nbsp;</td>
+                                <td align="left" valign="top">
+                                    <table>
+                                        <tr>
+                                            <td>Scale1x</td>
+                                            <td>Scale2</td>
+                                            <td>Value</td>
+                                            <td>Unit</td>
+                                        </tr>
+                                        <?php
+                                        $data = json_decode($oldinv['5']);
+                                        foreach ($data as $key => $prevalue) {
+                                            //print_r($prevalue);
+                                            ?>
+                                            <tr>
+                                                <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
+                                                <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
+                                                <td><?php echo $prevalue->oldinv; ?></td>
+                                                <td><?php echo $prevalue->unit; ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                    </table>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="355" height="25" align="right" valign="top">Present: <br></td>
+                                <td width="10">&nbsp;</td>
+                                <td align="left" valign="top">
+                                    <table>
+                                        <tr>
+                                            <td>Scale1y</td>
+                                            <td>Scale2</td>
+                                            <td>Value</td>
+                                            <td>Unit</td>
+                                        </tr>
+                                        <?php
+                                        $data = json_decode($oldinv['5']);
+                                        foreach ($data as $key => $prevalue) {
+                                            //print_r($prevalue);
+                                            ?>
+                                            <tr>
+                                                <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
+                                                <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
+                                                <td><?php echo $prevalue->wareHouseQty; ?></td>
+                                                <td><?php echo $prevalue->unit; ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                    </table>
+                                </td>
+                            </tr>
 
 
-             ?>
+                            </tbody>
+                        </table>
+
+                    </fieldset>
+
+                    <?php
+                }
+            }
+
+            ?>
+            <form id="inventoryForm" style="display: none;">
 
 
-            <input type="hidden" id="_location_id" name="location_id" value="<?php echo (isset($location_id) && $location_id) > 0 ? $location_id : 'null' ?>">
+                <?php
 
-            <input type="hidden" id="_inventory_id" name="inventory_id" value="<?php echo (isset($inventory_id) && $inventory_id > 0) ? $inventory_id : 'null' ?>">
 
-            <input type="hidden" id="_location_details_id" name="location_details_id" value="<?php echo (isset($location_details_id) && $location_details_id) > 0 ? $location_details_id : 'null' ?>">
+                if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
+
+                    //$my_data;
+
+
+                    $sql = 'select str."locationId" , inv.location_details_id from "tbl_invStorage" as str  left join "tbl_inventory" as inv on inv."inventoryId" = str."invId" where str.unit = \'' . $_GET['unitId'] . '\' ';
+
+
+                    if (!($result = pg_query($connection, $sql))) {
+                        print("Failed invQuery: " . pg_last_error($connection));
+                        exit;
+                    }
+                    while ($row = pg_fetch_array($result)) {
+                        $my_data[] = $row;
+                    }
+
+                    $location_id = '';
+                    $location_details_id = '';
+                    foreach ($my_data as $key => $value) {
+
+                        $location_id = $value['locationId'];
+                        if ($value['location_details_id'] != '')
+                            $location_details_id = $value['location_details_id'];
+                    }
+
+
+                    //$location_id = $my_data[0]['locationId'];
+                    //$inventory_id = $my_data[0]['invId'];
+                    //$location_details_id = $my_data[0]['location_details_id'];
+
+                    // echo $location_id.'=='.$location_details_id;
+                    // exit();
+
+                    // echo "<pre>";print_r($my_data);
+                    // exit();
+                }
+
+
+                ?>
+
+
+                <input type="hidden" id="_location_id" name="location_id"
+                       value="<?php echo (isset($location_id) && $location_id) > 0 ? $location_id : 'null' ?>">
+
+                <input type="hidden" id="_inventory_id" name="inventory_id"
+                       value="<?php echo (isset($inventory_id) && $inventory_id > 0) ? $inventory_id : 'null' ?>">
+
+                <input type="hidden" id="_location_details_id" name="location_details_id"
+                       value="<?php echo (isset($location_details_id) && $location_details_id) > 0 ? $location_details_id : 'null' ?>">
 
                 <div id="scrollLinks">
                     <fieldset style="margin:10px;">
@@ -1347,76 +1570,76 @@ pg_free_result($resultProduct);
                                         </tr>
 
 
-                            <?php if (isset($_SESSION['employeeType']) && $_SESSION['employeeType'] < 4) { ?>
+                                        <?php if (isset($_SESSION['employeeType']) && $_SESSION['employeeType'] < 4) { ?>
 
-                                <?php
-                                if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
-                                    ?>
-                                    <tr>
-                                        <td>
-                                            
-                                        </td>
-                                    </tr>
-                                    <?php
-                                }
-                                ?>
+                                            <?php
+                                            if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
+                                                ?>
+                                                <tr>
+                                                    <td>
+
+                                                    </td>
+                                                </tr>
+                                                <?php
+                                            }
+                                            ?>
 
 
-            <?php } ?>
-                    </table>
-                </td>
-                <td width="10"></td>
-                <td width="100">
-                <div id="header" style="float:left; width:100%;">
-                    <div id="scrollLinks4">
-                        <div id="scrollLinks2">
-                          <div id="scrollLinks">
-                            <div id="scrollLinks3">
-                              <table class="HD001" width="250px" style="float:left;"
-                                               border="0" cellspacing="1" cellpadding="1">
-                                  <tr>
-                                    <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                <td class="gridHeaderReport">sizes</td>
-                                  </tr>
-                                  <tr>
-                                                <td class="gridHeaderReportGrids3"><a
-                                                        class="mouseover_left" href="#"><img
-                                                            src="<?php echo $mydirectory; ?>/images/leftArrw.gif"
-                                                            alt="lft" width="33" height="26"
-                                                            border="0"/></a><a
-                                                        class="mouseover_right" href="#"><img
-                                                            src="<?php echo $mydirectory; ?>/images/rightArrw.gif"
-                                                            alt="lft" width="30" height="26"
-                                                            border="0"/></a></td>
-                                                <td class="gridHeaderReport">prices</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                <td class="gridHeaderReportGrids2">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                <td colspan="2"
-                                                    class="gridHeaderReportGrids4"><?php echo $data_optionName['opt1Name']; ?></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                <td class="gridHeaderReportGrids2"><span
-                                                        class="gridHeaderReportGrids3"><a
-                                                            class="mouseover_up" href="#"><img
-                                                                src="<?php echo $mydirectory; ?>/images/upArrw.gif"
-                                                                alt="lft" width="33" height="26"
-                                                                border="0"/></a><a
-                                                            class="mouseover_down" href="#"><img
-                                                                src="<?php echo $mydirectory; ?>/images/dwnArrw.gif"
-                                                                alt="lft" width="33" height="26"
-                                                                border="0"/></a></span></td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                        <?php } ?>
+                                    </table>
+                                </td>
+                                <td width="10"></td>
+                                <td width="100">
+                                    <div id="header" style="float:left; width:100%;">
+                                        <div id="scrollLinks4">
+                                            <div id="scrollLinks2">
+                                                <div id="scrollLinks">
+                                                    <div id="scrollLinks3">
+                                                        <table class="HD001" width="250px" style="float:left;"
+                                                               border="0" cellspacing="1" cellpadding="1">
+                                                            <tr>
+                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                                <td class="gridHeaderReport">sizes</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="gridHeaderReportGrids3"><a
+                                                                            class="mouseover_left" href="#"><img
+                                                                                src="<?php echo $mydirectory; ?>/images/leftArrw.gif"
+                                                                                alt="lft" width="33" height="26"
+                                                                                border="0"/></a><a
+                                                                            class="mouseover_right" href="#"><img
+                                                                                src="<?php echo $mydirectory; ?>/images/rightArrw.gif"
+                                                                                alt="lft" width="30" height="26"
+                                                                                border="0"/></a></td>
+                                                                <td class="gridHeaderReport">prices</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                                <td class="gridHeaderReportGrids2">&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                                <td colspan="2"
+                                                                    class="gridHeaderReportGrids4"><?php echo $data_optionName['opt1Name']; ?></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                                <td class="gridHeaderReportGrids2"><span
+                                                                            class="gridHeaderReportGrids3"><a
+                                                                                class="mouseover_up" href="#"><img
+                                                                                    src="<?php echo $mydirectory; ?>/images/upArrw.gif"
+                                                                                    alt="lft" width="33" height="26"
+                                                                                    border="0"/></a><a
+                                                                                class="mouseover_down" href="#"><img
+                                                                                    src="<?php echo $mydirectory; ?>/images/dwnArrw.gif"
+                                                                                    alt="lft" width="33" height="26"
+                                                                                    border="0"/></a></span></td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="TopDiv">
                                             <!-- window 1 starts here -->
                                             <div id="wn">
@@ -1439,59 +1662,61 @@ pg_free_result($resultProduct);
                                             </div>
                                         </div>
                                     </div>
-    <div id="wn3">
-        <div id="lyr3">
-            <div id="rowSize" style="float:left; width:250px;">
-                <table width="250" border="0" cellspacing="1" cellpadding="1">
-                    <?php
-                    if ($locArr[0] > 0 && $locArr[0] != "") {
-                        $loc_i = 0;
-                        for ($i = 0; $i < count($locArr); $i++, $loc_i++) {
-                            for (; $loc_i < count($data_loc); $loc_i++) {
-                                if ($locArr[$i] == $data_loc[$loc_i]['locationId'])
-                                    break;
-                            }
-                            ?>
-                            <tr>
-                            <td class="gridHeaderReportGrids3"><?php //echo $data_loc[$loc_i]['name'];
-                                $loc_identity = $loc_i; ?></td>
-                            <?php
-                            if (count($data_opt1Size) > 0) {
-                                for ($j = 0; $j < count($data_opt1Size); $j++) {
-                                    if ($j != 0) {
-                                        ?>
-                                        <tr>
-                                            <td class="gridHeaderReportGrids3">
-                                                &nbsp;</td>
-                                            <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
-                                        </tr>
+                                    <div id="wn3">
+                                        <div id="lyr3">
+                                            <div id="rowSize" style="float:left; width:250px;">
+                                                <table width="250" border="0" cellspacing="1" cellpadding="1">
+                                                    <?php
+                                                    if ($locArr[0] > 0 && $locArr[0] != "") {
+                                                        $loc_i = 0;
+                                                        for ($i = 0; $i < count($locArr); $i++, $loc_i++) {
+                                                            for (; $loc_i < count($data_loc); $loc_i++) {
+                                                                if ($locArr[$i] == $data_loc[$loc_i]['locationId'])
+                                                                    break;
+                                                            }
+                                                            ?>
+                                                            <tr>
+                                                            <td class="gridHeaderReportGrids3"><?php //echo $data_loc[$loc_i]['name'];
+                                                                $loc_identity = $loc_i; ?></td>
+                                                            <?php
+                                                            if (count($data_opt1Size) > 0) {
+                                                                for ($j = 0; $j < count($data_opt1Size); $j++) {
+                                                                    if ($j != 0) {
+                                                                        ?>
+                                                                        <tr>
+                                                                            <td class="gridHeaderReportGrids3">
+                                                                                &nbsp;
+                                                                            </td>
+                                                                            <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
+                                                                        </tr>
 
-                                        <?php
-                                    } else {
-                                        ?>
-                                        <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
-                                        </tr>
-                                        <?php
-                                    }
-                                }
-                            } else {
-                                ?>
-                                <td style="visibility:hidden;"
-                                    class="gridHeaderReportGrids2">&nbsp;</td>
-                                </tr>
-                                <?php
-                            }
-                            ?>
-                            <tr>
-                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                <td class="gridHeaderReportGrids2">&nbsp;</td>
-                            </tr>
-                            <?php
-                        }//LocArr for
-                    }//locArr if
-                    ?>
-                </table>
-            </div>
+                                                                        <?php
+                                                                    } else {
+                                                                        ?>
+                                                                        <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
+                                                                        </tr>
+                                                                        <?php
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                ?>
+                                                                <td style="visibility:hidden;"
+                                                                    class="gridHeaderReportGrids2">&nbsp;
+                                                                </td>
+                                                                </tr>
+                                                                <?php
+                                                            }
+                                                            ?>
+                                                            <tr>
+                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                                <td class="gridHeaderReportGrids2">&nbsp;</td>
+                                                            </tr>
+                                                            <?php
+                                                        }//LocArr for
+                                                    }//locArr if
+                                                    ?>
+                                                </table>
+                                            </div>
                                             <?php if (count($data_opt1Size) > 0){ ?>
                                             <div id="wn2"
                                                  style="position:relative; width:600px; height:<?php echo((count($data_opt1Size) * count($locArr) * 32) + (count($data_loc) * 32)); ?>px;  overflow:hidden; float:left;">
@@ -1567,9 +1792,9 @@ pg_free_result($resultProduct);
                                 </td>
                                 <td>
                                     <input id="update_inventory" width="117" height="98"
-                                                   type="image"
-                                                   src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg"
-                                                   alt="Submit button"/>
+                                           type="image"
+                                           src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg"
+                                           alt="Submit button"/>
                                 </td>
                             </tr>
                             <tr>
@@ -1595,1019 +1820,1262 @@ pg_free_result($resultProduct);
         </td>
     </tr>
 </table>
-
-
-
+        </div>
+        </div>
+    </div>
+</div>
 <div class="inventory-box">
     <div class="container">
-        <div class="row">
-            <form id="inventoryFormNew">
-                <div class="col-md-3 left-sidebar">
-                    <img id="imgView" src="<?php echo $upload_dir_image . trim($imageName); ?>" alt="thumbnail" width="150" height="230" border="1" class="mouseover_left"/>
-                </div>
-                <div class="col-md-9 right-sidebar">
-                    <div class="inventory-table">
-                        <div class="col-xs-2">
-                              <input type="hidden" name="scaleNameId"
-                                           value="<?php echo $data_style['scaleNameId']; ?>"/>
-                            <input type="hidden" id="styleId" name="styleId"
-                                           value="<?php echo $styleId; ?>"/>
-                                    <input type="hidden" id="colorId" name="colorId" value="<?php echo $clrId; ?>"/>
+        <br/><br/>
+        <div class="wrapper">
+            <div class="top-table">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="width: 30%">Style #: <strong><?php echo $data_style['styleNumber']; ?></strong></td>
+                        <td style="width: 35%">
+                            Employee:<strong><?php echo $data_employee['firstname'] . ' ' . $data_employee['lastname']; ?></strong>
+                        </td>
+                        <td style="width: 35%">Date Entered:
+                            <strong><?php echo ($latest != '0')?date("F j, Y, g:i a", $latest):''; ?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 30%">Garment Type:
+                            <strong><?php echo $data_garment["garmentName"]; ?></strong></td>
+                        <td style="width: 35%">Color:<strong>
+                                <?php
+                                for ($i = 0; $i < count($data_color); $i++) {
+                                    if ($data_color[$i]['name'] != "") {
+                                        if ($data_color[$i]['colorId'] == $clrId) {
+                                            echo $data_color[$i]['name'];
+                                            break;
+                                        }
+                                    } else {
+                                        echo 'Unknown';
+                                    }
+                                }
+                                ?></strong>
+                        </td>
+                        <td style="width: 35%">Gender :<strong><?php echo(" " . $data_style['sex']); ?></strong></td>
+                    </tr>
+                    <?php
+/*                    echo '<pre>';
+                    print_r($arr_location);die();
+                    */?>
 
+                    <tr>
+                        <td style="width: 30%">Client: <strong><?php echo $data_client['client'] ?></strong></td>
+                        <td colspan="2">Location:
+                            <strong>
+                                <select name="location" id="main_location">
+                                  <option value="0">All Location</option>
+                                <?php
+                                    foreach ($arr_location as $arrKey=>$arrValue) {
+                                        echo '<option value="' . $arrValue . '" ';
+                                        if (isset($_REQUEST['location']) && $_REQUEST['location'] == $arrValue) echo ' selected="selected" ';
+                                        echo '>' . $arrValue . '</option>';
+                                    }
+                                ?>
+                                </select>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 10%">
+                            Box#:<strong> <?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') echo $_REQUEST['unitId']; else echo "All Box" ?></strong>
+                        </td>
+                        <td>Slot:
+                            <strong> <select name="unit_num" class="slot_num">
+                                    <option value="0">---- All box # ----</option>
+                                    <?php
+                                    for ($i = 0; $i < count($data_storage); $i++) {
+                                        if ($data_storage[$i]['unit'] != "")
+                                            echo '<option value="' . $data_storage[$i]['unit'] . '"';
+                                        if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] == $data_storage[$i]['unit']) echo ' selected="selected" ';
+                                        echo '>' . $data_storage[$i]['unit'] . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </strong>
+                        </td>
+                        <td>
                             <?php
-                            // echo "<pre>";print_r($data_style);
-                            // exit();
+                            if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                echo '<button class="btn btn-danger" type="button" onclick="Delete()" style="color: #cd0a0a"> Delete </button>';
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <?php
+                    $unitPost = $_GET['unitId'];
+                    $explode = explode('_',$unitPost);
+                    $words = preg_replace('/\d+/', '', $explode[1] );
+                    if($words == 'W' || $words == ''){
+                    ?>
+                    <tr>
+                        <td>Row:
+                            <strong>
+                                <?php
+                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                    echo '<input type="text" id="up_row" value="' . $data_product[0]['row'] . '">';
+                                } else {
+                                    echo 'All';
+                                }
+                                ?>
+                            </strong>
+                        </td>
+                        <td>Rack:
+                            <strong>
+                                <?php
+                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                    echo '<input type="text" id="up_rack"  value="' . $data_product[0]['rack'] . '">';
+                                } else {
+                                    echo 'All';
+                                }
+                                ?>
+                            </strong>
+                        </td>
+                        <td>Shelf:
+                            <strong>
+                                <?php
+                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                    echo '<input type="text" id="up_shelf"  value="' . $data_product[0]['shelf'] . '">';
+                                } else {
+                                    echo 'All';
+                                }
+                                ?>
+                            </strong>
+                        </td>
+                        <td>
+                            <?php
+                            if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                echo '<button class="btn btn btn-success" onclick="UpdateNew()">Update</button>';
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                    </tr>
+                </table>
+            </div>
+            <br/><br/>
+            <div class="row">
+                <form id="inventoryFormNew">
+                    <div class="col-md-12 right-sidebar">
+                        <div class="inventory-table">
+                            <div class="table-responsive">
+                                <table class="table my-table">
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" name="scaleNameId"
+                                                   value="<?php echo $data_style['scaleNameId']; ?>"/>
+                                            <input type="hidden" id="styleId" name="styleId"
+                                                   value="<?php echo $styleId; ?>"/>
+                                            <input type="hidden" id="colorId" name="colorId" value="<?php echo $clrId; ?>"/>
+                                            <table class="table ">
+                                            <?php
+                                            // echo "<pre>";print_r($data_style);
+                                            $len = sizeof($data_mainSizeIdHash);
+                                            $row = $len / sizeof($data_mainSizeIdHash);
+                                            $row += $len % 4 == 0 ? 0 : 1;
+                                            $row = 1;
+
+                                            $start_head = "<div class='row1'>";
+                                            $end = "</div>";
+                                            $start_div = "<tr><td><div class='title-section'><div class='col-md-12 nopadding'>";
+                                            $end_div = "</div></div></td></tr>";
+                                            $data_div = $start_div . '<p>sizes</p>' . $end_div;
+                                            /*$data_div .= $start_div . '<p>prices</p>' . $end_div;*/
+                                            $cnt = 0;
+                                            foreach ($opt1SizeIdHash as $key => $value) {
+                                                $cnt++;
+                                                $data_div .= $start_div . "<p>" . $value . "</p>" . $end_div;
+                                                //echo $data_div."<br>";
+                                            }
+
+
+                                            //var_dump($row);exit();
+                                            while ($row--) {
+                                                echo $start_head . $data_div . $end;
+                                            }
+                                            ?>
+
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table>
+                                            <?php
+                                            $mainsize_div = '<td><div class="each-section">';
+                                            $mainsize_div_end = '</div></td>';
+                                            $data = '';
+                                            $element = '';
+                                            foreach ($data_mainSizeIdHash as $key1 => $val1) {
+                                                $element .= '<span>' . $val1 . '</span>'; //for sizes
+                                                /*                                                $price = isset($data_style['price'])
+                                                                                                    ? $data_style['price']
+                                                                                                    : ' ';
+                                                                                                $element .= '<span><input type="text" value="' . $price . '" readonly></span>'; //for prices*/
+                                                foreach ($opt1SizeIdHash as $key2 => $val2) {
+                                                    if (isset($data_set[$key1][$key2])) {
+                                                        $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . $key2 . '" type="text" id="" value="' . $data_set[$key1][$key2] . '" name="new_qty_data[]"></span>';
+                                                        $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                        $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
+                                                        $element .= '<input type="hidden" id="_' . $key1 . '_' . $key2 . '" value="0" name="is_change[]">';
+                                                        $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new" value="'.$data_invNew[$key1][$key2].'">';
+                                                    } else {
+                                                        $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . $key2 . '" type="text" value="0" name="new_qty_data[]"></span>';
+                                                        $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                        $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
+                                                        $element .= '<input id="_' . $key1 . '_' . $key2 . '" type="hidden" value="0" name="is_change[]">';
+                                                        $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new" value="0">';
+                                                    }
+                                                }
+                                                $data .= $mainsize_div . $element . $mainsize_div_end;
+                                                $element = '';
+                                            }
+                                            echo $data;
+                                            ?>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+
+
+                                </table>
+                            </div>
+
+
+
+                            <!--<div class="col-xs-1">
+                                <input type="hidden" name="scaleNameId"
+                                       value="<?php /*echo $data_style['scaleNameId']; */?>"/>
+                                <input type="hidden" id="styleId" name="styleId"
+                                       value="<?php /*echo $styleId; */?>"/>
+                                <input type="hidden" id="colorId" name="colorId" value="<?php /*echo $clrId; */?>"/>
+
+                                <?php
+/*                                // echo "<pre>";print_r($data_style);
                                 $len = sizeof($data_mainSizeIdHash);
-                                $row = $len/4;
-                                $row += $len%4 == 0 ? 0 : 1 ;
-                                $row = (int)$row;
+                                $row = $len / sizeof($data_mainSizeIdHash);
+                                $row += $len % 4 == 0 ? 0 : 1;
+                                $row = 1;
 
                                 $start_head = "<div class='row'>";
                                 $end = "</div>";
                                 $start_div = "<div class='title-section'><div class='col-md-12 nopadding'>";
                                 $end_div = "</div></div>";
-                                $data_div = $start_div.'<p>sizes</p>'.$end_div;
-                                $data_div .= $start_div.'<p>prices</p>'.$end_div;
-                                $cnt=0;
-                                foreach ($opt1SizeIdHash as $key => $value) 
-                                {
+                                $data_div = $start_div . '<p>sizes</p>' . $end_div;
+                                $data_div .= $start_div . '<p>prices</p>' . $end_div;
+                                $cnt = 0;
+                                foreach ($opt1SizeIdHash as $key => $value) {
                                     $cnt++;
-                                    $data_div .= $start_div."<p>".$value."</p>".$end_div;
+                                    $data_div .= $start_div . "<p>" . $value . "</p>" . $end_div;
                                     //echo $data_div."<br>";
                                 }
-                               
+
 
                                 //var_dump($row);exit();
-                                while($row--){
-                                    echo $start_head.$data_div.$end;
+                                while ($row--) {
+                                    echo $start_head . $data_div . $end;
                                 }
-                             ?>
-                            
+                                */?>
 
-                        </div>
 
-                        <div class="col-xs-10">
+                            </div>-->
 
-                            <div class="row">
-                                <?php   
+                            <div class="col-xs-10">
 
-                                //echo "<pre>"; print_r($data_set_price);exit();
-                                
-
-                                $mainsize_div = '<div class="col-xs-6 col-sm-4 col-md-3 nopadding"><div class="each-section">';
-                                $mainsize_div_end = '</div></div>';
-                                $data = '';
-                                $element = '';
-
-                                foreach($data_mainSizeIdHash as $key1=>$val1)
-                                {
-                                    $element .= '<span>'.$val1.'</span>'; //for sizes
-                                    $price = isset($data_style['price']) 
-                                                 ? $data_style['price']
-                                                 : ' '; 
-                                    $element .= '<span><input type="text" value="'.$price.'" readonly></span>'; //for prices
-
-                                    foreach($opt1SizeIdHash as $key2=>$val2)
-                                    {
-                                        //var_dump(isset($data_set[$key1][$key2]));exit();
-                                        if(isset($data_set[$key1][$key2]))
-                                        {
-                                                   
-                                          //$element .= '<span>'.$data_set[$key1][$key2].'</span>';
-                                            $element .= '<span><input class="clicked" id="input_'.$key1.'_'.$key2.'" type="text" id="" value="'.$data_set[$key1][$key2].'" name="new_qty_data[]"></span>';
-                                            $element .= '<input type="hidden" value="'.$val1.'" name="new_type_data[]">';
-                                            $element .= '<input type="hidden" value="'.$val2.'" name="new_size_data[]">';
-                                            $element .= '<input type="hidden" id="_'.$key1.'_'.$key2.'" value="0" name="is_change[]">';
-                                        }
-                                        else
-                                        {
-                                            $element .= '<span><input class="clicked" id="input_'.$key1.'_'.$key2.'" type="text" value="0" name="new_qty_data[]"></span>';
-                                            $element .= '<input type="hidden" value="'.$val1.'" name="new_type_data[]">';
-                                            $element .= '<input type="hidden" value="'.$val2.'" name="new_size_data[]">';
-                                                $element .= '<input id="_'.$key1.'_'.$key2.'" type="hidden" value="0" name="is_change[]">';
-                                        }
-                                    }
-                                    $data .= $mainsize_div.$element.$mainsize_div_end;
+                                <div class="row">
+                                    <?php
+/*                                    $mainsize_div = '<div class="col-xs-1 col-sm-1 col-md-1 nopadding"><div class="each-section">';
+                                    $mainsize_div_end = '</div></div>';
+                                    $data = '';
                                     $element = '';
-                                }
-                                
-                                //$data =  $data;
-                                echo $data;
+                                    foreach ($data_mainSizeIdHash as $key1 => $val1) {
+                                        $element .= '<span>' . $val1 . '</span>'; //for sizes
+                                        $price = isset($data_style['price'])
+                                            ? $data_style['price']
+                                            : ' ';
+                                        $element .= '<span><input type="text" value="' . $price . '" readonly></span>'; //for prices
+                                        foreach ($opt1SizeIdHash as $key2 => $val2) {
+                                            if (isset($data_set[$key1][$key2])) {
+                                                $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . $key2 . '" type="text" id="" value="' . $data_set[$key1][$key2] . '" name="new_qty_data[]"></span>';
+                                                $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
+                                                $element .= '<input type="hidden" id="_' . $key1 . '_' . $key2 . '" value="0" name="is_change[]">';
+                                            } else {
+                                                $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . $key2 . '" type="text" value="0" name="new_qty_data[]"></span>';
+                                                $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
+                                                $element .= '<input id="_' . $key1 . '_' . $key2 . '" type="hidden" value="0" name="is_change[]">';
+                                            }
+                                        }
+                                        $data .= $mainsize_div . $element . $mainsize_div_end;
+                                        $element = '';
+                                    }
+                                    echo $data;
+                                    */?>
+                                </div>
 
-
-                                // $mainsize_div = '<div class="col-xs-6 col-sm-4 col-md-3 nopadding"><div class="each-section">';
-                                // $mainsize_div_end = '</div></div>';
-                                // $data = '';
-                                // foreach($data_mainSizeIdHash as $key=>$val){ 
-                                //     $data .= $mainsize_div . '<span>'.$val.'</span>'.'<span>40</span><span>40</span><span>40</span>
-                                //         <span>40</span>
-                                //         <span>40</span>'.$mainsize_div_end;
-                                // }
-                                //$data =  $data;
-                                //echo $data;
-
-                                ?>
                             </div>
+
 
                         </div>
                     </div>
-                </div>
-                    <?php if(isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5){ ?>
-                    <input id="update_inventory_new" width="117" height="98"
-                                                   type="image"
-                                                   src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg"
-                                                   alt="Submit button"/>
-                    <?php } ?>
-            </form>
+                    <div class="row col-md-12 align-right">
+                        <?php if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { ?>
+                            <input id="update_inventory_new" width="117" height="98"
+                                   type="image"
+                                   src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg"
+                                   alt="Submit button"/>
+                        <?php } ?>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
+    <div id="dialog-form" title="Submit By Email">
+        <p class="validateTips">All form fields are required.</p>
 
+        <form action='reportMail.php?styleId=<?php echo $styleId; ?>' id="frmmailsendform" method="POST">
+            <fieldset>
+                <label for="email">Email</label>
+                <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all"/>
+                <label for="subject">Subject:</label>
+                <input type="text" name="subject" id="subject" class="text ui-widget-content ui-corner-all"/>
 
-
-
-<!-- <div class="inventory-box">
-    <div class="container">
-        <div class="row">
-            <form id="inventoryForm">
-                <div class="col-md-3 left-sidebar">
-                    <img id="imgView" src="<?php echo $upload_dir_image . trim($imageName); ?>" alt="thumbnail" width="150" height="230" border="1" class="mouseover_left"/>
-                </div>
-                <div class="col-md-9 right-sidebar">
-                    <div class="inventory-table">
-                        <div class="col-xs-2"></div>
-                        <div class="col-xs-10">
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
-                                    <div class="each-section">
-                                        <span>XXXS</span>
-                                        <span>40</span>
-                                        <span>40</span>
-                                        <span>40</span>
-                                        <span>40</span>
-                                        <span>40</span>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
-                                    <div class="each-section">
-                                        <span>XXS</span>
-                                        <span>30</span>
-                                        <span>30</span>
-                                        <span>30</span>
-                                        <span>30</span>
-                                        <span>30</span>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
-                                    <div class="each-section">
-                                        <span>XS</span>
-                                        <span>20</span>
-                                        <span>20</span>
-                                        <span>20</span>
-                                        <span>20</span>
-                                        <span>20</span>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
-                                    <div class="each-section">
-                                        <span>S</span>
-                                        <span>10</span>
-                                        <span>10</span>
-                                        <span>10</span>
-                                        <span>10</span>
-                                        <span>10</span>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-4 col-md-3 nopadding">
-                                    <div class="each-section">
-                                        <span>M</span>
-                                        <span>10</span>
-                                        <span>10</span>
-                                        <span>10</span>
-                                        <span>10</span>
-                                        <span>10</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
+            </fieldset>
+            <input type="hidden" name="colorId" id="colorid_mail" value="<?php echo $_GET['colorId']; ?>"/>
+            <input type="hidden" name="unitId" id="unitId_mail" value="<?php echo $_GET['unitId']; ?>"/>
+            <input type="hidden" name="styleId" id="styleId_mail" value="<?php echo $_GET['styleId']; ?>"/>
+        </form>
     </div>
-</div>
- -->
 
+    <script type="text/javascript">
+        /*
+         ===================================
+         Inventory table responsive
+         ===================================
+         */
 
-<div id="dialog-form" title="Submit By Email">
-    <p class="validateTips">All form fields are required.</p>
+        var opt1Array_str = null;
+        var obj_arr = new Array();
 
-    <form action='reportMail.php?styleId=<?php echo $styleId; ?>' id="frmmailsendform" method="POST">
-        <fieldset>
-            <label for="email">Email</label>
-            <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all"/>
-            <label for="subject">Subject:</label>
-            <input type="text" name="subject" id="subject" class="text ui-widget-content ui-corner-all"/>
+        function storeopt1Array(str) {
+            opt1Array_str = str;
 
-        </fieldset>
-        <input type="hidden" name="colorId" id="colorid_mail" value="<?php echo $_GET['colorId']; ?>"/>
-        <input type="hidden" name="unitId" id="unitId_mail" value="<?php echo $_GET['unitId']; ?>"/>
-        <input type="hidden" name="styleId" id="styleId_mail" value="<?php echo $_GET['styleId']; ?>"/>
-    </form>
-</div>
+            var obj = opt1Array_str.split(",").map(String);
+            console.log(obj);
 
-<script type="text/javascript">
-/*
-===================================
-    Inventory table responsive
-===================================
-*/
+            for (var key in obj) {
+                //console.log('key :',key,' obj :',obj[key],' type :',typeof obj[key]);
 
-var opt1Array_str = null;
-var obj_arr = new Array(); 
-
-function storeopt1Array(str){
-    opt1Array_str = str;
-
-    var obj = opt1Array_str.split(",").map(String);
-    console.log(obj);
-    
-    for (var key in obj) {
-        //console.log('key :',key,' obj :',obj[key],' type :',typeof obj[key]);
-        
-        var temp = obj[key].split("=").map(String);
-        obj_arr.push(temp[1].slice(1, -1));//temp[1].replace(/\'\s*$/, "");
-        //console.log('temp :',temp);
-    }
-
-    for(i=0 ; i<obj_arr.length ; i++)
-    {
-        console.log(' i:',i,'obj_arr :',obj_arr[i]);
-    }
-    
-}
-
-
-    
-
-$(document).ready(function(){
-
-    //console.log('obj_arr ::>>',obj_arr);
-
-    //var windowWidth = $(window).width();
-    //$(".inventory-table .col-md-3").each(function(i){
-
-        // var div_header = "<div class='row'>";
-        // var div_content = "<div class='title-section'>";
-        // div_content += "<div class='col-md-12 nopadding'>";
-        // var div_content_end = "</div></div>";
-        // var div_header_end = "</div>";
-
-        // var data='';
-        // data += div_content+'<p>'+'sizes'+'</p>'+div_content_end;
-        // data += div_content+'<p>'+'prices'+'</p>'+div_content_end;
-        
-        // console.log('lllllllllllllllllllll',obj_arr.length)
-        // for(i=0;i<obj_arr.length;i++)
-        // {
-        //     console.log('obj_arr ::::',obj_arr[i],' LENGTH :: ',obj_arr.length);
-        //     data += div_content+'<p>'+obj_arr[i]+'</p>'+div_content_end;
-        // }
-        // data = div_header + data + div_header_end;
-
-        // alert(data);
-
-        // var data = "<div class='row'>";
-        // data += "<div class='title-section'>";
-        // data += "<div class='col-md-12 nopadding'>";
-        // data += "<p>sizes</p>";
-        // data += "</div>";
-        // data += "</div>";
-        // data += "<div class='title-section'>";
-        // data += "<div class='col-md-12 nopadding'>";
-        // data += "<p>prices</p>";
-        // data += "</div>";
-        // data += "</div>";
-        // data += "<div class='title-section'>";
-        // data += "<div class='col-md-12 nopadding'>";
-        // data += "<p>Petite</p>";
-        // data += "</div>";
-        // data += "</div>";
-        // data += "<div class='title-section'>";
-        // data += "<div class='col-md-12 nopadding'>";
-        // data += "<p>Short</p>";
-        // data += "</div>";
-        // data += "</div>";
-        // data += "<div class='title-section'>";
-        // data += "<div class='col-md-12 nopadding'>";
-        // data += "<p>Reg</p>";
-        // data += "</div>";
-        // data += "</div>";
-        // data += "<div class='title-section'>";
-        // data += "<div class='col-md-12 nopadding'>";
-        // data += "<p>Tall</p>";
-        // data += "</div>";
-        // data += "</div>";
-        // data += "</div>";
-        //alert(data);
-
-        // if(windowWidth > 991){
-        //     if( i % 4 === 0 ) {
-        //         $(".inventory-table .col-xs-2").append(data);
-        //     }
-        // }
-
-        // if(windowWidth > 767 && windowWidth <= 991){
-        //     if( i % 3 === 0 ) {
-        //         $(".inventory-table .col-xs-2").append(data);
-        //     }
-        // }
-
-        // if(windowWidth <= 767){
-        //     if( i % 2 === 0 ) {
-        //         $(".inventory-table .col-xs-2").append(data);
-        //     }
-        // }
-        
-    //});
-});
-/*
-=============================================
-*/
-</script>
-<script>
-
-$(document).ready(function(){
-    $('#warehouse_link').hide();
-})
-
-$('#container_link').click(function(e){
-    $('#container_link').hide();
-    $('#conveyor_link').show();
-    $('#warehouse_link').show();
-});
-
-$('#conveyor_link').click(function(e){
-    $('#container_link').show();
-    $('#conveyor_link').hide();
-    $('#warehouse_link').show();
-});
-
-$('#warehouse_link').click(function(e){
-    $('#container_link').show();
-    $('#conveyor_link').show();
-    $('#warehouse_link').hide();
-});
-
-
-
-$('#warehouse_dropdown').select(function(e){
-   // alert(this.value);
-});
-
-
-$('#conveyor_loc_dropdown').change(function(e){
-    id = this.value;
-    if(id != 0)
-    {
-        $.ajax({
-            url: 'conveyor_dropdown.php',
-            type:"post",
-            dataType : "json",
-            data: {
-                id:id
-            },
-            success: function(data) 
-            {
-                console.log(data);
-                $('#conveyor_td').show();
-                $('#conveyor_dropdown').empty();
-                $('#conveyor_dropdown').append($('<option>',
-                {
-                    value: 0,
-                    data: "",
-                    text : '--All conveyor--'
-                }));
-                $.each (data, function(i){
-                    $('#conveyor_dropdown').append($('<option>',
-                     {
-                        value: data[i].id,
-                        text : data[i].conveyor
-                    }));
-                });
+                var temp = obj[key].split("=").map(String);
+                obj_arr.push(temp[1].slice(1, -1));//temp[1].replace(/\'\s*$/, "");
+                //console.log('temp :',temp);
             }
-        }); 
-    }
-    else{
-        $('#conveyor_dropdown').empty();
-    }
 
-});
-
-$('#container_loc_dropdown').change(function(e){
-    id = this.value;
-    if(id != 0)
-    {
-        $.ajax({
-            url: 'container_dropdown.php',
-            type:"post",
-            dataType : "json",
-            data: {
-                id:id
-            },
-            success: function(data) 
-            {
-                console.log(data);
-                $('#container_td').show();
-                $('#container_dropdown').empty();
-                $('#container_dropdown').append($('<option>',
-                {
-                    value: 0,
-                    text : '--All container--'
-                }));
-                $.each (data, function(i){
-                    $('#container_dropdown').append($('<option>',
-                     {
-                        value: data[i].id,
-                        text : data[i].container
-                    }));
-                });
-
-                
+            for (i = 0; i < obj_arr.length; i++) {
+                console.log(' i:', i, 'obj_arr :', obj_arr[i]);
             }
-        }); 
-    }
-    else
-    {
-        $('#container_dropdown').empty();
-    }
-});
+
+        }
 
 
+        $(document).ready(function () {
 
-$('.location_dropdown').change(function(e){
-    id = this.value;
-    if(id != 0)
-    {
-       $.ajax({
-            url: 'warehouse_dropdown.php',
-            type:"post",
-            dataType : "json",
-            data: {
-                id:id
-            },
-            success: function(data) 
-            {
+            //console.log('obj_arr ::>>',obj_arr);
 
-                console.log(data);
-                length = Object.keys(data).length;
-                //console.log(length);
-                $('#warehouse_td').show();
-                $('#warehouse_dropdown').empty();
-                $('#warehouse_dropdown').append($('<option>',
-                     {
-                        value: 0,
-                        text : '--All warehouse--'
-                    }));
+            //var windowWidth = $(window).width();
+            //$(".inventory-table .col-md-3").each(function(i){
 
-                $.each (data, function (i) {
-                    console.log (i);
-                    $('#warehouse_dropdown').append($('<option>',
-                     {
-                        value: data[i].id,
-                        text : data[i].warehouse
-                    }));
-                });   
-            }
-        }); 
-    }
-    else
-    {
-        $('#warehouse_dropdown').empty();
-    }
-});
+            // var div_header = "<div class='row'>";
+            // var div_content = "<div class='title-section'>";
+            // div_content += "<div class='col-md-12 nopadding'>";
+            // var div_content_end = "</div></div>";
+            // var div_header_end = "</div>";
 
-// function warehouse_dropdown()
-//     {
-//         console.log(1);
-//     }
+            // var data='';
+            // data += div_content+'<p>'+'sizes'+'</p>'+div_content_end;
+            // data += div_content+'<p>'+'prices'+'</p>'+div_content_end;
 
+            // console.log('lllllllllllllllllllll',obj_arr.length)
+            // for(i=0;i<obj_arr.length;i++)
+            // {
+            //     console.log('obj_arr ::::',obj_arr[i],' LENGTH :: ',obj_arr.length);
+            //     data += div_content+'<p>'+obj_arr[i]+'</p>'+div_content_end;
+            // }
+            // data = div_header + data + div_header_end;
 
-$('#new_conveyor_form').submit(function(e){
-    e.preventDefault();
-    var styleId = document.getElementById('styleId').value;
-    var colorId = document.getElementById('colorId').value;
-    var slot = $('input[name="cv_slot"]').val();
-    var locationId = $('#conveyor_loc_dropdown').val();
-    var conveyorId = $('#conveyor_dropdown').val();
-    
-    console.log(slot,locationId,conveyorId);
-    if(slot == '' || conveyorId == '0' || conveyorId == null || locationId == '0' || locationId == null)
-    {
-        console.log(slot,conveyorId,locationId);
-    }
-    else
-    {
-        //alert (locationId+' '+styleId);
-        console.log(slot,conveyorId,locationId,styleId,colorId);
-        $.ajax({
-            url: 'add_unit_to_conveyor.php',
-            type:"post",
-            dataType : "json",
-            data: {
-                styleId:styleId,
-                colorId:colorId,
-                slot : slot,
-                locationId : locationId,
-                conveyorId : conveyorId,
-                type : 'slot'
-            },
-            success: function(data) 
-            {
-                console.log(data);
-                if(data == 'slot not available')
-                {
-                    
-                    $('#conv_err_msg').empty();
-                    $('#conv_err_msg').text(' -- slot not available');
-                    $('#conv_err_msg').show();
-                    $('#conv_err_msg').delay(3000).fadeOut();
-                    
-                } 
-                else
-                {
-                    $('#close_warehouse_f').trigger("click");
+            // alert(data);
 
-                    window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&unitId=" + data);
-                    $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+            // var data = "<div class='row'>";
+            // data += "<div class='title-section'>";
+            // data += "<div class='col-md-12 nopadding'>";
+            // data += "<p>sizes</p>";
+            // data += "</div>";
+            // data += "</div>";
+            // data += "<div class='title-section'>";
+            // data += "<div class='col-md-12 nopadding'>";
+            // data += "<p>prices</p>";
+            // data += "</div>";
+            // data += "</div>";
+            // data += "<div class='title-section'>";
+            // data += "<div class='col-md-12 nopadding'>";
+            // data += "<p>Petite</p>";
+            // data += "</div>";
+            // data += "</div>";
+            // data += "<div class='title-section'>";
+            // data += "<div class='col-md-12 nopadding'>";
+            // data += "<p>Short</p>";
+            // data += "</div>";
+            // data += "</div>";
+            // data += "<div class='title-section'>";
+            // data += "<div class='col-md-12 nopadding'>";
+            // data += "<p>Reg</p>";
+            // data += "</div>";
+            // data += "</div>";
+            // data += "<div class='title-section'>";
+            // data += "<div class='col-md-12 nopadding'>";
+            // data += "<p>Tall</p>";
+            // data += "</div>";
+            // data += "</div>";
+            // data += "</div>";
+            //alert(data);
+
+            // if(windowWidth > 991){
+            //     if( i % 4 === 0 ) {
+            //         $(".inventory-table .col-xs-2").append(data);
+            //     }
+            // }
+
+            // if(windowWidth > 767 && windowWidth <= 991){
+            //     if( i % 3 === 0 ) {
+            //         $(".inventory-table .col-xs-2").append(data);
+            //     }
+            // }
+
+            // if(windowWidth <= 767){
+            //     if( i % 2 === 0 ) {
+            //         $(".inventory-table .col-xs-2").append(data);
+            //     }
+            // }
+
+            //});
+        });
+        /*
+         =============================================
+         */
+    </script>
+    <script>
+        $('#add_new_location').change(function(){
+            var arr = <?php echo json_encode($newAllLocation); ?>;
+            var select = $('#add_new_location').val();
+            var type = '';
+            for(var i=0;i<arr.length;i++){
+                if(arr[i]['location'] == select){
+                    type =arr[i]['type'];
+                    break;
                 }
             }
-        }); 
-    }
-});
+            if(type == 'warehouse'){
+                $('#box_add').show();
+                $('#row_add').show();
+                $('#rack_add').show();
+                $('#shelf_add').show();
+                $('#slot_add').hide();
+            } else if(type == 'container'){
+                $('#row_add').hide();
+                $('#rack_add').hide();
+                $('#shelf_add').hide();
+                $('#box_add').show();
+                $('#slot_add').hide();
+            } else if(type == 'conveyor'){
+                $('#slot_add').show();
+                $('#box_add').hide();
+                $('#row_add').hide();
+                $('#rack_add').hide();
+                $('#shelf_add').hide();
+            } else {
+                $('#slot_add').hide();
+                $('#box_add').hide();
+                $('#row_add').hide();
+                $('#rack_add').hide();
+                $('#shelf_add').hide();
+            }
+        });
 
-
-
-
-$('#new_container_form').submit(function(e){
-    e.preventDefault();
-    var styleId = document.getElementById('styleId').value;
-    var colorId = document.getElementById('colorId').value;
-    var unit = $('input[name="co_unit"]').val();
-    var locationId = $('#container_loc_dropdown').val();
-    var containerId = $('#container_dropdown').val();
-
-    if(unit == '' || containerId == '0' || containerId == null || locationId == '0' || locationId == null)
-    {
-        console.log(unit,containerId,locationId);
-    }
-    else
-    {
-        console.log(unit,containerId,locationId,styleId,colorId);
-        //alert (locationId+' '+styleId);
-        $.ajax({
-            url: 'add_unit_to_container.php',
-            type:"post",
-            dataType : "json",
-            data: {
-                styleId:styleId,
-                colorId:colorId,
-                unit : unit,
-                locationId : locationId,
-                containerId : containerId,
-                type : 'unit_c'
-            },
-            success: function(data) 
-            {
-                console.log(data);
-                if(data == 'box not available')
-                {
-                    //alert(data);
-                    $('#cont_err_msg').empty();
-                    $('#cont_err_msg').text(' -- box not available');
-                    $('#cont_err_msg').show();
-                    $('#cont_err_msg').delay(3000).fadeOut();
-                    //$('#cont_err_msg').empty();
-                }
-                else
-                {
-                    $('#close_warehouse_f').trigger("click");
-
-                    window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&unitId=" + data);
-                    $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
-
-                    //alert('success');        
+        $('#add_inventory_new').click(function () {
+            var arr = <?php echo json_encode($newAllLocation); ?>;
+            var location = $('#add_new_location').val();
+            if(location == '0' || location == "undefined" || location == null){
+                $('#message_add').html('<h4 style="color: red">Please Select a Location</h4>');
+                $('#message_add').show();
+                return false;
+            }
+            var style = $('#styleNumberAdd').val();
+            if(style == undefined || style == null){
+                $('#message_add').html('<h4 style="color: red">Style not available</h4>');
+                $('#message_add').show();
+                return false;
+            }
+            var color = $('#col_new_add').val();
+            if(color == undefined || color == null || color == "" || color == '0'){
+                $('#message_add').html('<h4 style="color: red">Please Select a Color</h4>');
+                $('#message_add').show();
+                return false;
+            }
+            var type = '';
+            for(var i=0;i<arr.length;i++){
+                if(arr[i]['location'] == location){
+                    type =arr[i]['type'];
+                    break;
                 }
             }
-        }); 
-    }
-});
-
-
-
-
-$('#warehouse_new_form').submit(function(e){
-    e.preventDefault();
-    var styleId = document.getElementById('styleId').value;
-    var colorId = document.getElementById('colorId').value;
-    var location = $('#location_dropdown').val();
-    var warehouse = $('#warehouse_dropdown').val();
-    var rack = $('input[name="rack"]').val();
-    var row  = $('input[name="row"]').val();
-    var shelf  = $('input[name="shelf"]').val();
-    var unit = $('input[name="unit"]').val();
-    //var location_details_id = $('input[name="location_details_id"]').val();
-
-    //alert(location+' '+styleId);
-
-    //console.log(warehouse,location);
-
-    if(colorId == '' || styleId == '' ||  unit == '' || shelf == '' || row == '' || rack == '' || warehouse == '' || location == null || location == '0')
-    {
-        $('#close_warehouse_f').trigger("click");
-        $("#message").html("<div class='errorMessage'><strong>All fields are mandatory. Please fill all fields and try later.</strong></div>").delay(3000).fadeOut();
-    }
-    else
-    {
+            var box = '';
+            var row = '';
+            var rack = '';
+            var shelf = '';
+            var slot = '';
+            var unitId = '';
+            if(type == 'warehouse'){
+                box = $('#add_new_box').val();
+                if(box == '' || box == null){
+                    $('#message_add').html('<h4 style="color: red;">Please Enter a box number</h4>')
+                    $('#message_add').show();
+                    return false;
+                }
+                unitId = location+'_'+box;
+                row = $('#add_new_row').val();
+                rack = $('#add_new_rack').val();
+                shelf = $('#add_new_shelf').val();
+            } else if(type == 'container'){
+                box = $('#add_new_box').val();
+                if(box == '' || box == null){
+                    $('#message_add').html('<h4 style="color: red;">Please Enter a box number</h4>')
+                    $('#message_add').show();
+                    return false;
+                }
+                unitId = location+'_'+box;
+            } else if(type == 'conveyor'){
+                slot = $('#add_new_slot').val();
+                if(slot == '' || slot == null){
+                    $('#message_add').html('<h4 style="color: red;">Please Enter a Slot number</h4>');
+                    $('#message_add').show();
+                    return false;
+                }
+                unitId = location+'_'+slot;
+            } else {
+                $('#message_add').html('<h4 style="color: red;">Box Type undefined</h4>');
+                $('#message_add').show();
+                return false;
+            }
+            var datastring = $('#inventoryFormNewAdd').serialize();
+            datastring += '&location='+location;
+            datastring += '&type='+type;
+            datastring += '&colorId='+color;
+            datastring += '&box='+box+'&slot='+slot+'&row='+row+'&rack='+rack+'&shelf='+shelf;
             $.ajax({
-                url: 'addNewInventory.php',
-                type:"post",
-
-                data: {
-                    location:location,
-                    warehouse:warehouse,
-                    rack: rack,
-                    row: row,
-                    shelf: shelf,
-                    unit:unit,
-                    colorId:colorId,
-                    styleId:styleId,
-                    type : 'type_w'
-                    //location_details_id:location_details_id
-                },
-                success: function (data) 
-                {
-                    console.log(data);
-                    
-                    if (data != null) 
-                    {
-                        if(data == "box not available")
-                        {
-
-                            $('#warehouse_err_msg').empty();
-                            $('#warehouse_err_msg').text(' -- unit not available');
-                            $('#warehouse_err_msg').show();
-                            $('#warehouse_err_msg').delay(3000).fadeOut();
-                            console.log('kaudfy---------');
+                url: "inventoryNew.php",
+                type: "POST",
+                data: datastring,
+                success: function (data) {
+                    var json = JSON.parse(data);
+                    if(json.error == '1'){
+                        if(json.conflict == '1'){
+                            var arr = json.name;
+                            var html = '<h4 style="color: #0c00d2">';
+                            jQuery.each(arr,function (i,item) {
+                                html += 'Box already present in '+item.location+' , '+item.type+'<br/>';
+                            });
+                            html += '</h4>';
+                            $('#message_add').html(html);
+                            $('#message_add').show();
+                        } else {
+                            $('#message_add').html('<h4 style="color: red;">'+json.name+'</h4>');
+                            $('#message_add').show();
                         }
-                        else
-                        {
-                            console.log('kajdfgaludfgluiyf');
+                    } else {
+                        if(json.flag == '1'){
+                            window.location.replace("reportViewEdit.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + color + "&unitId=" + unitId);
+                            $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+                        } else {
+                            $('#message_add').html('<h4 style="color: red;">Server error please try again</h4>');
+                            $('#message_add').show();
+                        }
+                    }
+                }
+            });
+            return false;
+        });
+        $(document).ready(function () {
+            $('#warehouse_link').hide();
+        });
 
+        $('#container_link').click(function (e) {
+            $('#container_link').hide();
+            $('#conveyor_link').show();
+            $('#warehouse_link').show();
+        });
+
+        $('#conveyor_link').click(function (e) {
+            $('#container_link').show();
+            $('#conveyor_link').hide();
+            $('#warehouse_link').show();
+        });
+
+        $('#warehouse_link').click(function (e) {
+            $('#container_link').show();
+            $('#conveyor_link').show();
+            $('#warehouse_link').hide();
+        });
+
+
+        $('#warehouse_dropdown').select(function (e) {
+            // alert(this.value);
+        });
+
+
+        $('#conveyor_loc_dropdown').change(function (e) {
+            id = this.value;
+            if (id != 0) {
+                $.ajax({
+                    url: 'conveyor_dropdown.php',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        id: id
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        $('#conveyor_td').show();
+                        $('#conveyor_dropdown').empty();
+                        $('#conveyor_dropdown').append($('<option>',
+                            {
+                                value: 0,
+                                data: "",
+                                text: '--All conveyor--'
+                            }));
+                        $.each(data, function (i) {
+                            $('#conveyor_dropdown').append($('<option>',
+                                {
+                                    value: data[i].id,
+                                    text: data[i].conveyor
+                                }));
+                        });
+                    }
+                });
+            }
+            else {
+                $('#conveyor_dropdown').empty();
+            }
+
+        });
+
+        $('#container_loc_dropdown').change(function (e) {
+            id = this.value;
+            if (id != 0) {
+                $.ajax({
+                    url: 'container_dropdown.php',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        id: id
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        $('#container_td').show();
+                        $('#container_dropdown').empty();
+                        $('#container_dropdown').append($('<option>',
+                            {
+                                value: 0,
+                                text: '--All container--'
+                            }));
+                        $.each(data, function (i) {
+                            $('#container_dropdown').append($('<option>',
+                                {
+                                    value: data[i].id,
+                                    text: data[i].container
+                                }));
+                        });
+
+
+                    }
+                });
+            }
+            else {
+                $('#container_dropdown').empty();
+            }
+        });
+
+
+        $('.location_dropdown').change(function (e) {
+            id = this.value;
+            if (id != 0) {
+                $.ajax({
+                    url: 'warehouse_dropdown.php',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        id: id
+                    },
+                    success: function (data) {
+
+                        console.log(data);
+                        length = Object.keys(data).length;
+                        //console.log(length);
+                        $('#warehouse_td').show();
+                        $('#warehouse_dropdown').empty();
+                        $('#warehouse_dropdown').append($('<option>',
+                            {
+                                value: 0,
+                                text: '--All warehouse--'
+                            }));
+
+                        $.each(data, function (i) {
+                            console.log(i);
+                            $('#warehouse_dropdown').append($('<option>',
+                                {
+                                    value: data[i].id,
+                                    text: data[i].warehouse
+                                }));
+                        });
+                    }
+                });
+            }
+            else {
+                $('#warehouse_dropdown').empty();
+            }
+        });
+
+        // function warehouse_dropdown()
+        //     {
+        //         console.log(1);
+        //     }
+
+
+        $('#new_conveyor_form').submit(function (e) {
+            e.preventDefault();
+            var styleId = document.getElementById('styleId').value;
+            var colorId = document.getElementById('colorId').value;
+            var slot = $('input[name="cv_slot"]').val();
+            var locationId = $('#conveyor_loc_dropdown').val();
+            var conveyorId = $('#conveyor_dropdown').val();
+
+            console.log(slot, locationId, conveyorId);
+            if (slot == '' || conveyorId == '0' || conveyorId == null || locationId == '0' || locationId == null) {
+                console.log(slot, conveyorId, locationId);
+            }
+            else {
+                //alert (locationId+' '+styleId);
+                console.log(slot, conveyorId, locationId, styleId, colorId);
+                $.ajax({
+                    url: 'add_unit_to_conveyor.php',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        styleId: styleId,
+                        colorId: colorId,
+                        slot: slot,
+                        locationId: locationId,
+                        conveyorId: conveyorId,
+                        type: 'slot'
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data == 'slot not available') {
+
+                            $('#conv_err_msg').empty();
+                            $('#conv_err_msg').text(' -- slot not available');
+                            $('#conv_err_msg').show();
+                            $('#conv_err_msg').delay(3000).fadeOut();
+
+                        }
+                        else {
                             $('#close_warehouse_f').trigger("click");
 
                             window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&unitId=" + data);
                             $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
                         }
-                    } 
-                    else 
-                    {
-                        
-                        $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
                     }
-                }
-            });
-    }
-});
-
-function clear_form_data(){
-    
-    //empty warehouse form
-    $('#warehouse_form_row').val('');
-    $('#warehouse_form_rack').val('');
-    $('#warehouse_form_shelf').val('');
-    $('#warehouse_form_unit').val('');
-    $('#warehouse_dropdown').empty();
-    $('#warehouse_td').hide();
-    // $('#warehouse_dropdown').val('0');
-    // $('#warehouse_dropdown').text('--All warehouse--');
-    $('#warehouse_err_msg').text('');
-    $('#warehouse_err_msg').hide();
-    document.getElementById("location_dropdown").options[0].selected=true;
-
-    //empty container form
-    $('#co_unit').val('');
-    $('#container_dropdown').empty();
-    $('#container_td').hide();
-    $('#cont_err_msg').empty();
-    $('#cont_err_msg').hide();
-    document.getElementById("container_loc_dropdown").options[0].selected=true;
-
-    //empty conveyor form
-    $('#cv_slot').val('');
-    $('#conveyor_dropdown').empty();
-    $('#conveyor_td').hide();
-    $('#conv_err_msg').empty();
-    $('#conv_err_msg').hide();
-    document.getElementById("conveyor_loc_dropdown").options[0].selected=true;
-    
-};
-
-// Get the modal
-var modal = document.getElementById('myModal');
-
-// Get the button that opens the modal
-var btn = document.getElementById("addinventory_new");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks the button, open the modal 
-btn.onclick = function() {
-    modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
-    clear_form_data();
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
-</script>
-
-
-<script>
-
-
-    $('#newInventory').click(function(e){
-
-        $('#inventory_form').show();
-        $('#warehouse_form').show();
-
-        
-    });
-        
-    function Update() 
-    {
-        
-        room = $('#updateroom').val();
-        // if(room == '') {
-        //     alert("Please Provide a Room");
-        //     return false;
-        // }
-        var rack = $('#updaterack').val();
-        if(rack == '') {
-            alert("Please Provide a rack");
-            return false;
-        }
-        var row = $('#updaterow').val();
-        if(row == '') {
-            alert("Please Provide a row");
-            return false;
-        }
-        var self = $('#updateshelf').val();
-        if(self == '') {
-            alert("Please Provide a self");
-            return false;
-        }
-        //alert(row);
-        $.ajax({
-            url: 'editRoom.php',
-            type:"post",
-            data: {
-                room: room,
-                rack: rack,
-                row: row,
-                self: self,
-                unitId: "<?php echo $_REQUEST['unitId'];?>",
-                styleId: document.getElementById('styleId').value
-            },
-            success: function (response) {
-                if(response == 1) {
-                    alert("Updated");
-                    location.reload();
-                } else {
-                    alert("Not Updated! Please Try Again After Some Time");
-                }
+                });
             }
         });
-       // $(location).attr('href', "updateInventory.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
-    }
 
-    function Delete() 
-    {
-        if (confirm("Are you Sure you want to delete this unit") == true) {
+
+        $('#new_container_form').submit(function (e) {
+            e.preventDefault();
+            var styleId = document.getElementById('styleId').value;
+            var colorId = document.getElementById('colorId').value;
+            var unit = $('input[name="co_unit"]').val();
+            var locationId = $('#container_loc_dropdown').val();
+            var containerId = $('#container_dropdown').val();
+
+            if (unit == '' || containerId == '0' || containerId == null || locationId == '0' || locationId == null) {
+                console.log(unit, containerId, locationId);
+            }
+            else {
+                console.log(unit, containerId, locationId, styleId, colorId);
+                //alert (locationId+' '+styleId);
+                $.ajax({
+                    url: 'add_unit_to_container.php',
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        styleId: styleId,
+                        colorId: colorId,
+                        unit: unit,
+                        locationId: locationId,
+                        containerId: containerId,
+                        type: 'unit_c'
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data == 'box not available') {
+                            //alert(data);
+                            $('#cont_err_msg').empty();
+                            $('#cont_err_msg').text(' -- box not available');
+                            $('#cont_err_msg').show();
+                            $('#cont_err_msg').delay(3000).fadeOut();
+                            //$('#cont_err_msg').empty();
+                        }
+                        else {
+                            $('#close_warehouse_f').trigger("click");
+
+                            window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&unitId=" + data);
+                            $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+
+                            //alert('success');
+                        }
+                    }
+                });
+            }
+        });
+
+
+        $('#warehouse_new_form').submit(function (e) {
+            e.preventDefault();
+            var styleId = document.getElementById('styleId').value;
+            var colorId = document.getElementById('colorId').value;
+            var location = $('#location_dropdown').val();
+            var warehouse = $('#warehouse_dropdown').val();
+            var rack = $('input[name="rack"]').val();
+            var row = $('input[name="row"]').val();
+            var shelf = $('input[name="shelf"]').val();
+            var unit = $('input[name="unit"]').val();
+            //var location_details_id = $('input[name="location_details_id"]').val();
+
+            //alert(location+' '+styleId);
+
+            //console.log(warehouse,location);
+
+            if (colorId == '' || styleId == '' || unit == '' || shelf == '' || row == '' || rack == '' || warehouse == '' || location == null || location == '0') {
+                $('#close_warehouse_f').trigger("click");
+                $("#message").html("<div class='errorMessage'><strong>All fields are mandatory. Please fill all fields and try later.</strong></div>").delay(3000).fadeOut();
+            }
+            else {
+                $.ajax({
+                    url: 'addNewInventory.php',
+                    type: "post",
+
+                    data: {
+                        location: location,
+                        warehouse: warehouse,
+                        rack: rack,
+                        row: row,
+                        shelf: shelf,
+                        unit: unit,
+                        colorId: colorId,
+                        styleId: styleId,
+                        type: 'type_w'
+                        //location_details_id:location_details_id
+                    },
+                    success: function (data) {
+                        console.log(data);
+
+                        if (data != null) {
+                            if (data == "box not available") {
+
+                                $('#warehouse_err_msg').empty();
+                                $('#warehouse_err_msg').text(' -- unit not available');
+                                $('#warehouse_err_msg').show();
+                                $('#warehouse_err_msg').delay(3000).fadeOut();
+                                console.log('kaudfy---------');
+                            }
+                            else {
+                                console.log('kajdfgaludfgluiyf');
+
+                                $('#close_warehouse_f').trigger("click");
+
+                                window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&unitId=" + data);
+                                $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
+                            }
+                        }
+                        else {
+
+                            $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+                        }
+                    }
+                });
+            }
+        });
+
+        function clear_form_data() {
+
+            //empty warehouse form
+            $('#warehouse_form_row').val('');
+            $('#warehouse_form_rack').val('');
+            $('#warehouse_form_shelf').val('');
+            $('#warehouse_form_unit').val('');
+            $('#warehouse_dropdown').empty();
+            $('#warehouse_td').hide();
+            // $('#warehouse_dropdown').val('0');
+            // $('#warehouse_dropdown').text('--All warehouse--');
+            $('#warehouse_err_msg').text('');
+            $('#warehouse_err_msg').hide();
+            document.getElementById("location_dropdown").options[0].selected = true;
+
+            //empty container form
+            $('#co_unit').val('');
+            $('#container_dropdown').empty();
+            $('#container_td').hide();
+            $('#cont_err_msg').empty();
+            $('#cont_err_msg').hide();
+            document.getElementById("container_loc_dropdown").options[0].selected = true;
+
+            //empty conveyor form
+            $('#cv_slot').val('');
+            $('#conveyor_dropdown').empty();
+            $('#conveyor_td').hide();
+            $('#conv_err_msg').empty();
+            $('#conv_err_msg').hide();
+            document.getElementById("conveyor_loc_dropdown").options[0].selected = true;
+
+        };
+
+        // Get the modal
+        var modal = document.getElementById('myModal');
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("addinventory_new");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+            clear_form_data();
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+
+    <script>
+
+
+        $('#newInventory').click(function (e) {
+
+            $('#inventory_form').show();
+            $('#warehouse_form').show();
+
+
+        });
+        function UpdateNew() {
+            var room = $('#up_room').val();
+            var rack = $('#up_rack').val();
+            if (rack == '') {
+                alert("Please Provide a rack");
+                return false;
+            }
+            var row = $('#up_row').val();
+            if (row == '') {
+                alert("Please Provide a row");
+                return false;
+            }
+            var self = $('#up_shelf').val();
+            if (self == '') {
+                alert("Please Provide a self");
+                return false;
+            }
+            //alert(row);
             $.ajax({
-                url: "deleteInventory.php",
+                url: 'editRoom.php',
                 type: "post",
                 data: {
-                    styleId: document.getElementById('styleId').value,
-                    colorId: document.getElementById('colorId').value,
-                    unitId: "<?php echo $_REQUEST['unitId'];?>"
+                    room: room,
+                    rack: rack,
+                    row: row,
+                    self: self,
+                    unitId: "<?php echo $_REQUEST['unitId'];?>",
+                    styleId: document.getElementById('styleId').value
                 },
                 success: function (response) {
-                    //return false;
-                    // console.log(response);
                     if (response == 1) {
-                        alert("unit Deleted SuccessFully");
+                        alert("Updated");
                         location.reload();
                     } else {
-                        alert("unit Not Deleted Please Empty the unit first");
+                        alert("Not Updated! Please Try Again After Some Time");
                     }
                 }
             });
-        } else {
-            console.log('cancel');
+            // $(location).attr('href', "updateInventory.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
         }
-    }
+
+        function Update() {
+            room = $('#updateroom').val();
+            // if(room == '') {
+            //     alert("Please Provide a Room");
+            //     return false;
+            // }
+            var rack = $('#updaterack').val();
+            if (rack == '') {
+                alert("Please Provide a rack");
+                return false;
+            }
+            var row = $('#updaterow').val();
+            if (row == '') {
+                alert("Please Provide a row");
+                return false;
+            }
+            var self = $('#updateshelf').val();
+            if (self == '') {
+                alert("Please Provide a self");
+                return false;
+            }
+            //alert(row);
+            $.ajax({
+                url: 'editRoom.php',
+                type: "post",
+                data: {
+                    room: room,
+                    rack: rack,
+                    row: row,
+                    self: self,
+                    unitId: "<?php echo $_REQUEST['unitId'];?>",
+                    styleId: document.getElementById('styleId').value
+                },
+                success: function (response) {
+                    if (response == 1) {
+                        alert("Updated");
+                        location.reload();
+                    } else {
+                        alert("Not Updated! Please Try Again After Some Time");
+                    }
+                }
+            });
+            // $(location).attr('href', "updateInventory.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
+        }
+
+        function Delete() {
+            if (confirm("Are you Sure you want to delete this unit") == true) {
+                $.ajax({
+                    url: "deleteInventory.php",
+                    type: "post",
+                    data: {
+                        styleId: document.getElementById('styleId').value,
+                        colorId: document.getElementById('colorId').value,
+                        unitId: "<?php echo $_REQUEST['unitId'];?>"
+                    },
+                    success: function (response) {
+                        if (response == 1) {
+                            alert("unit Deleted SuccessFully");
+                            window.location.replace("reportViewEdit.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value);
+                        } else if(response == 2) {
+                            alert("unit Not Deleted Please Empty the unit first");
+                        } else {
+                            alert('Internal server error please try again after some time');
+                        }
+                    }
+                });
+            } else {
+                console.log('cancel');
+            }
+        }
 
     </script>
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    var unique_id = 0;
+        var unique_id = 0;
 
-    function print_content(stylId, loc, unitId) {
-        //alert($('#unique_0').val());
-        //alert($('#unique_30').val());
+        function print_content(stylId, loc, unitId) {
+            //alert($('#unique_0').val());
+            //alert($('#unique_30').val());
 
-        var data_ = "";
-        for (i = 0; ; i++) {
-            var data = $('#unique_' + i).val();
-            if (typeof(data) != "undefined" && data !== null) {
-                if (i > 0) data_ += ",";
-                data_ += data;
+            var data_ = "";
+            for (i = 0; ; i++) {
+                var data = $('#unique_' + i).val();
+                if (typeof(data) != "undefined" && data !== null) {
+                    if (i > 0) data_ += ",";
+                    data_ += data;
+                }
+                else {
+                    break;
+                }
+            }
+            // alert(data_);
+
+            if (stylId == 'null' || unitId == 'null') {
+                alert('error');
             }
             else {
-                break;
+                //alert(window.location);
+                var clrId = $('#color option[selected="selected"]').attr('data-color');
+
+                location.assign("print.php" + '?styleId=' + stylId + '&colorId=' + clrId + '&unitId=' + unitId + '&location=' + loc + '&all_data=' + data_);
             }
         }
-        // alert(data_);
 
-        if (stylId == 'null' || unitId == 'null') {
-            alert('error');
-        }
-        else {
-            //alert(window.location);
-            var clrId = $('#color option[selected="selected"]').attr('data-color');
-
-            location.assign("print.php" + '?styleId=' + stylId + '&colorId=' + clrId + '&unitId=' + unitId + '&location=' + loc + '&all_data=' + data_);
-        }
-    }
-
-    function AddRow(type, cellId, value) {
-        switch (type) {
-            case 'main': {
-                var trTop = document.getElementById('mainSizeTop');
-                var trBottom = document.getElementById('mainSizeBottom');
-                var tr2Bottom = document.getElementById('adjBottom');
-                var cell = trTop.insertCell(cellId);
-                cell.className = 'gridHeaderReport';
-                cell.innerHTML = value;
-                cell = trBottom.insertCell(cellId);
-                cell.className = 'gridHeaderReport';
-                cell.innerHTML = value;
-                cell = tr2Bottom.insertCell(cellId);
-                cell.className = 'txBxWhite';
-                var txtunit = document.createElement("input");
-                txtunit.type = "text";
-                txtunit.className = "txBxWhite";
-                txtunit.value = "";
-                cell.appendChild(txtunit);
-                break;
-            }
-            case 'price': {
-                var trPrice = document.getElementById('priceTop');
-                var cell = trPrice.insertCell(cellId);
-                cell.className = 'gridHeaderReportGrids2';
-                var txtunit = document.createElement("input");
-                txtunit.type = "text";
-                txtunit.className = "txBxWhite";
-                txtunit.name = 'price[]';
-                txtunit.value = value;
-                cell.appendChild(txtunit);
-                break;
-            }
-            case 'column': {
-                var trc = document.getElementById('columnSize');
-                var cell = trc.insertCell(cellId);
-                cell.className = 'gridHeaderReportBlue';
-                cell.innerHTML = value;
-                break;
-            }
-            case 'dummy': {
-                var trd = document.getElementById('dummy1');
-                var cell = trd.insertCell(cellId);
-                cell.className = 'gridHeaderReportGrids2';
-                cell.innerHTML = value;
-
-                trd = document.getElementById('dummy2');
-                cell = trd.insertCell(cellId);
-                cell.className = 'gridHeaderReportGrids2';
-                cell.innerHTML = value;
-                break;
-            }
-        }
-    }
-
-
-
-    function AddQty(trId,type,cellId,i,j,data,locIndex,rowIndex,qty,invIdValue)
-    {
-        //alert(qty);
-        console.log(locIndex,cellId,data,type);
-        // console.log(i,j,qty);
-        //alert(data);
-        //alert(invIdValue);
-        switch(type)
-        {
-            case 'qty':
-            {
-                var abc="Abc:hfdfh \nBcd:jhyf";
-                var tr = document.getElementById(trId);     
-                var cell = tr.insertCell(cellId);
-                var txtunit = document.createElement("input");
-                cell.className = 'gridHeaderReportGrids allvaluesingrid';
-                txtunit.type = "text";
-                txtunit.name = "qty["+locIndex+"]["+rowIndex+"][]";
-                txtunit.className = "txBxGrey eachcell"; 
-                txtunit.id = 'unique_'+unique_id++;
-
-                if(data != -1)
-                {
-                    data = data.replace(/::/g,'\n');
-                    txtunit.title = data;
+        function AddRow(type, cellId, value) {
+            switch (type) {
+                case 'main': {
+                    var trTop = document.getElementById('mainSizeTop');
+                    var trBottom = document.getElementById('mainSizeBottom');
+                    var tr2Bottom = document.getElementById('adjBottom');
+                    var cell = trTop.insertCell(cellId);
+                    cell.className = 'gridHeaderReport';
+                    cell.innerHTML = value;
+                    cell = trBottom.insertCell(cellId);
+                    cell.className = 'gridHeaderReport';
+                    cell.innerHTML = value;
+                    cell = tr2Bottom.insertCell(cellId);
+                    cell.className = 'txBxWhite';
+                    var txtunit = document.createElement("input");
+                    txtunit.type = "text";
+                    txtunit.className = "txBxWhite";
+                    txtunit.value = "";
+                    cell.appendChild(txtunit);
+                    break;
                 }
-                
-                txtunit.value = qty ;
-                cell.appendChild(txtunit);
-                
-                txtunit = document.createElement("input");           
-                txtunit.type = "hidden";
-                txtunit.name = "invId["+locIndex+"]["+rowIndex+"][]";
-                txtunit.value = invIdValue;
-                cell.appendChild(txtunit);   
-                /*if(invIdValue > 0 && qty > 0)
-                {
-                    a = document.createElement("a");
-                    a.setAttribute("href", "#");
-                    img = document.createElement("img");
-                    img.width="15px";
-                    img. height="14px";
-                    img.className = "imgRght";*/
-                    //img.src="<?php// echo $mydirectory;?>/images/Btn_edit.gif";
-                    /*img.setAttribute("onclick",'QtyDblClick('+invIdValue+');');
-                    a.appendChild(img);
-                    cell.appendChild(a);
-                }*/
-                break;
-            }
-            case 'qtyDummy':
-            {
-                var trd = document.getElementById('qtyDummy'+locIndex);
-                if(trd !=null)
-                {
-                    //alert(trd+' '+locIndex);
+                case 'price': {
+                    var trPrice = document.getElementById('priceTop');
+                    var cell = trPrice.insertCell(cellId);
+                    cell.className = 'gridHeaderReportGrids2';
+                    var txtunit = document.createElement("input");
+                    txtunit.type = "text";
+                    txtunit.className = "txBxWhite";
+                    txtunit.name = 'price[]';
+                    txtunit.value = value;
+                    cell.appendChild(txtunit);
+                    break;
+                }
+                case 'column': {
+                    var trc = document.getElementById('columnSize');
+                    var cell = trc.insertCell(cellId);
+                    cell.className = 'gridHeaderReportBlue';
+                    cell.innerHTML = value;
+                    break;
+                }
+                case 'dummy': {
+                    var trd = document.getElementById('dummy1');
                     var cell = trd.insertCell(cellId);
                     cell.className = 'gridHeaderReportGrids2';
-                    cell.innerHTML="&nbsp;";
+                    cell.innerHTML = value;
+
+                    trd = document.getElementById('dummy2');
+                    cell = trd.insertCell(cellId);
+                    cell.className = 'gridHeaderReportGrids2';
+                    cell.innerHTML = value;
+                    break;
                 }
-                
-                
-                break;
             }
         }
-    }
 
-    function StoreInitialValues(locIndex, rowIndex, txtValue, newQty) {
-        var td = document.getElementById('hdnVar');
-        var element1 = document.createElement("input");
-        element1.type = "hidden";
-        element1.name = "hdnqty[" + locIndex + "][" + rowIndex + "][]";
-        element1.value = txtValue;
-        var element2 = document.createElement("input");
-        element2.type = "hidden";
-        element2.name = "hdnNewQty[" + locIndex + "][" + rowIndex + "][]";
-        element2.value = newQty;
-        td.appendChild(element1);
-        td.appendChild(element2);
 
-    }
-    function QtyDblClick(inventoryId) {
+        function AddQty(trId, type, cellId, i, j, data, locIndex, rowIndex, qty, invIdValue) {
+            //alert(qty);
+            console.log(locIndex, cellId, data, type);
+            // console.log(i,j,qty);
+            //alert(data);
+            //alert(invIdValue);
+            switch (type) {
+                case 'qty': {
+                    var abc = "Abc:hfdfh \nBcd:jhyf";
+                    var tr = document.getElementById(trId);
+                    var cell = tr.insertCell(cellId);
+                    var txtunit = document.createElement("input");
+                    cell.className = 'gridHeaderReportGrids allvaluesingrid';
+                    txtunit.type = "text";
+                    txtunit.name = "qty[" + locIndex + "][" + rowIndex + "][]";
+                    txtunit.className = "txBxGrey eachcell";
+                    txtunit.id = 'unique_' + unique_id++;
 
-        $(location).attr('href', "storage.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&invId=" + inventoryId + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
-    }
-</script>
+                    if (data != -1) {
+                        data = data.replace(/::/g, '\n');
+                        txtunit.title = data;
+                    }
+
+                    txtunit.value = qty;
+                    cell.appendChild(txtunit);
+
+                    txtunit = document.createElement("input");
+                    txtunit.type = "hidden";
+                    txtunit.name = "invId[" + locIndex + "][" + rowIndex + "][]";
+                    txtunit.value = invIdValue;
+                    cell.appendChild(txtunit);
+                    /*if(invIdValue > 0 && qty > 0)
+                     {
+                     a = document.createElement("a");
+                     a.setAttribute("href", "#");
+                     img = document.createElement("img");
+                     img.width="15px";
+                     img. height="14px";
+                     img.className = "imgRght";*/
+                    //img.src="<?php// echo $mydirectory;?>/images/Btn_edit.gif";
+                    /*img.setAttribute("onclick",'QtyDblClick('+invIdValue+');');
+                     a.appendChild(img);
+                     cell.appendChild(a);
+                     }*/
+                    break;
+                }
+                case 'qtyDummy': {
+                    var trd = document.getElementById('qtyDummy' + locIndex);
+                    if (trd != null) {
+                        //alert(trd+' '+locIndex);
+                        var cell = trd.insertCell(cellId);
+                        cell.className = 'gridHeaderReportGrids2';
+                        cell.innerHTML = "&nbsp;";
+                    }
+
+
+                    break;
+                }
+            }
+        }
+
+        function StoreInitialValues(locIndex, rowIndex, txtValue, newQty) {
+            var td = document.getElementById('hdnVar');
+            var element1 = document.createElement("input");
+            element1.type = "hidden";
+            element1.name = "hdnqty[" + locIndex + "][" + rowIndex + "][]";
+            element1.value = txtValue;
+            var element2 = document.createElement("input");
+            element2.type = "hidden";
+            element2.name = "hdnNewQty[" + locIndex + "][" + rowIndex + "][]";
+            element2.value = newQty;
+            td.appendChild(element1);
+            td.appendChild(element2);
+
+        }
+        function QtyDblClick(inventoryId) {
+
+            $(location).attr('href', "storage.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&invId=" + inventoryId + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
+        }
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
-
-
 
 
             if ($('#unit_num').val() == 0 || $('#unit_num').val() == 'undefined') {
@@ -2628,7 +3096,6 @@ window.onclick = function(event) {
                 $columnSize = 0;
 
 
-                
                 for ($i = 0; $i < count($data_mainSize); $i++) {
                     $invPrice = 0;
                     $found = 0;
@@ -2655,28 +3122,23 @@ window.onclick = function(event) {
                 if ($sizeIndex)
                     echo "document.getElementById('mainCount').value = $sizeIndex;";
             }
-            
+
             $locIndex = 0;
             $rowIndex = 0;
             $mainIndex = 0;
             if ($locArr[0] > 0 && $locArr[0] != "") {
                 // var_dump(count($locArr));
                 // exit();
-                for ($i = 0; $i < count($locArr); $i++, $locIndex++) 
-                {
+                for ($i = 0; $i < count($locArr); $i++, $locIndex++) {
                     $rowIndex = 0;
                     //echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>".$locIndex."    ";
-                    if (count($data_opt1Size) > 0) 
-                    {
-                        for ($j = 0; $j < count($data_opt1Size); $j++) 
-                        {
-                            InsertQty($data_mainSize, $data_inv, $data_opt1Size[$j]['opt1SizeId'], $locArr[$i], $locIndex, $rowIndex,$_store);
+                    if (count($data_opt1Size) > 0) {
+                        for ($j = 0; $j < count($data_opt1Size); $j++) {
+                            InsertQty($data_mainSize, $data_inv, $data_opt1Size[$j]['opt1SizeId'], $locArr[$i], $locIndex, $rowIndex, $_store);
                             $rowIndex++;
                         }
-                    }
-                    else 
-                    {
-                        InsertQty($data_mainSize, $data_inv, 0, $locArr[$i], $locIndex, $rowIndex,$_store);
+                    } else {
+                        InsertQty($data_mainSize, $data_inv, 0, $locArr[$i], $locIndex, $rowIndex, $_store);
                         $rowIndex++;
                     }
                     echo 'AddQty("dummy","qtyDummy",' . $mainIndex . ',0,0,0,' . $locIndex . ',' . $rowIndex . ',0,0);';
@@ -2691,48 +3153,39 @@ window.onclick = function(event) {
 
 
 
-            function InsertQty($data_mainsize,$data_inv,$rowSizeId,$locId,$locIndex,$rowIndex,$store)
+            function InsertQty($data_mainsize, $data_inv, $rowSizeId, $locId, $locIndex, $rowIndex, $store)
             {
                 $mainIndex = 0;
-                for($i=0;$i < count($data_mainsize);$i++)
-                {
-                    $invFound=0;
-                    for($j=0; $j < count($data_inv);$j++)
-                    {
-                        if($rowSizeId > 0)
-                        {
-                           
-                            if(($data_inv[$j]['sizeScaleId'] == $data_mainsize[$i]['mainSizeId']) && 
-                                ($locId == $data_inv[$j]['locationId']) && 
-                                ($rowSizeId == $data_inv[$j]['opt1ScaleId']))
-                            {
-                           
+                for ($i = 0; $i < count($data_mainsize); $i++) {
+                    $invFound = 0;
+                    for ($j = 0; $j < count($data_inv); $j++) {
+                        if ($rowSizeId > 0) {
+
+                            if (($data_inv[$j]['sizeScaleId'] == $data_mainsize[$i]['mainSizeId']) &&
+                                ($locId == $data_inv[$j]['locationId']) &&
+                                ($rowSizeId == $data_inv[$j]['opt1ScaleId'])
+                            ) {
+
                                 $invFound = 1;
 
-                                if($data_inv[$j]['inventoryId'] != "")
-                                {
-                                    if($data_inv[$j]['quantity'] != "" )
-                                    {
-                                        echo "StoreInitialValues($locIndex,$rowIndex,'".$data_inv[$j]['quantity']."','".$data_inv[$j]['newQty']."');";
+                                if ($data_inv[$j]['inventoryId'] != "") {
+                                    if ($data_inv[$j]['quantity'] != "") {
+                                        echo "StoreInitialValues($locIndex,$rowIndex,'" . $data_inv[$j]['quantity'] . "','" . $data_inv[$j]['newQty'] . "');";
                                         // echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',"'.$data_inv[$j]['quantity'].'",'.$data_inv[$j]['inventoryId'].');';
 
                                         $data = "";
-                                        if(!isset($_GET['unitId']) || $_GET['unitId']=='0')
-                                        {
-                                            for($ii=0 ; $ii<count($store); $ii++)
-                                            {
+                                        if (!isset($_GET['unitId']) || $_GET['unitId'] == '0') {
+                                            for ($ii = 0; $ii < count($store); $ii++) {
 
                                                 //echo($_store['mainSizeId'].",".);
 
-                                                if($store[$ii]['mainSizeId']==$data_mainsize[$i]['mainSizeId'] &&
-                                                   $store[$ii]['opt1ScaleId']==$data_inv[$j]['opt1ScaleId'])
-                                                {
-                                                    $data .= 'unit='.$store[$ii]['unit']." : ".$store[$ii]['quantity']."::";
+                                                if ($store[$ii]['mainSizeId'] == $data_mainsize[$i]['mainSizeId'] &&
+                                                    $store[$ii]['opt1ScaleId'] == $data_inv[$j]['opt1ScaleId']
+                                                ) {
+                                                    $data .= 'unit=' . $store[$ii]['unit'] . " : " . $store[$ii]['quantity'] . "::";
                                                 }
                                             }
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             $data = "-1";
                                         }
                                         // echo "***************************************************";
@@ -2740,151 +3193,136 @@ window.onclick = function(event) {
                                         // //var_dump($data_inv[$j]['quantity']);
                                         // echo "***************************************************";
                                         // exit();
-                                        if($data == '')
+                                        if ($data == '')
                                             $data = "-1";
 
-                                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '",
                                                     "qty",
-                                                    '.$mainIndex.',
-                                                    '.$i.',
-                                                    '.$j.',
-                                                    "'.$data.'",
-                                                    '.$locIndex.',
-                                                    '.$rowIndex.',
-                                                    "'.$data_inv[$j]['quantity'].'",
-                                                    '.$data_inv[$j]['inventoryId'].');';
+                                                    ' . $mainIndex . ',
+                                                    ' . $i . ',
+                                                    ' . $j . ',
+                                                    "' . $data . '",
+                                                    ' . $locIndex . ',
+                                                    ' . $rowIndex . ',
+                                                    "' . $data_inv[$j]['quantity'] . '",
+                                                    ' . $data_inv[$j]['inventoryId'] . ');';
 
                                         //echo "*****************************************************";
-                                        
 
-                                    }
-                                    else
-                                    {
-                                        echo "StoreInitialValues($locIndex,$rowIndex,0,'".$data_inv[$j]['newQty']."');";
+
+                                    } else {
+                                        echo "StoreInitialValues($locIndex,$rowIndex,0,'" . $data_inv[$j]['newQty'] . "');";
                                         // echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,'.$data_inv[$j]['inventoryId'].');';
                                         $data = "-1";
-                                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '",
                                                 "qty",
-                                                '.$mainIndex.',
-                                                '.$i.',
-                                                '.$j.',
-                                                "'.$data.'",
-                                                '.$locIndex.',
-                                                '.$rowIndex.',
+                                                ' . $mainIndex . ',
+                                                ' . $i . ',
+                                                ' . $j . ',
+                                                "' . $data . '",
+                                                ' . $locIndex . ',
+                                                ' . $rowIndex . ',
                                                 0,
-                                                '.$data_inv[$j]['inventoryId'].');';
+                                                ' . $data_inv[$j]['inventoryId'] . ');';
                                     }
-                                }
-                                else
-                                {
+                                } else {
                                     echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
                                     // echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
 
 
-
                                     $data = "-1";
-                                    echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                    echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '",
                                             "qty",
-                                            '.$mainIndex.',
-                                            '.$i.',
-                                            '.$j.',
-                                            "'.$data.'",
-                                            '.$locIndex.',
-                                            '.$rowIndex.',
+                                            ' . $mainIndex . ',
+                                            ' . $i . ',
+                                            ' . $j . ',
+                                            "' . $data . '",
+                                            ' . $locIndex . ',
+                                            ' . $rowIndex . ',
                                             0,
                                             0);';
                                 }
                                 break;
                             }
-                            
-                        }
-                        else
-                        {
-                            if($data_inv[$j]['sizeScaleId'] == $data_mainsize[$i]['mainSizeId'] && ($locId == $data_inv[$j]['locationId']) && ("" == $data_inv[$j]['opt1ScaleId']))
-                            {
+
+                        } else {
+                            if ($data_inv[$j]['sizeScaleId'] == $data_mainsize[$i]['mainSizeId'] && ($locId == $data_inv[$j]['locationId']) && ("" == $data_inv[$j]['opt1ScaleId'])) {
                                 $invFound = 1;
-                                if($data_inv[$j]['inventoryId'] != "")
-                                {
-                                    if($data_inv[$j]['quantity'] != "" )
-                                    {
-                                        echo "StoreInitialValues($locIndex,$rowIndex,'".$data_inv[$j]['quantity']."','".$data_inv[$j]['newQty']."');";
+                                if ($data_inv[$j]['inventoryId'] != "") {
+                                    if ($data_inv[$j]['quantity'] != "") {
+                                        echo "StoreInitialValues($locIndex,$rowIndex,'" . $data_inv[$j]['quantity'] . "','" . $data_inv[$j]['newQty'] . "');";
                                         //echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',"'.$data_inv[$j]['quantity'].'",'.$data_inv[$j]['inventoryId'].');';
 
 
                                         $data = "-1";
-                                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '",
                                             "qty",
-                                            '.$mainIndex.',
-                                            '.$i.',
-                                            '.$j.',
-                                            "'.$data.'",
-                                            '.$locIndex.',
-                                            '.$rowIndex.',
-                                            "'.$data_inv[$j]['quantity'].'",
-                                            '.$data_inv[$j]['inventoryId'].');';
+                                            ' . $mainIndex . ',
+                                            ' . $i . ',
+                                            ' . $j . ',
+                                            "' . $data . '",
+                                            ' . $locIndex . ',
+                                            ' . $rowIndex . ',
+                                            "' . $data_inv[$j]['quantity'] . '",
+                                            ' . $data_inv[$j]['inventoryId'] . ');';
 
-                                        
-                                    }
-                                    else
-                                    {
-                                        echo "StoreInitialValues($locIndex,$rowIndex,0,'".$data_inv[$j]['newQty']."');";
+
+                                    } else {
+                                        echo "StoreInitialValues($locIndex,$rowIndex,0,'" . $data_inv[$j]['newQty'] . "');";
                                         //echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,'.$data_inv[$j]['inventoryId'].');';
 
                                         $data = "-1";
-                                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '",
                                             "qty",
-                                            '.$mainIndex.',
-                                            '.$i.',
-                                            '.$j.',
-                                            "'.$data.'",
-                                            '.$locIndex.',
-                                            '.$rowIndex.',
+                                            ' . $mainIndex . ',
+                                            ' . $i . ',
+                                            ' . $j . ',
+                                            "' . $data . '",
+                                            ' . $locIndex . ',
+                                            ' . $rowIndex . ',
                                             0,
-                                            '.$data_inv[$j]['inventoryId'].');';
+                                            ' . $data_inv[$j]['inventoryId'] . ');';
                                     }
-                                    
-                                }
-                                else
-                                {
+
+                                } else {
                                     echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
                                     //echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
 
                                     $data = "-1";
-                                    echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                                    echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '",
                                             "qty",
-                                            '.$mainIndex.',
-                                            '.$i.',
-                                            '.$j.',
-                                            "'.$data.'",
-                                            '.$locIndex.',
-                                            '.$rowIndex.',
+                                            ' . $mainIndex . ',
+                                            ' . $i . ',
+                                            ' . $j . ',
+                                            "' . $data . '",
+                                            ' . $locIndex . ',
+                                            ' . $rowIndex . ',
                                             0,
                                             0);';
 
-                                    
+
                                 }
                                 break;
                             }
-                        }           
+                        }
                     }
-                    if(!$invFound)
-                    {
+                    if (!$invFound) {
                         echo "StoreInitialValues($locIndex,$rowIndex,0,0);";
                         // echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'","qty",'.$mainIndex.','.$locIndex.','.$rowIndex.',0,0);';
 
                         $data = "-1";
-                        echo 'AddQty("qty_'.$locIndex.'_'.$rowIndex.'",
+                        echo 'AddQty("qty_' . $locIndex . '_' . $rowIndex . '",
                                 "qty",
-                                '.$mainIndex.',
-                                '.$i.',
-                                '.$j.',
-                                "'.$data.'",
-                                '.$locIndex.',
-                                '.$rowIndex.',
+                                ' . $mainIndex . ',
+                                ' . $i . ',
+                                ' . $j . ',
+                                "' . $data . '",
+                                ' . $locIndex . ',
+                                ' . $rowIndex . ',
                                 0,
                                 0);';
 
-                        
+
                     }
 
 
@@ -2907,7 +3345,15 @@ window.onclick = function(event) {
                 PostRequest();
 
             });
+            $(".slot_num").change(function () {
+                $("#unit_num").val($(this).val());
+                PostRequest();
+
+            });
             $("#sConveyor").change(function () {
+                PostRequest();
+            });
+            $("#main_location").change(function () {
                 PostRequest();
             });
             function PostRequest() {
@@ -2923,10 +3369,14 @@ window.onclick = function(event) {
                     unitId = $("#unit_num").val();
                 }
                 var conveyor = 0;
-                if($("#sConveyor").val() != undefined) {
+                if ($("#sConveyor").val() != undefined) {
                     conveyor = $("#sConveyor").val();
                 }
-                var dataString = 'styleId=' + stylId + '&colorId=' + clrId + '&unitId=' + unitId+ '&conveyor='+conveyor;
+                var locationMain = 0;
+                if($('#main_location').val() != undefined){
+                    locationMain = $('#main_location').val();
+                }
+                var dataString = 'styleId=' + stylId + '&colorId=' + clrId + '&unitId=' + unitId + '&conveyor=' + conveyor + '&location=' + locationMain;
                 //alert(dataString);
                 $.ajax
                 ({
@@ -2976,7 +3426,7 @@ window.onclick = function(event) {
     <script type="text/javascript">
         $(function () {
             $("#inventoryFormNew").submit(function (e) {
-                
+
                 var location_id = $('#_location_id').val();
                 //var inventory_id = $('#_inventory_id').val();
                 var location_details_id = $('#_location_details_id').val();
@@ -2993,7 +3443,7 @@ window.onclick = function(event) {
                 var room = "<?php echo $data_product[0]['room']; ?>";
                 var shelf = "<?php echo $data_product[0]['shelf']; ?>";
                 var rack = "<?php echo $data_product[0]['rack']; ?>";
-                
+
                 dataString = $("#inventoryFormNew").serialize();
                 dataString += "&type=e";
                 dataString += "&unitId=" + unitId;
@@ -3004,125 +3454,121 @@ window.onclick = function(event) {
 
                 //var data_ = "";
                 flag = 0;
-                for (i = 0; ; i++) 
-                {
+                for (i = 0; ; i++) {
                     var data = $('#unique_' + i).val();
-                    if (typeof(data) != "undefined" && data !== null ) 
-                    {
-                        if(data < 0)
-                        {
+                    if (typeof(data) != "undefined" && data !== null) {
+                        if (data < 0) {
                             flag = 1;
                             break;
                         }
-                    }                    
-                    else 
-                    {
+                    }
+                    else {
                         break;
                     }
                 }
 
-                if(unitId == '')
-                {
+                if (unitId == '') {
                     //alert(row+' '+rack+' '+' '+room+' '+shelf);
                     //alert('here');
                     alert('unitId is null! not submiting the form');
                 }
-                else if(flag == 1)
-                {
+                else if (flag == 1) {
                     alert('Negative value not accepted!');
                 }
-                else
-                {
+                else {
                     //alert('in else');
                     $("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");
                     //alert(location_id)
                     //alert('*********');
                     //alert(location_id+' '+inventory_id+' '+location_details_id+' '+document.getElementById('styleId').value);
                     $.ajax({
-                    type: "POST",
-                    url: "invReportSubmit.php",
-                    data: dataString,
-                    dataType: "json",
-                    success: function (data) 
-                    {
-                        
-                        
-                        //return false;
-                        console.log(data);
-                        if (data != null) 
-                        {
-                            if (data[0].name || data[0].error) 
-                            {
-                                $("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error + "</strong></div>");
-                                if (data[0].flag) {
-                                    //console.log('first');
-                                    $.ajax({
-                                        url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&unitId=" + unitId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
-                                        type: "GET",
-                                        success: function (data) {
-                                            //return false;
-                                            console.log(data);
-                                            if (data != null) {
-                                                if (data.name || data.error) {
-                                                    $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
+                        type: "POST",
+                        url: "invReportSubmit.php",
+                        data: dataString,
+                        dataType: "json",
+                        success: function (data) {
+
+
+                            //return false;
+                            console.log(data);
+                            if (data != null) {
+                                if (data[0].name || data[0].error) {
+                                    $("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error + "</strong></div>");
+                                    if (data[0].flag) {
+                                        //console.log('first');
+                                        $.ajax({
+                                            url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&unitId=" + unitId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
+                                            type: "GET",
+                                            success: function (data) {
+                                                //return false;
+                                                console.log(data);
+                                                if (data != null) {
+                                                    if (data.name || data.error) {
+                                                        $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
+                                                    }
+                                                    else {
+                                                        location.reload(true);
+                                                        $("#message").html("<div class='successMessage'><strong>Storage Updated. Thank you.</strong></div>");
+                                                    }
                                                 }
                                                 else {
-                                                    location.reload(true);
-                                                    $("#message").html("<div class='successMessage'><strong>Storage Updated. Thank you.</strong></div>");
+                                                    $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
                                                 }
                                             }
-                                            else {
-                                                $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
-                                            }
-                                        }
-                                    });
-                                    //$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&unitId="+unitId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
+                                        });
+                                        //$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&unitId="+unitId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
+                                    }
                                 }
-                            } 
-                            else 
-                            {
-                                if (data[0].flag) {
-                                    $("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");
-                                    $.ajax({
-                                        url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&unitId=" + unitId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
-                                        type: "GET",
-                                        success: function (data) {
-                                           //return false;
-                                           console.log(data);
-                                            if (data != null) {
-                                                if (data.name || data.error) {
-                                                    $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
+                                else {
+                                    if (data[0].flag) {
+                                        $("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");
+                                        $.ajax({
+                                            url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&unitId=" + unitId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
+                                            type: "GET",
+                                            success: function (data) {
+                                                //return false;
+                                                console.log(data);
+                                                if (data != null) {
+                                                    if (data.name || data.error) {
+                                                        $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
+                                                    }
+                                                    else {
+                                                        location.reload(true);
+                                                        $("#message").html("<div class='successMessage'><strong>Storage Updated. Thank you.</strong></div>");
+                                                    }
                                                 }
                                                 else {
-                                                    location.reload(true);
-                                                    $("#message").html("<div class='successMessage'><strong>Storage Updated. Thank you.</strong></div>");
+                                                    $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
                                                 }
                                             }
-                                            else {
-                                                $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
-                                            }
-                                        }
-                                    });
-                                    //$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&unitId="+unitId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
-                                } else {
-                                    $("#message").html("<div class='successMessage'><strong> All inventorys are up to date...</strong></div>");
+                                        });
+                                        //$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&unitId="+unitId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
+                                    } else {
+                                        $("#message").html("<div class='successMessage'><strong> All inventorys are up to date...</strong></div>");
+                                    }
                                 }
+                            } else {
+                                $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
                             }
-                        } else {
-                            $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
                         }
-                    }
-                });
+                    });
                 }
                 return false;
             });
         });
-        $('.clicked').keyup(function(){
-               var id = this.id;
-               var change = id.slice(5);
-               $('#'+change).val(1);
+        $('.clicked').keyup(function () {
+            var id = this.id;
+            var change = id.slice(5);
+            $('#' + change).val(1);
         });
-
+        $('.clicked_new').keyup(function () {
+            var id = this.id;
+            var change = id.slice(5);
+            $('#h' + change).val(1);
+        });
+        $('#box_add').keyup(function () {
+            $('#message_add').hide();
+        });
         function delAllQnts() {
             var url = location.href;
             if (!url.contains("colorId"))
@@ -3188,7 +3634,7 @@ window.onclick = function(event) {
                     if (data == 1) {
                         $(location).attr('href', "reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&unitId=" + unitId);
                         $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
-                    }  else {
+                    } else {
                         $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
                     }
                 }
@@ -3197,80 +3643,74 @@ window.onclick = function(event) {
         }
 
     </script>
-<?php
-function logCheckOStyle($styleId) {
-    $server_URL = "http://127.0.0.1:4569";
-$db_server = "localhost";
-$db_name = "php_intranet_uniformsourcing";
-$db_uname= "globaluniformuser";    
-$db_pass= "globaluniformpassword";   
-try{
-    $connection = pg_connect("host = $db_server ".
-                         "dbname = $db_name ".
-                         "user = $db_uname ".
-                         "password = $db_pass");
+    <?php
+    function logCheckOStyle($styleId)
+    {
+        $server_URL = "http://127.0.0.1:4569";
+        $db_server = "localhost";
+        $db_name = "php_intranet_uniformsourcing";
+        $db_uname = "globaluniformuser";
+        $db_pass = "globaluniformpassword";
+        try {
+            $connection = pg_connect("host = $db_server " .
+                "dbname = $db_name " .
+                "user = $db_uname " .
+                "password = $db_pass");
 
-}
-catch(\Exception $e)
-{
-    var_dump($e->getMessage());
-}
-
-    $sql='';
-    $sql='select * from "tbl_invScaleSize" where "sizeScaleId" ='.$styleId.'LIMIT 1';
-    if(!($resultoldinv=pg_query($connection,$sql))){
-            //echo "no";
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
         }
-        else{
+
+        $sql = '';
+        $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . 'LIMIT 1';
+        if (!($resultoldinv = pg_query($connection, $sql))) {
+            //echo "no";
+        } else {
             //echo "yes";
         }
         $rowoldinv = pg_fetch_row($resultoldinv);
-        $oldinv=$rowoldinv;
+        $oldinv = $rowoldinv;
         pg_free_result($resultoldinv);
         echo $oldinv['2'];
-      
-        
-}
 
 
+    }
 
-?>
-<?php
-function logCheckNStyle($styleId) {
-    $server_URL = "http://127.0.0.1:4569";
-$db_server = "localhost";
-$db_name = "php_intranet_uniformsourcing";
-$db_uname= "globaluniformuser";    
-$db_pass= "globaluniformpassword";   
-try{
-    $connection = pg_connect("host = $db_server ".
-                         "dbname = $db_name ".
-                         "user = $db_uname ".
-                         "password = $db_pass");
 
-}
-catch(\Exception $e)
-{
-    var_dump($e->getMessage());
-}
+    ?>
+    <?php
+    function logCheckNStyle($styleId)
+    {
+        $server_URL = "http://127.0.0.1:4569";
+        $db_server = "localhost";
+        $db_name = "php_intranet_uniformsourcing";
+        $db_uname = "globaluniformuser";
+        $db_pass = "globaluniformpassword";
+        try {
+            $connection = pg_connect("host = $db_server " .
+                "dbname = $db_name " .
+                "user = $db_uname " .
+                "password = $db_pass");
 
-    $sql='';
-    $sql='select * from "tbl_invScaleSize" where "sizeScaleId" ='.$styleId.'LIMIT 1';
-    if(!($resultoldinv=pg_query($connection,$sql))){
-            //echo "no";
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
         }
-        else{
+
+        $sql = '';
+        $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . 'LIMIT 1';
+        if (!($resultoldinv = pg_query($connection, $sql))) {
+            //echo "no";
+        } else {
             //echo "yes";
         }
         $rowoldinv = pg_fetch_row($resultoldinv);
-        $oldinv=$rowoldinv;
+        $oldinv = $rowoldinv;
         pg_free_result($resultoldinv);
         echo $oldinv['3'];
-      
-        
-}
 
 
+    }
 
-?>
-<?php require('../../trailer.php'); ?>
+
+    ?>
+    <?php require('../../trailer.php'); ?>

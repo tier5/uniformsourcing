@@ -17,3 +17,8 @@ Sales Person V1.2 Stable Released
 
 Application Configuration V1.0 Stable Released
 	Added config file to application and changed in inventor reports to make global scope
+
+Inventory V2.0 Stable Released
+	Modify inventory table
+	added inventory details in inventory page
+	make box number unique
