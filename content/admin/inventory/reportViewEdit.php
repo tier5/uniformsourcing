@@ -2249,7 +2249,13 @@ die();*/
                             var arr = json.name;
                             var html = '<h4 style="color: #0c00d2">';
                             jQuery.each(arr,function (i,item) {
-                                html += 'Box already present in '+item.location+' , '+item.type+'<br/>';
+                                if(item.location != null && item.type != null){
+                                    html += 'Box already present in '+item.location+' , '+item.type+'<br/>';
+                                } else if(item.location != null && item.type == null){
+                                    html += 'Box already present in '+item.location +'<br/>';
+                                } else {
+                                    html += 'Box already present in another location<br/>';
+                                }
                             });
                             html += '</h4>';
                             $('#message_add').html(html);
