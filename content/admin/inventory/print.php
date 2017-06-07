@@ -53,7 +53,7 @@ require('Application.php');
 			
 	}
 
-	$sql ='select "styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds" from "tbl_invStyle" where "styleId"='.$styleId;
+	$sql ='select "clientId","styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds" from "tbl_invStyle" where "styleId"='.$styleId;
 	if(!($result=pg_query($connection,$sql)))
 	{
 		print("Failed StyleQuery: " . pg_last_error($connection));
@@ -62,8 +62,8 @@ require('Application.php');
 	$row = pg_fetch_array($result);
 	$data_style=$row; //--------------------------- data style----------------
 
-	// echo "<pre>";print_r($data_style);
-	// exit();
+	 //echo "<pre>";print_r($data_style);
+	 //exit();
 
 	$sql = 'select * from "tbl_garment" where "garmentID"='.$data_style["garmentId"];
 	if(!($result=pg_query($connection,$sql)))
@@ -289,8 +289,57 @@ require('Application.php');
 	{
 		$locArr = explode(",",$data_style['locationIds']);
 	}
+$sql = '';
+$sql = 'SELECT * FROM "clientDB" where "ID"=' . $data_style['clientId'];
+if (!($resultClient = pg_query($connection, $sql))) {
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+$row = pg_fetch_array($resultClient);
+$data_client = $row;
 
+$exp = explode('_',$_GET['unitId']);
+$keyAllLoc = preg_replace('/\d/', '', $exp[1] );
+if($keyAllLoc == 'CV'){
+   $typeBox = 'conveyor';
+} elseif ($keyAllLoc == 'C'){
+    $typeBox = 'container';
+} else {
+    $typeBox = 'warehouse';
+}
+$query = 'select * from "tbl_invStorage" WHERE unit=' . "'" . $_GET['unitId'] . "'";
 
+if (!($resultProduct = pg_query($connection, $query))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+while ($rowProduct = pg_fetch_array($resultProduct)) {
+    $data_product[] = $rowProduct;
+}
+pg_free_result($rowProduct);
+if(count($data_product) > 0) {
+    $key_product = 0;
+    foreach ($data_product as $dk => $dv) {
+        if ($dv['updatedDate'] > $latest) {
+            $latest = $dv['updatedDate'];
+            $key_product = $dk;
+        }
+    }
+    $sql = '';
+    $sql = 'SELECT * FROM "employeeDB" where "employeeID"=' . $data_product[$key_product]['updatedBy'];
+    if (!($resultClient = pg_query($connection, $sql))) {
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit;
+    }
+    $row = pg_fetch_array($resultClient);
+    $data_employee = $row;
+} else {
+    $data_employee = '';
+    $latest = 0;
+}
+/*echo '<pre>';
+print_r($data_employee);
+exit();*/
 	
 ?>
 <body>
@@ -302,8 +351,8 @@ require('Application.php');
 		<table width="100%" cellpadding="0" cellspacing="0">
 			<tr>
 				<td style="width: 30%">Style #: <?php echo $data_style['styleNumber']; ?></td>
-				<td style="width: 35%">Employee:<input type="text" name=""></td>
-				<td style="width: 35%">Date Entered: <input type="text"></td>
+				<td style="width: 35%">Employee:<?php echo $data_employee['firstname'] . ' ' . $data_employee['lastname']; ?></td>
+				<td style="width: 35%">Date Entered: <?php echo ($latest != '0')?date("F j, Y, g:i a", $latest):''; ?></td>
 			</tr>
 			<tr>
 				<td style="width: 30%">Garment Type: <?php echo $data_garment["garmentName"]; ?></td>
@@ -311,19 +360,37 @@ require('Application.php');
 				<td style="width: 35%">Gender :<?php echo (" ".$data_style['sex']); ?></td>
 			</tr>
 			<tr>
-				<td>Client: </td>
+				<td>Client: <?php echo $data_client['client']; ?></td>
 				<td colspan="2">Location: <?php echo $_GET['location']; ?></td>
 			</tr>
 			<tr>
-				<td style="width: 30%">Box#: <?php echo $_GET['boxId']; ?></td>
+                <?php
+                    if ($typeBox == 'warehouse' || $typeBox == 'container'){
+                        ?>
+                        <td style="width: 30%">Box#: <?php echo $_GET['unitId']; ?></td>
+                <?php
+                    } else {
+                ?>
+                        <td style="width: 30%">Slot:  <?php echo $_GET['unitId']; ?></td>
+                <?php
+                    }
+                ?>
+
 				<td colspan="2" style="width: 70%">
 					<table width="100%">
 						<tr>
-							<!-- <td>Room: <?php //echo $data_storage[0]['room']==''?'nil':$data_storage[0]['room'] ?></td> -->
-							<td>Row: <?php echo $data_storage[0]['row']==''?'nil':$data_storage[0]['row']  ?></td>
-							<td>Rack: <?php echo $data_storage[0]['rack']==''?'nil':$data_storage[0]['rack']  ?></td>
-							<td>Shelf: <?php echo $data_storage[0]['shelf']==''?'nil':$data_storage[0]['shelf']  ?></td>
-							<td>Slot: <input type="text" name=""></td>
+                            <?php
+                                if($typeBox == 'warehouse') {
+                                    ?>
+                                    <td>
+                                        Row: <?php echo $data_storage[0]['row'] == '' ? 'nil' : $data_storage[0]['row'] ?></td>
+                                    <td>
+                                        Rack: <?php echo $data_storage[0]['rack'] == '' ? 'nil' : $data_storage[0]['rack'] ?></td>
+                                    <td>
+                                        Shelf: <?php echo $data_storage[0]['shelf'] == '' ? 'nil' : $data_storage[0]['shelf'] ?></td>
+                                    <?php
+                                }
+                            ?>
 						</tr>	
 					</table>
 
@@ -424,7 +491,7 @@ require('Application.php');
 		</table>
 
 		<br><br>
-		<button onclick="print_me()" >Print</button>
+		<button id="print_btn" onclick="print_me()" >Print</button>
 
 		<br>
 		<br>
@@ -449,7 +516,15 @@ require('Application.php');
 
 	function print_me()
 	{
-		window.print();
+        //Get the print button and put it into a variable
+        var printButton = document.getElementById("print_btn");
+        //Set the print button visibility to 'hidden'
+        printButton.style.visibility = 'hidden';
+        //Print the page content
+        window.print()
+        //Set the print button to 'visible' again
+        //[Delete this line if you want it to stay hidden after printing]
+        printButton.style.visibility = 'visible';
 	}
 
 	function QtyDblClick(inventoryId)
