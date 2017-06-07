@@ -2,6 +2,30 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <style>
     .container{width:95%;}
+
+     .tool {
+         position: relative;
+         display: inline-block;
+     }
+
+    .tooltext {
+        /*visibility: hidden;*/
+        display: none;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+    }
+
+    .tool:hover .tooltext {
+        visibility: visible;
+    }
 </style>
 <?php
 require('Application.php');
@@ -579,10 +603,17 @@ foreach ($data_inv as $key => $val) {
         $data_set[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['quantity'];
         $data_invNew[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['inventoryId'];
         $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null;
+    }else if (isset($locHash[$val['locationId']])
+        && !isset($opt1SizeIdHash[$val['opt1ScaleId']])
+        && isset($data_mainSizeIdHash[$val['sizeScaleId']])
+    ) {
+        $data_set[$val['sizeScaleId']][0] = $val['quantity'];
+        $data_invNew[$val['sizeScaleId']][0] = $val['inventoryId'];
+        $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null;
     }
 }
 
-//echo "<pre>";print_r($data_invNew);exit();
+//echo "<pre>";print_r($data_set);exit();
 
 //echo "<pre>";print_r($data_mainSizeIdHash);
 //exit();
@@ -729,9 +760,75 @@ foreach ($arr_all_location as $arrAllLocationKey => $arrAlllocationValue){
         $newAllLocation[$arrAllLocationKey]['type'] = 'conveyor';
     }
 }
-/*echo '<pre>';
-print_r($newAllLocation);
-die();*/
+$dataTooltip = [];
+
+foreach ($data_mainSizeIdHash as $key1 => $val1) {
+
+    if(count($opt1SizeIdHash) > 0){
+
+        foreach ($opt1SizeIdHash as $key2 => $val2) {
+            $sql = '';
+            $sql = "SELECT * FROM \"tbl_inventory\" as inv ";
+            $sql .= " INNER JOIN \"tbl_invStorage\" as str ON str.\"invId\" = inv.\"inventoryId\"  where inv.\"styleId\"=".$data_style['styleId'];
+            $sql .= " AND inv.\"sizeScaleId\" = '".$key1."' AND inv.\"opt1ScaleId\" = '".$key2."'";
+            if ($_GET['colorId'] > 0) {
+                $sql .= ' and inv."colorId"=' . $_GET['colorId'];
+            } else if (count($data_color) > 0) {
+                $sql .= ' and inv."colorId"=' . $data_color[0]['colorId'];
+            }
+            if (!($result = pg_query($connection, $sql))) {
+                print("Failed invQuery: " . pg_last_error($connection));
+                exit;
+            }
+            $arrData = [];
+            while ($row = pg_fetch_array($result)) {
+                 $arrData[] = $row;
+            }
+            $strArr = "";
+
+            if(!is_null($arrData)){
+                foreach ($arrData as $ka=>$arrDaraTool){
+                    if(($arrDaraTool['unit'] != 0 || $arrDaraTool['unit'] != null) && $arrDaraTool['wareHouseQty'] > 0) {
+                        $strArr .= '<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&unitId='.$arrDaraTool['unit'].'">'.$arrDaraTool['unit']." : ".$arrDaraTool['wareHouseQty']."</a></br>";
+                    }
+                }
+            }
+            $dataTooltip[$key1][$key2] = $strArr;
+        }
+    } else {
+        $sql = '';
+        $sql = "SELECT * FROM \"tbl_inventory\" as inv ";
+        $sql .= " INNER JOIN \"tbl_invStorage\" as str ON str.\"invId\" = inv.\"inventoryId\"  where inv.\"styleId\"=".$data_style['styleId'];
+        $sql .= " AND inv.\"sizeScaleId\" = '".$key1."'";
+        if ($_GET['colorId'] > 0) {
+            $sql .= ' and inv."colorId"=' . $_GET['colorId'];
+        } else if (count($data_color) > 0) {
+            $sql .= ' and inv."colorId"=' . $data_color[0]['colorId'];
+        }
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $arrData = '';
+        while ($row = pg_fetch_array($result)) {
+            $arrData[] = $row;
+        }
+        $strArr = "";
+
+        if(!is_null($arrData)){
+            foreach ($arrData as $ka=>$arrDaraTool){
+                if(($arrDaraTool['unit'] != 0 || $arrDaraTool['unit'] != null) && $arrDaraTool['wareHouseQty'] > 0) {
+                    $strArr .= '<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&unitId='.$arrDaraTool['unit'].'">'.$arrDaraTool['unit']." : ".$arrDaraTool['wareHouseQty']."</a></br>";
+                }
+            }
+        }
+        $dataTooltip[$key1][0] = $strArr;
+    }
+}
+
+    /*echo '<pre>';
+    print_r($dataTooltip);
+    die();*/
 ?>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/jquery-ui.min-1.8.2.js"></script>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/samplerequest.js"></script>
@@ -740,7 +837,6 @@ die();*/
 <script src="<?php echo $mydirectory; ?>/js/tabs.js"></script>
 
 <link href="<?php echo $mydirectory; ?>/css/style.css" rel="stylesheet">
-
 <div class="container">
 <div class="row">
 <div class="col-md-12 col-sm-12">
@@ -884,11 +980,16 @@ die();*/
                                                         $data_div1 = $start_div1 . '<p>sizes</p>' . $end_div1;
                                                         /*$data_div .= $start_div . '<p>prices</p>' . $end_div;*/
                                                         $cnt1 = 0;
-                                                        foreach ($opt1SizeIdHash as $key1 => $value1) {
-                                                            $cnt1++;
-                                                            $data_div1 .= $start_div1 . "<p>" . $value1 . "</p>" . $end_div1;
-                                                            //echo $data_div."<br>";
+                                                        if(count($opt1SizeIdHash) > 0){
+                                                            foreach ($opt1SizeIdHash as $key1 => $value1) {
+                                                                $cnt1++;
+                                                                $data_div1 .= $start_div1 . "<p>" . $value1 . "</p>" . $end_div1;
+                                                                //echo $data_div."<br>";
+                                                            }
+                                                        } else {
+                                                            $data_div1 .= $start_div1 . "<p>Qty</p>" . $end_div1;
                                                         }
+
                                                         //var_dump($row);exit();
                                                         while ($row1--) {
                                                             echo $start_head1 . $data_div1 . $end1;
@@ -906,7 +1007,8 @@ die();*/
                                                             $count = 0;
                                                             foreach ($data_mainSizeIdHash as $key11 => $val11) {
                                                                 $element1 .= '<span>' . $val11 . '</span>';
-                                                                foreach ($opt1SizeIdHash as $key21 => $val21) {
+                                                                if(count($opt1SizeIdHash) > 0){
+                                                                    foreach ($opt1SizeIdHash as $key21 => $val21) {
                                                                         $element1 .= '<span><input class="clicked_new" id="input_' . $key11 . '_' . $key21 . '" type="text" value="0" name="new_qty_data[]"></span>';
                                                                         $element1 .= '<input type="hidden" value="' . $val11 . '" name="new_type_data[]">';
                                                                         $element1 .= '<input type="hidden" value="' . $val21 . '" name="new_size_data[]">';
@@ -916,7 +1018,14 @@ die();*/
                                                                             $element1 .= '<input id="h_' . $key11 . '_' . $key21 . '" type="hidden" value="0" name="is_change_new[]">';
                                                                         }
                                                                         $count++;
+                                                                    }
+                                                                } else {
+                                                                    $element1 .= '<span><input class="clicked_new" id="input_' . $key11 . '_' . 0 . '" type="text" value="0" name="new_qty_data[]"></span>';
+                                                                    $element1 .= '<input type="hidden" value="' . $val11 . '" name="new_type_data[]">';
+                                                                    $element1 .= '<input type="hidden" value="NULL" name="new_size_data[]">';
+                                                                    $element1 .= '<input id="h_' . $key11 . '_' . 0 . '" type="hidden" value="1" name="is_change_new[]">';
                                                                 }
+
                                                                 $data1 .= $mainsize_div1 . $element1 . $mainsize_div_end1;
                                                                 $element1 = '';
                                                             }
@@ -1402,8 +1511,8 @@ die();*/
                     // echo $location_id.'=='.$location_details_id;
                     // exit();
 
-                    // echo "<pre>";print_r($my_data);
-                    // exit();
+                     /*echo "<pre>";print_r($my_data);
+                     exit();*/
                 }
 
 
@@ -1835,7 +1944,7 @@ die();*/
                                             <input type="hidden" id="colorId" name="colorId" value="<?php echo $clrId; ?>"/>
                                             <table class="table ">
                                             <?php
-                                            // echo "<pre>";print_r($data_style);
+                                             //echo "<pre>";print_r($data_set);die();
                                             $len = sizeof($data_mainSizeIdHash);
                                             $row = $len / sizeof($data_mainSizeIdHash);
                                             $row += $len % 4 == 0 ? 0 : 1;
@@ -1848,11 +1957,16 @@ die();*/
                                             $data_div = $start_div . '<p>sizes</p>' . $end_div;
                                             /*$data_div .= $start_div . '<p>prices</p>' . $end_div;*/
                                             $cnt = 0;
-                                            foreach ($opt1SizeIdHash as $key => $value) {
-                                                $cnt++;
-                                                $data_div .= $start_div . "<p>" . $value . "</p>" . $end_div;
-                                                //echo $data_div."<br>";
+                                            if(count($opt1SizeIdHash) > 0){
+                                                foreach ($opt1SizeIdHash as $key => $value) {
+                                                    $cnt++;
+                                                    $data_div .= $start_div . "<p>" . $value . "</p>" . $end_div;
+                                                    //echo $data_div."<br>";
+                                                }
+                                            } else {
+                                                $data_div .= $start_div . "<p>Qty</p>" . $end_div;
                                             }
+
 
 
                                             //var_dump($row);exit();
@@ -1876,21 +1990,43 @@ die();*/
                                                                                                     ? $data_style['price']
                                                                                                     : ' ';
                                                                                                 $element .= '<span><input type="text" value="' . $price . '" readonly></span>'; //for prices*/
-                                                foreach ($opt1SizeIdHash as $key2 => $val2) {
-                                                    if (isset($data_set[$key1][$key2])) {
-                                                        $element .= '<span><input class="clicked" title="'.$store_new[$key1][$key2].'" id="input_' . $key1 . '_' . $key2 . '" type="text" id="" value="' . $data_set[$key1][$key2] . '" name="new_qty_data[]"></span>';
-                                                        $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
-                                                        $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
-                                                        $element .= '<input type="hidden" id="_' . $key1 . '_' . $key2 . '" value="0" name="is_change[]">';
-                                                        $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new" value="'.$data_invNew[$key1][$key2].'">';
-                                                    } else {
-                                                        $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . $key2 . '" type="text" value="0" name="new_qty_data[]"></span>';
-                                                        $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
-                                                        $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
-                                                        $element .= '<input id="_' . $key1 . '_' . $key2 . '" type="hidden" value="0" name="is_change[]">';
-                                                        $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new" value="0">';
+                                                if(count($opt1SizeIdHash) > 0){
+                                                    foreach ($opt1SizeIdHash as $key2 => $val2) {
+                                                        if (isset($data_set[$key1][$key2])) {
+                                                            $element .= '<span class="tool"><input class="clicked"  id="input_' . $key1 . '_' . $key2 . '" type="text" value="' . $data_set[$key1][$key2] . '" name="new_qty_data[]"></span>';
+                                                            $element .= '<p class="tooltext">'.$dataTooltip[$key1][$key2].'</p>';
+                                                            $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                            $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
+                                                            $element .= '<input type="hidden" id="_' . $key1 . '_' . $key2 . '" value="0" name="is_change[]">';
+                                                            $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new" value="'.$data_invNew[$key1][$key2].'">';
+                                                        } else {
+                                                            $element .= '<span><input class="clicked"  id="input_' . $key1 . '_' . $key2 . '" type="text" value="0" name="new_qty_data[]"></span>';
+                                                            $element .= '<p class="tooltext">'.$dataTooltip[$key1][$key2].'</p>';
+                                                            $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                            $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
+                                                            $element .= '<input id="_' . $key1 . '_' . $key2 . '" type="hidden" value="0" name="is_change[]">';
+                                                            $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new" value="0">';
+                                                        }
                                                     }
+                                                } else {
+                                                    if(isset($data_set[$key1][0])){
+                                                        $element .= '<span class="tool"><input class="clicked" id="input_' . $key1 . '_' . 0 . '" type="text" value="' . $data_set[$key1][0] . '" name="new_qty_data[]"></span>';
+                                                        $element .= '<p class="tooltext">'.$dataTooltip[$key1][0].'</p>';
+                                                        $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                        $element .= '<input type="hidden" value="NULL" name="new_size_data[]">';
+                                                        $element .= '<input type="hidden" id="_' . $key1 . '_' . 0 . '" value="0" name="is_change[]">';
+                                                        $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new[]" value="'.$data_invNew[$key1][0].'">';
+                                                    } else {
+                                                        $element .= '<span"><input class="clicked" id="input_' . $key1 . '_' . 0 . '" type="text" value="0" name="new_qty_data[]"></span>';
+                                                        $element .= '<p class="tooltext">'.$dataTooltip[$key1][0].'</p>';
+                                                        $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                        $element .= '<input type="hidden" value="NULL" name="new_size_data[]">';
+                                                        $element .= '<input type="hidden" id="_' . $key1 . '_' . 0 . '" value="0" name="is_change[]">';
+                                                        $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new[]" value="'.$data_invNew[$key1][0].'">';
+                                                    }
+
                                                 }
+
                                                 $data .= $mainsize_div . $element . $mainsize_div_end;
                                                 $element = '';
                                             }
@@ -2862,7 +2998,7 @@ die();*/
 
 
         function AddQty(trId, type, cellId, i, j, data, locIndex, rowIndex, qty, invIdValue) {
-            //alert(qty);
+                //alert(qty);
             console.log(locIndex, cellId, data, type);
             // console.log(i,j,qty);
             //alert(data);
@@ -2943,7 +3079,26 @@ die();*/
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
+            <?php if(!isset($_REQUEST['unitId']) || $_REQUEST['unitId'] == 0): ?>
+            $('.tool').bind({
+                mouseenter: function(){
+                    $(this).next('.tooltext').show();
+                },
+                mouseleave : function(){
+                    $('.tooltext').hide();
 
+                }
+            });
+
+            $('.tooltext').bind({
+                mouseenter: function(){
+                    $(this).show();
+                },
+                mouseleave : function(){
+                    $('.tooltext').hide();
+                }
+            });
+            <?php endif; ?>
 
             if ($('#unit_num').val() == 0 || $('#unit_num').val() == 'undefined') {
                 $('#update_inventory').hide();
@@ -2998,7 +3153,7 @@ die();*/
                 // exit();
                 for ($i = 0; $i < count($locArr); $i++, $locIndex++) {
                     $rowIndex = 0;
-                    //echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>".$locIndex."    ";
+                    //echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>".implode(';', $data_inv[$i])." >>>>>>>>>>>>>>   ";
                     if (count($data_opt1Size) > 0) {
                         for ($j = 0; $j < count($data_opt1Size); $j++) {
                             InsertQty($data_mainSize, $data_inv, $data_opt1Size[$j]['opt1SizeId'], $locArr[$i], $locIndex, $rowIndex, $_store);
