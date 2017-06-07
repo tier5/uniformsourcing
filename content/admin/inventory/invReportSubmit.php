@@ -126,6 +126,13 @@ if (isset($_POST['type']) && $_POST['type'] == "e") {
         }
         /*$optNew = Opt1Size($data_opt1Size,$new_size_data[1]);*/
         /*print_r($optNew);die();*/
+        foreach ($new_qty_data as $key => $value){
+            if($value < 0){
+                $return_arr[0]['name'] = "Negative value not accepted";
+                echo json_encode($return_arr);
+                return;
+            }
+        }
         foreach ($is_change as $key => $value) {
             if ($value == 1) {
                 if ($data_inv_new[$key] > 0) {
@@ -160,7 +167,7 @@ if (isset($_POST['type']) && $_POST['type'] == "e") {
                     $query .= ",\"isStorage\" = 0 ";
                     $query .= ",\"updatedBy\" = '" . $_SESSION['employeeID'] . "' ";
                     $query .= ",\"updatedDate\" = '" . date('U') . "' ";
-                    $query .= "  where \"inventoryId\"='" . $inv['inventoryId'] . "'";
+                    $query .= "  where \"inventoryId\"='" . $inventory . "'";
                 } else {
                     /*die($new_type_data[$key]);*/
                     $mainSize = MainSize($data_mainSize, $new_type_data[$key]);
@@ -177,11 +184,11 @@ if (isset($_POST['type']) && $_POST['type'] == "e") {
                     $query .= ", \"newQty\" ";
                     if ($mainSize) $query .= ", \"sizeScaleId\" ";
                     $query .= ", \"colorId\" ";
-                    if ($opt1) $query .= ", \"opt1ScaleId\" ";
+                    if ($opt1 != 0) $query .= ", \"opt1ScaleId\" ";
                     //if($k < count($data_opt2Size))$query .=", \"opt2ScaleId\" ";
                     $query .= ", \"notes\" ";
                     $query .= ", \"mainSize\" ";
-                    $query .= ", \"rowSize\" ";
+                    if($new_size_data[$key]) $query .= ", \"rowSize\" ";
                     //if($k < count($data_opt2Size))$query .=", \"columnSize\" ";
                     $query .= ", \"isStorage\" ";
                     $query .= ", \"createdBy\" ";
@@ -199,11 +206,11 @@ if (isset($_POST['type']) && $_POST['type'] == "e") {
                     $query .= " ,'" . $new_qty_data[$key] . "' ";
                     if ($mainSize) $query .= ", '" . $mainSize . "' ";
                     $query .= ", '$colorId' ";
-                    if ($opt1) $query .= ", '" . $opt1 . "' ";
+                    if ($opt1 != 0) $query .= ", '" . $opt1 . "' ";
                     //if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2SizeId']."' ";
                     $query .= " ,'$notes' ";
                     $query .= ", '" . $new_type_data[$key] . "' ";
-                    $query .= ", '" . $new_size_data[$key] . "' ";
+                    if($new_size_data[$key]) $query .= ", '" . $new_size_data[$key] . "' ";
                     //if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2Size']."' ";
                     $query .= " ,0 ";
                     $query .= " ,'" . $_SESSION['employeeID'] . "' ";

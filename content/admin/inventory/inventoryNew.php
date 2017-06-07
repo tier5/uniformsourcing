@@ -134,6 +134,14 @@ if(count($id) > 0){
     }
     $rowLoc = pg_fetch_row($result);
     $flag = 0;
+    foreach ($new_qty_data as $key => $value){
+        if($value < 0){
+            $return_arr['name'] = "Negative value not accepted";
+            $return_arr['error'] = 1;
+            echo json_encode($return_arr);
+            return;
+        }
+    }
     foreach ($is_change_new as $key => $value){
         if($value == 1){
             $mainSize = MainSize($data_mainSize,$new_type_data[$key]);
@@ -154,7 +162,7 @@ if(count($id) > 0){
             //if($k < count($data_opt2Size))$query .=", \"opt2ScaleId\" ";
             $query .=", \"notes\" ";
             $query .=", \"mainSize\" ";
-            $query .=", \"rowSize\" ";
+            if($new_size_data[$key])  $query .=", \"rowSize\" ";
             //if($k < count($data_opt2Size))$query .=", \"columnSize\" ";
             $query .=", \"isStorage\" ";
             $query .=", \"createdBy\" ";
@@ -176,7 +184,7 @@ if(count($id) > 0){
             //if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2SizeId']."' ";
             $query .=" ,'$notes' ";
             $query .=", '".$new_type_data[$key]."' ";
-            $query .=", '".$new_size_data[$key]."' ";
+            if($new_size_data[$key]) $query .=", '".$new_size_data[$key]."' ";
             //if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2Size']."' ";
             $query .=" ,1 ";
             $query .=" ,'".$_SESSION['employeeID']."' ";

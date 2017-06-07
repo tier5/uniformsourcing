@@ -22,3 +22,9 @@ Inventory V2.0 Stable Released
 	Modify inventory table
 	added inventory details in inventory page
 	make box number unique
+
+Inventory V2.1 Stable Released
+	Add Tool-tip in inventory report  
+	Fix Negative_value_error
+	Fix Print_button_error
+	Fix Add_inventory
