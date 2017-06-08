@@ -1202,110 +1202,117 @@ pg_free_result($resultemp);
             </form>
         </div>
     </div>
-    <fieldset style="margin:10px;">
-        <table width="98%" border="0" cellspacing="1" cellpadding="1">
-            <tbody>
-            <tr>
-                <td width="355" height="25" align="right" valign="top">Date: <br></td>
-                <td width="10">&nbsp;</td>
-                <td align="left" valign="top">
-                    <?php echo date("F j, Y, g:i a", $oldinv['3']); ?>
-                    <?php
-                    $t = time();
-                    $datetime1 = date_create(date('Y-m-d',$t));
-                    $datetime2 = date_create(date('Y-m-d',$oldinv['3']));
-                    $interval = date_diff($datetime1, $datetime2);
-                    $days = $interval->format('%a')+1;
-                    $colo = 'black';
-                    if (isset($oldinv['3'])) {
-                        foreach ($colorSettings as $colorSetting){
-                            if($colorSetting['interval'] == $days){
-                                $colo = $colorSetting['color'];
+    <?php
+    if ($oldinv) {
+        ?>
+        <fieldset style="margin:10px;">
+            <table width="98%" border="0" cellspacing="1" cellpadding="1">
+                <tbody>
+                <tr>
+                    <td width="355" height="25" align="right" valign="top">Date: <br></td>
+                    <td width="10">&nbsp;</td>
+                    <td align="left" valign="top">
+                        <?php echo date("F j, Y, g:i a", $oldinv['3']); ?>
+                        <?php
+                        $t = time();
+                        $datetime1 = date_create(date('Y-m-d', $t));
+                        $datetime2 = date_create(date('Y-m-d', $oldinv['3']));
+                        $interval = date_diff($datetime1, $datetime2);
+                        $days = $interval->format('%a') + 1;
+                        $colo = 'black';
+                        if (isset($oldinv['3'])) {
+                            foreach ($colorSettings as $colorSetting) {
+                                if ($colorSetting['interval'] == $days) {
+                                    $colo = $colorSetting['color'];
+                                }
                             }
+                            $updatedby = $oldemp['1'] . " " . $oldemp['2'];
+                            echo '<div id="button" style="width:25px; height: 25px; border-radius:100%; background-color:' . $colo . ';"></div>';
                         }
-                        $updatedby=$oldemp['1']." ".$oldemp['2'];
-                        echo '<div id="button" style="width:25px; height: 25px; border-radius:100%; background-color:' . $colo . ';"></div>';
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-
-                <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
-                <td width="10">&nbsp;</td>
-                <td align="left" valign="top">
-                    <?php echo $oldemp['1'] . " " . $oldemp['2']; ?>
-                </td>
-            </tr>
-            <tr>
-                <td width="355" height="25" align="right" valign="top">Previous: <br></td>
-                <td width="10">&nbsp;</td>
-                <td align="left" valign="top">
-                    <table>
-                        <tr>
-                            <td>Scale1 &nbsp;&nbsp;</td>
-                            <td>Scale2 &nbsp;&nbsp;</td>
-                            <td>Value &nbsp;&nbsp;</td>
-                            <td>Unit &nbsp;&nbsp;</td>
-                        </tr>
-                        <?php
-                        $data = json_decode($oldinv['5']);
-                        foreach ($data as $key => $prevalue) {
-                            //print_r($prevalue);
-                            ?>
-                            <tr>
-                                <td><?php logCheckOStyle($prevalue->sizeScaleId,$connection); ?> &nbsp;&nbsp;</td>
-                                <td><?php
-                                    if($prevalue->opt1ScaleId != ''){
-                                        logCheckNStyle($prevalue->opt1ScaleId,$connection);
-                                    } else {
-                                        echo 'Qty';
-                                    }
-                                    ?>&nbsp;&nbsp;
-                                </td>
-                                <td><?php echo $prevalue->oldinv; ?>&nbsp;&nbsp;</td>
-                                <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
-                            </tr>
-                        <?php } ?>
-                    </table>
-
-                </td>
-            </tr>
-            <tr>
-                <td width="355" height="25" align="right" valign="top">Present: <br></td>
-                <td width="10">&nbsp;</td>
-                <td align="left" valign="top">
-                    <table>
-                        <tr>
-                            <td>Scale1 &nbsp;&nbsp;</td>
-                            <td>Scale2 &nbsp;&nbsp;</td>
-                            <td>Value &nbsp;&nbsp;</td>
-                            <td>Unit &nbsp;&nbsp;</td>
-                        </tr>
-                        <?php
-                        $data = json_decode($oldinv['5']);
-                        foreach ($data as $key => $prevalue) {
                         ?>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
+                    <td width="10">&nbsp;</td>
+                    <td align="left" valign="top">
+                        <?php echo $oldemp['1'] . " " . $oldemp['2']; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="355" height="25" align="right" valign="top">Previous: <br></td>
+                    <td width="10">&nbsp;</td>
+                    <td align="left" valign="top">
+                        <table>
                             <tr>
-                                <td><?php logCheckOStyle($prevalue->sizeScaleId,$connection); ?>&nbsp;&nbsp;</td>
-                                <td><?php
-                                    if($prevalue->opt1ScaleId != ''){
-                                        logCheckNStyle($prevalue->opt1ScaleId,$connection);
-                                    } else {
-                                        echo 'Qty';
-                                    }
-                                    ?>
-                                    &nbsp;&nbsp;</td>
-                                <td><?php echo $prevalue->wareHouseQty; ?>&nbsp;&nbsp;</td>
-                                <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
+                                <td>Scale1 &nbsp;&nbsp;</td>
+                                <td>Scale2 &nbsp;&nbsp;</td>
+                                <td>Value &nbsp;&nbsp;</td>
+                                <td>Unit &nbsp;&nbsp;</td>
                             </tr>
-                        <?php } ?>
-                    </table>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </fieldset>
+                            <?php
+                            $data = json_decode($oldinv['5']);
+                            foreach ($data as $key => $prevalue) {
+                                //print_r($prevalue);
+                                ?>
+                                <tr>
+                                    <td><?php logCheckOStyle($prevalue->sizeScaleId, $connection); ?> &nbsp;&nbsp;</td>
+                                    <td><?php
+                                        if ($prevalue->opt1ScaleId != '') {
+                                            logCheckNStyle($prevalue->opt1ScaleId, $connection);
+                                        } else {
+                                            echo 'Qty';
+                                        }
+                                        ?>&nbsp;&nbsp;
+                                    </td>
+                                    <td><?php echo $prevalue->oldinv; ?>&nbsp;&nbsp;</td>
+                                    <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td width="355" height="25" align="right" valign="top">Present: <br></td>
+                    <td width="10">&nbsp;</td>
+                    <td align="left" valign="top">
+                        <table>
+                            <tr>
+                                <td>Scale1 &nbsp;&nbsp;</td>
+                                <td>Scale2 &nbsp;&nbsp;</td>
+                                <td>Value &nbsp;&nbsp;</td>
+                                <td>Unit &nbsp;&nbsp;</td>
+                            </tr>
+                            <?php
+                            $data = json_decode($oldinv['5']);
+                            foreach ($data as $key => $prevalue) {
+                                ?>
+                                <tr>
+                                    <td><?php logCheckOStyle($prevalue->sizeScaleId, $connection); ?>&nbsp;&nbsp;</td>
+                                    <td><?php
+                                        if ($prevalue->opt1ScaleId != '') {
+                                            logCheckNStyle($prevalue->opt1ScaleId, $connection);
+                                        } else {
+                                            echo 'Qty';
+                                        }
+                                        ?>
+                                        &nbsp;&nbsp;
+                                    </td>
+                                    <td><?php echo $prevalue->wareHouseQty; ?>&nbsp;&nbsp;</td>
+                                    <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <?php
+    }
+    ?>
             <form id="inventoryForm" style="display: none;">
 
 

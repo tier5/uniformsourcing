@@ -28,3 +28,9 @@ Inventory V2.1 Stable Released
 	Fix Negative_value_error
 	Fix Print_button_error
 	Fix Add_inventory
+
+Inventory V2.2 Stable Released 
+	Fix Update Log errors
+
+Inventory V2.3 Stable Released
+	Fix non updated inventory list
