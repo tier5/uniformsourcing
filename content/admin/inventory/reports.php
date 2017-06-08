@@ -32,99 +32,61 @@ require('../../jsonwrapper/jsonwrapper.php');?>
 // 	echo "<pre>";
 // 	var_dump($_POST);
 // }
-function logCheckvival($styleId) 
+function logCheckvival($styleId,$connection)
 {
-    global $server_URL, $db_server, $db_name, $db_uname, $db_pass;   
-try{
-	$connection = pg_connect("host = $db_server ".
-						 "dbname = $db_name ".
-						 "user = $db_uname ".
-						 "password = $db_pass");
-
-}
-catch(\Exception $e)
-{
-	var_dump($e->getMessage());
-}
-// SELECT e.\"employeeID\" as \"employeeID\", ".
-// 			"e.\"username\" as \"username\", ".
-// 			"e.\"password\" as \"password\", ".
-// 			"e.\"firstname\" as \"firstname\", ".
-// 			"e.\"lastname\" as \"lastname\", ".
-// 			"e.\"email\" as \"email\",  ".
-// 			"p.\"login\" as \"plogin\", ".
-// 			"e.\"employeeType\" as \"employeeType\",  ".
-// 			"e.employee_type_id as employee_type_id ".
-// 			"FROM \"employeeDB\" e, \"permissions\" p ".
-// 			"WHERE username = '$username' AND password = '$password' AND e.\"employeeID\" = p.\"employee\" AND p.\"login\" = 'on' "
-	$sql ='select * from "tbl_date_interval_setting"';
-			if (!($resultProduct = pg_query($connection, $sql))) {
-			print("Failed invQuery: " . pg_last_error($connection));
-			exit;
-			}
-			while ($row = pg_fetch_array($resultProduct)) {
-				if($row['color']=="red"){
-					 $red = $row['interval'];
-				}
-				if($row['color']=="green"){
-					 $green = $row['interval'];
-				}
-				if($row['color']=="yellow"){
-					$yellow = $row['interval'];
-				}
-			
-			}
-	pg_free_result($resultProduct);	
+    $sql = 'select * from "tbl_date_interval_setting"';
+    if (!($resultProduct = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($resultProduct)) {
+        $colorSettings[] = $row;
+    }
+    pg_free_result($resultProduct);
+    $sql = '';
+    $sql = "select * from \"tbl_log_updates\" where \"styleId\" =" . $styleId . " and \"present\" ='inventory' order by \"updatedDate\" desc LIMIT 1";
+    if (!($resultoldinv = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    $rowoldinv = pg_fetch_row($resultoldinv);
+    $oldinv = $rowoldinv;
     pg_free_result($resultoldinv);
-    $sql='';
-  	$sql='select * from "tbl_log_updates" where "styleId" ='.$styleId.' and "present" = '."'".inventory."'".' order by "updatedDate" asc LIMIT 1';
-		if(!($resultoldinv=pg_query($connection,$sql))){
-			//echo "no";
-		}
-		else{
-			//echo "yes";
-		}
-        $rowoldinv = pg_fetch_row($resultoldinv);
-        $oldinv=$rowoldinv;
-        pg_free_result($resultoldinv);
-        //print_r($oldinv['4']);
-        $date2=date('U');
-        $date1=$oldinv['4'];
 
-
-        if($oldinv['4']){
-        	$resultday=round(abs($date1-$date2)/86400);
-			if($resultday<=$green){
-				$colo= "green";
-			}
-			if($resultday<=$yellow && $resultday>$green){
-				$colo= "yellow";
-			}
-			if($resultday>$yellow){
-				$colo= "red";
-			}
-			pg_free_result($resultemp);
-			$empsql='select * from "employeeDB" where "employeeID" ='.$oldinv['2'].' LIMIT 1';
-			if(!($resultemp=pg_query($connection,$empsql))){
-			
-			}
-			else{
-			
-			}
-			$rowemp = pg_fetch_row($resultemp);
-			$oldemp=$rowemp;
-			pg_free_result($resultemp);
-			//print_r($oldemp);
-			 $updatedby=$oldemp['1']." ".$oldemp['2'];
-			 echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"><span class="tooltiptext">'.$updatedby.'</br><a href="checkLog.php?ID='.$styleId.'">check the log</a></span></div>';
-        
-        }else{
-        	$colo= "red";
-        	$updatedby="Not Update Yet !!!";
-        	echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"></div>';
-        
+    if ($oldinv) {
+        $empsql = 'select * from "employeeDB" where "employeeID" =' . $oldinv['2'] . ' LIMIT 1';
+        if (!($resultemp = pg_query($connection, $empsql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
         }
-        
+        $rowemp = pg_fetch_row($resultemp);
+        $oldemp = $rowemp;
+    }
+    pg_free_result($resultemp);
+    $t = time();
+    $datetime1 = date_create(date('Y-m-d',$t));
+    $datetime2 = date_create(date('Y-m-d',$oldinv['3']));
+    $interval = date_diff($datetime1, $datetime2);
+    $days = $interval->format('%a')+1;
+    $colo = 'black';
+    if (isset($oldinv['3'])) {
+        foreach ($colorSettings as $colorSetting){
+            if($colorSetting['interval'] == $days){
+                $colo = $colorSetting['color'];
+            }
+        }
+        if($colo == 'black'){
+            $updatedby="Not Updated within 3 Days !!!";
+            echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"><span class="tooltiptext">'.$updatedby.'</br><a href="checkLog.php?ID='.$styleId.'">check the log</a></span></div>';
+        } else {
+            $updatedby=$oldemp['1']." ".$oldemp['2'];
+            echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"><span class="tooltiptext">'.$updatedby.'</br><a href="checkLog.php?ID='.$styleId.'">check the log</a></span></div>';
+        }
+    } else {
+        $updatedby="Not Updated Yet !!!";
+        echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"><span class="tooltiptext">'.$updatedby.'</span></div>';
+
+    }
 }
 
 
@@ -700,7 +662,7 @@ if(count($datalist))
 		echo '<td class="grid001">'.$datalist[$i]['notes'].'</td>';
 
 		?>
-		<td class="grid001"><?php logCheckvival($datalist[$i]['styleId']); ?></td>
+		<td class="grid001"><?php logCheckvival($datalist[$i]['styleId'],$connection); ?></td>
 		<td class="grid001">
 			<a href="reportViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">
 			<img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0">

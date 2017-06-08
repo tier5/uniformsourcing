@@ -8,9 +8,6 @@ if (!($resultProduct = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-
-
-//print_r($data_color_settings);
 ?>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>

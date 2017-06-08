@@ -69,7 +69,36 @@ function locationDetails($locId,$connection){
     }
     return $data;
 }
+function logCheckOStyle($styleId,$connection)
+{
+    $sql = '';
+    $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . ' LIMIT 1';
+    if (!($resultoldinv = pg_query($connection, $sql))) {
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit;
+    }
+    $rowoldinv = pg_fetch_row($resultoldinv);
+    $oldinv = $rowoldinv;
+    pg_free_result($resultoldinv);
+    echo $oldinv['2'];
 
+
+}
+function logCheckNStyle($styleId,$connection)
+{
+    $sql = '';
+    $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . ' LIMIT 1';
+    if (!($resultoldinv = pg_query($connection, $sql))) {
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit;
+    }
+    $rowoldinv = pg_fetch_row($resultoldinv);
+    $oldinv = $rowoldinv;
+    pg_free_result($resultoldinv);
+    echo $oldinv['3'];
+
+
+}
 $loc_identity = 0;
 if (isset($_GET["del"]) && $_GET["del"] == "true") {
     $sql = 'select "inventoryId" from "tbl_inventory" as inv where inv."styleId"=' . $_GET['styleId'] . ' and inv."colorId"=' . $_GET['colorId'];
@@ -825,7 +854,40 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
         $dataTooltip[$key1][0] = $strArr;
     }
 }
+    $sql = 'select * from "tbl_date_interval_setting"';
+    if (!($resultProduct = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($resultProduct)) {
+        $colorSettings[] = $row;
+    }
+    pg_free_result($resultProduct);
+    if ((isset($_GET['unitId']) && $_GET['unitId'] != '0')) {
+        $sqlUnit = " AND warehouse='".$_GET['unitId']."'";
+    } else {
+        $sqlUnit = '';
+    }
+    $sql = '';
+    $sql = "select * from \"tbl_log_updates\" where \"styleId\" =" . $_GET['styleId'] . " and \"present\" ='inventory' ".$sqlUnit." order by \"updatedDate\" desc LIMIT 1";
+    if (!($resultoldinv = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    $rowoldinv = pg_fetch_row($resultoldinv);
+    $oldinv = $rowoldinv;
+    pg_free_result($resultoldinv);
 
+    if ($oldinv) {
+        $empsql = 'select * from "employeeDB" where "employeeID" =' . $oldinv['2'] . ' LIMIT 1';
+        if (!($resultemp = pg_query($connection, $empsql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $rowemp = pg_fetch_row($resultemp);
+        $oldemp = $rowemp;
+    }
+pg_free_result($resultemp);
     /*echo '<pre>';
     print_r($dataTooltip);
     die();*/
@@ -1067,9 +1129,7 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
             <table class="table">
                 <tr>
                     <td>Style: <h4><?php echo $data_style['styleNumber']; ?></h4>
-
                     </td>
-                  
                     <td>
                         Color:&nbsp;<br>
                         <select class="color-option" name="color" id="color">
@@ -1088,7 +1148,6 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
                             }
                             ?>
                         </select>&nbsp;
-
                     </td>
                     <td>
                         box #:&nbsp;<br><select name="unit_num" id="unit_num" class="unit_num">
@@ -1126,352 +1185,127 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
                 <tr id="hide">
                     <td>
                     <?php if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { ?>
-
                         <button class="pull-left" type="button" id="addinventory_new">Add Inventory</button>
-
                     <?php } ?>
                     </td>
                 </tr>
                     <td colspan="2">
                         <?php if ($data_style['barcode'] != "") { ?>
-
                     Barcode:
-
                     <h1><img width="100" height="100"
                                  src="../../uploadFiles/inventory/images/<?php echo $data_style['barcode']; ?>">
                         </h1>
                     <?php } ?>
                     </td>
-
                 </tr>
-
-
-
             </table>
             </form>
-
-
-
-           <!-- <div class="table-responsive">
-
-
-
-
-
-
-
-            <table class="table" width="100%">-->
-<!--    <tr>
-        <td>
-            <center>
-                <table>
-                    <tr>
-                        <td>
-                            <div align="center" id="message"></div>
-                        </td>
-                    </tr>
-                </table>
-            </center>
-        </td>
-    </tr>
-    <tr>
-        <td align="center"><font size="5">Report</font><font size="5"> View/Edit <br>
-                <br>-->
-            </font>
-            <?php
-
-
-            if (isset($_GET['styleId']) && (!isset($_GET['unitId']) || $_GET['unitId'] == '0')) {
-                $sql = 'select * from "tbl_date_interval_setting"';
-                if (!($resultProduct = pg_query($connection, $sql))) {
-                    print("Failed invQuery: " . pg_last_error($connection));
-                    exit;
-                }
-                while ($row = pg_fetch_array($resultProduct)) {
-
-                    $interval[] = $row;
-
-                }
-                foreach ($interval as $key => $valueint) {
-                    if ($valueint['color'] == "green") {
-                        $green = $valueint['interval'];
+        </div>
+    </div>
+    <fieldset style="margin:10px;">
+        <table width="98%" border="0" cellspacing="1" cellpadding="1">
+            <tbody>
+            <tr>
+                <td width="355" height="25" align="right" valign="top">Date: <br></td>
+                <td width="10">&nbsp;</td>
+                <td align="left" valign="top">
+                    <?php echo date("F j, Y, g:i a", $oldinv['3']); ?>
+                    <?php
+                    $t = time();
+                    $datetime1 = date_create(date('Y-m-d',$t));
+                    $datetime2 = date_create(date('Y-m-d',$oldinv['3']));
+                    $interval = date_diff($datetime1, $datetime2);
+                    $days = $interval->format('%a')+1;
+                    $colo = 'black';
+                    if (isset($oldinv['3'])) {
+                        foreach ($colorSettings as $colorSetting){
+                            if($colorSetting['interval'] == $days){
+                                $colo = $colorSetting['color'];
+                            }
+                        }
+                        $updatedby=$oldemp['1']." ".$oldemp['2'];
+                        echo '<div id="button" style="width:25px; height: 25px; border-radius:100%; background-color:' . $colo . ';"></div>';
                     }
-                    if ($valueint['color'] == "yellow") {
-                        $yellow = $valueint['interval'];
-                    }
-                    if ($valueint['color'] == "red") {
-                        $red = $valueint['interval'];
-                    }
-                }
-                pg_free_result($resultProduct);
-
-//pg_free_result($resultoldinv);
-                $sql = '';
-                $sql = 'select * from "tbl_log_updates" where "styleId" =' . $_GET['styleId'] . ' and "present" = ' . "'" . inventory . "'" . ' order by "updatedDate" desc LIMIT 1';
-                if (!($resultoldinv = pg_query($connection, $sql))) {
-
-                } else {
-
-                }
-                $rowoldinv = pg_fetch_row($resultoldinv);
-                $oldinv = $rowoldinv;
-                //print_r($oldinv);
-                pg_free_result($resultoldinv);
-
-                if ($oldinv) {
-                    $empsql = 'select * from "employeeDB" where "employeeID" =' . $oldinv['2'] . ' LIMIT 1';
-                    if (!($resultemp = pg_query($connection, $empsql))) {
-
-                    } else {
-
-                    }
-                    $rowemp = pg_fetch_row($resultemp);
-                    $oldemp = $rowemp;
-                    pg_free_result($resultemp);
                     ?>
-                    <fieldset style="margin:10px;">
-                        <table width="98%" border="0" cellspacing="1" cellpadding="1">
-                            <tbody>
+                </td>
+            </tr>
+            <tr>
+
+                <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
+                <td width="10">&nbsp;</td>
+                <td align="left" valign="top">
+                    <?php echo $oldemp['1'] . " " . $oldemp['2']; ?>
+                </td>
+            </tr>
+            <tr>
+                <td width="355" height="25" align="right" valign="top">Previous: <br></td>
+                <td width="10">&nbsp;</td>
+                <td align="left" valign="top">
+                    <table>
+                        <tr>
+                            <td>Scale1 &nbsp;&nbsp;</td>
+                            <td>Scale2 &nbsp;&nbsp;</td>
+                            <td>Value &nbsp;&nbsp;</td>
+                            <td>Unit &nbsp;&nbsp;</td>
+                        </tr>
+                        <?php
+                        $data = json_decode($oldinv['5']);
+                        foreach ($data as $key => $prevalue) {
+                            //print_r($prevalue);
+                            ?>
                             <tr>
-                                <td width="355" height="25" align="right" valign="top">Date: <br></td>
-                                <td width="10">&nbsp;</td>
-                                <td align="left" valign="top">
-                                    <?php echo date('m/d/Y h:i:s', $oldinv['3']); ?>
-                                    <?php
-                                    $date2 = date('U');
-                                    $date1 = $oldinv['4'];
-                                    if ($oldinv['4']) {
-                                        $resultday = round(abs($date1 - $date2) / 86400);
-                                        if ($resultday <= $green) {
-                                            $colo = "green";
-                                        }
-                                        if ($resultday <= $yellow && $resultday > $green) {
-                                            $colo = "yellow";
-                                        }
-                                        if ($resultday > $yellow) {
-                                            $colo = "red";
-                                        }
-                                        echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:' . $colo . ';"></div>';
+                                <td><?php logCheckOStyle($prevalue->sizeScaleId,$connection); ?> &nbsp;&nbsp;</td>
+                                <td><?php
+                                    if($prevalue->opt1ScaleId != ''){
+                                        logCheckNStyle($prevalue->opt1ScaleId,$connection);
+                                    } else {
+                                        echo 'Qty';
+                                    }
+                                    ?>&nbsp;&nbsp;
+                                </td>
+                                <td><?php echo $prevalue->oldinv; ?>&nbsp;&nbsp;</td>
+                                <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+
+                </td>
+            </tr>
+            <tr>
+                <td width="355" height="25" align="right" valign="top">Present: <br></td>
+                <td width="10">&nbsp;</td>
+                <td align="left" valign="top">
+                    <table>
+                        <tr>
+                            <td>Scale1 &nbsp;&nbsp;</td>
+                            <td>Scale2 &nbsp;&nbsp;</td>
+                            <td>Value &nbsp;&nbsp;</td>
+                            <td>Unit &nbsp;&nbsp;</td>
+                        </tr>
+                        <?php
+                        $data = json_decode($oldinv['5']);
+                        foreach ($data as $key => $prevalue) {
+                        ?>
+                            <tr>
+                                <td><?php logCheckOStyle($prevalue->sizeScaleId,$connection); ?>&nbsp;&nbsp;</td>
+                                <td><?php
+                                    if($prevalue->opt1ScaleId != ''){
+                                        logCheckNStyle($prevalue->opt1ScaleId,$connection);
+                                    } else {
+                                        echo 'Qty';
                                     }
                                     ?>
-                                </td>
+                                    &nbsp;&nbsp;</td>
+                                <td><?php echo $prevalue->wareHouseQty; ?>&nbsp;&nbsp;</td>
+                                <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
                             </tr>
-                            <tr>
-
-                                <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
-                                <td width="10">&nbsp;</td>
-                                <td align="left" valign="top">
-                                    <?php echo $oldemp['1'] . " " . $oldemp['2']; ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="355" height="25" align="right" valign="top">Previous: <br></td>
-                                <td width="10">&nbsp;</td>
-                                <td align="left" valign="top">
-                                    <table>
-                                        <tr>
-                                            <td>Scale1x</td>
-                                            <td>Scale2</td>
-                                            <td>Value</td>
-                                            <td>Unit</td>
-                                        </tr>
-                                        <?php
-                                        $data = json_decode($oldinv['5']);
-                                        foreach ($data as $key => $prevalue) {
-                                            //print_r($prevalue);
-                                            ?>
-                                            <tr>
-                                                <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
-                                                <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
-                                                <td><?php echo $prevalue->oldinv; ?></td>
-                                                <td><?php echo $prevalue->unit; ?></td>
-                                            </tr>
-                                        <?php } ?>
-                                    </table>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="355" height="25" align="right" valign="top">Present: <br></td>
-                                <td width="10">&nbsp;</td>
-                                <td align="left" valign="top">
-                                    <table>
-                                        <tr>
-                                            <td>Scale1y</td>
-                                            <td>Scale2</td>
-                                            <td>Value</td>
-                                            <td>Unit</td>
-                                        </tr>
-                                        <?php
-                                        $data = json_decode($oldinv['5']);
-                                        foreach ($data as $key => $prevalue) {
-                                            //print_r($prevalue);
-                                            ?>
-                                            <tr>
-                                                <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
-                                                <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
-                                                <td><?php echo $prevalue->wareHouseQty; ?></td>
-                                                <td><?php echo $prevalue->unit; ?></td>
-                                            </tr>
-                                        <?php } ?>
-                                    </table>
-                                </td>
-                            </tr>
-
-
-                            </tbody>
-                        </table>
-
-                    </fieldset>
-                    <?php
-                }
-
-            }
-            if (isset($_GET['styleId']) && (isset($_GET['unitId']) && $_GET['unitId'] != '0')) {
-                $sql = 'select * from "tbl_date_interval_setting"';
-                if (!($resultProduct = pg_query($connection, $sql))) {
-                    print("Failed invQuery: " . pg_last_error($connection));
-                    exit;
-                }
-                while ($row = pg_fetch_array($resultProduct)) {
-
-                    $interval[] = $row;
-
-                }
-                foreach ($interval as $key => $valueint) {
-                    if ($valueint['color'] == "green") {
-                        $green = $valueint['interval'];
-                    }
-                    if ($valueint['color'] == "yellow") {
-                        $yellow = $valueint['interval'];
-                    }
-                    if ($valueint['color'] == "red") {
-                        $red = $valueint['interval'];
-                    }
-                }
-                pg_free_result($resultProduct);
-                $sql = '';
-                $sql = 'select * from "tbl_log_updates" where "styleId" =' . $_GET['styleId'] . ' and  "warehouse" =' . "'" . $_GET['unitId'] . "'" . ' and "present" = ' . "'" . inventory . "'" . ' order by "updatedDate" desc LIMIT 1';
-                if (!($resultoldinv = pg_query($connection, $sql))) {
-
-                } else {
-
-                }
-                $rowoldinv = pg_fetch_row($resultoldinv);
-                $oldinv = $rowoldinv;
-                //print_r($oldinv);
-                pg_free_result($resultoldinv);
-
-                if ($oldinv) {
-                    $empsql = 'select * from "employeeDB" where "employeeID" =' . $oldinv['2'] . ' LIMIT 1';
-                    if (!($resultemp = pg_query($connection, $empsql))) {
-
-                    } else {
-
-                    }
-                    $rowemp = pg_fetch_row($resultemp);
-                    $oldemp = $rowemp;
-                    pg_free_result($resultemp); ?>
-                    <fieldset style="margin:10px;">
-                        <table width="98%" border="0" cellspacing="1" cellpadding="1">
-                            <tbody>
-                            <tr>
-                                <td width="355" height="25" align="right" valign="top">Date: <br></td>
-                                <td width="10">&nbsp;</td>
-                                <td align="left" valign="top">
-                                    <?php echo date('m/d/Y h:i:s', $oldinv['4']); ?>
-                                    <?php
-                                    $date2 = date('U');
-                                    $date1 = $oldinv['4'];
-                                    if ($oldinv['4']) {
-                                        $resultday = round(abs($date1 - $date2) / 86400);
-                                        if ($resultday <= $green) {
-                                            $colo = "green";
-                                        }
-                                        if ($resultday <= $yellow && $resultday > $green) {
-                                            $colo = "yellow";
-                                        }
-                                        if ($resultday > $yellow) {
-                                            $colo = "red";
-                                        }
-                                        echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:' . $colo . ';"></div>';
-                                    }
-                                    ?>
-                                </td>
-                            </tr>
-                            <tr>
-
-                                <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
-                                <td width="10">&nbsp;</td>
-                                <td align="left" valign="top">
-                                    <?php echo $oldemp['1'] . " " . $oldemp['2']; ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="355" height="25" align="right" valign="top">Previous: <br></td>
-                                <td width="10">&nbsp;</td>
-                                <td align="left" valign="top">
-                                    <table>
-                                        <tr>
-                                            <td>Scale1x</td>
-                                            <td>Scale2</td>
-                                            <td>Value</td>
-                                            <td>Unit</td>
-                                        </tr>
-                                        <?php
-                                        $data = json_decode($oldinv['5']);
-                                        foreach ($data as $key => $prevalue) {
-                                            //print_r($prevalue);
-                                            ?>
-                                            <tr>
-                                                <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
-                                                <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
-                                                <td><?php echo $prevalue->oldinv; ?></td>
-                                                <td><?php echo $prevalue->unit; ?></td>
-                                            </tr>
-                                        <?php } ?>
-                                    </table>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="355" height="25" align="right" valign="top">Present: <br></td>
-                                <td width="10">&nbsp;</td>
-                                <td align="left" valign="top">
-                                    <table>
-                                        <tr>
-                                            <td>Scale1y</td>
-                                            <td>Scale2</td>
-                                            <td>Value</td>
-                                            <td>Unit</td>
-                                        </tr>
-                                        <?php
-                                        $data = json_decode($oldinv['5']);
-                                        foreach ($data as $key => $prevalue) {
-                                            //print_r($prevalue);
-                                            ?>
-                                            <tr>
-                                                <td><?php logCheckOStyle($prevalue->sizeScaleId); ?></td>
-                                                <td><?php logCheckNStyle($prevalue->opt1ScaleId); ?></td>
-                                                <td><?php echo $prevalue->wareHouseQty; ?></td>
-                                                <td><?php echo $prevalue->unit; ?></td>
-                                            </tr>
-                                        <?php } ?>
-                                    </table>
-                                </td>
-                            </tr>
-
-
-                            </tbody>
-                        </table>
-
-                    </fieldset>
-
-                    <?php
-                }
-            }
-
-            ?>
+                        <?php } ?>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </fieldset>
             <form id="inventoryForm" style="display: none;">
 
 
@@ -1993,7 +1827,12 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
                                                 if(count($opt1SizeIdHash) > 0){
                                                     foreach ($opt1SizeIdHash as $key2 => $val2) {
                                                         if (isset($data_set[$key1][$key2])) {
-                                                            $element .= '<span class="tool"><input class="clicked"  id="input_' . $key1 . '_' . $key2 . '" type="text" value="' . $data_set[$key1][$key2] . '" name="new_qty_data[]"></span>';
+                                                            if($data_set[$key1][$key2] > 0){
+                                                                $element .= '<span class="tool">';
+                                                            } else {
+                                                                $element .= '<span>';
+                                                            }
+                                                            $element .= '<input class="clicked"  id="input_' . $key1 . '_' . $key2 . '" type="text" value="' . $data_set[$key1][$key2] . '" name="new_qty_data[]"></span>';
                                                             $element .= '<p class="tooltext">'.$dataTooltip[$key1][$key2].'</p>';
                                                             $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
                                                             $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
@@ -2010,14 +1849,19 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
                                                     }
                                                 } else {
                                                     if(isset($data_set[$key1][0])){
-                                                        $element .= '<span class="tool"><input class="clicked" id="input_' . $key1 . '_' . 0 . '" type="text" value="' . $data_set[$key1][0] . '" name="new_qty_data[]"></span>';
+                                                        if($data_set[$key1][0] > 0){
+                                                            $element .= '<span class="tool">';
+                                                        } else {
+                                                            $element .= '<span>';
+                                                        }
+                                                        $element .= '<input class="clicked" id="input_' . $key1 . '_' . 0 . '" type="text" value="' . $data_set[$key1][0] . '" name="new_qty_data[]"></span>';
                                                         $element .= '<p class="tooltext">'.$dataTooltip[$key1][0].'</p>';
                                                         $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
                                                         $element .= '<input type="hidden" value="NULL" name="new_size_data[]">';
                                                         $element .= '<input type="hidden" id="_' . $key1 . '_' . 0 . '" value="0" name="is_change[]">';
                                                         $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new[]" value="'.$data_invNew[$key1][0].'">';
                                                     } else {
-                                                        $element .= '<span"><input class="clicked" id="input_' . $key1 . '_' . 0 . '" type="text" value="0" name="new_qty_data[]"></span>';
+                                                        $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . 0 . '" type="text" value="0" name="new_qty_data[]"></span>';
                                                         $element .= '<p class="tooltext">'.$dataTooltip[$key1][0].'</p>';
                                                         $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
                                                         $element .= '<input type="hidden" value="NULL" name="new_size_data[]">';
@@ -2135,14 +1979,12 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
 
     <div id="dialog-form" title="Submit By Email">
         <p class="validateTips">All form fields are required.</p>
-
         <form action='reportMail.php?styleId=<?php echo $styleId; ?>' id="frmmailsendform" method="POST">
             <fieldset>
                 <label for="email">Email</label>
                 <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all"/>
                 <label for="subject">Subject:</label>
                 <input type="text" name="subject" id="subject" class="text ui-widget-content ui-corner-all"/>
-
             </fieldset>
             <input type="hidden" name="colorId" id="colorid_mail" value="<?php echo $_GET['colorId']; ?>"/>
             <input type="hidden" name="unitId" id="unitId_mail" value="<?php echo $_GET['unitId']; ?>"/>
@@ -2785,8 +2627,6 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
             }
         }
     </script>
-
-
     <script>
 
 
@@ -3444,7 +3284,6 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
             dw_Event.add(window, 'load', init_dw_Scroll);
         }
     </script>
-
     <script type="text/javascript">
         $(function () {
             $("#inventoryFormNew").submit(function (e) {
@@ -3665,74 +3504,4 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
         }
 
     </script>
-    <?php
-    function logCheckOStyle($styleId)
-    {
-        $server_URL = "http://127.0.0.1:4569";
-        $db_server = "localhost";
-        $db_name = "php_intranet_uniformsourcing";
-        $db_uname = "globaluniformuser";
-        $db_pass = "globaluniformpassword";
-        try {
-            $connection = pg_connect("host = $db_server " .
-                "dbname = $db_name " .
-                "user = $db_uname " .
-                "password = $db_pass");
-
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());
-        }
-
-        $sql = '';
-        $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . 'LIMIT 1';
-        if (!($resultoldinv = pg_query($connection, $sql))) {
-            //echo "no";
-        } else {
-            //echo "yes";
-        }
-        $rowoldinv = pg_fetch_row($resultoldinv);
-        $oldinv = $rowoldinv;
-        pg_free_result($resultoldinv);
-        echo $oldinv['2'];
-
-
-    }
-
-
-    ?>
-    <?php
-    function logCheckNStyle($styleId)
-    {
-        $server_URL = "http://127.0.0.1:4569";
-        $db_server = "localhost";
-        $db_name = "php_intranet_uniformsourcing";
-        $db_uname = "globaluniformuser";
-        $db_pass = "globaluniformpassword";
-        try {
-            $connection = pg_connect("host = $db_server " .
-                "dbname = $db_name " .
-                "user = $db_uname " .
-                "password = $db_pass");
-
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());
-        }
-
-        $sql = '';
-        $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . 'LIMIT 1';
-        if (!($resultoldinv = pg_query($connection, $sql))) {
-            //echo "no";
-        } else {
-            //echo "yes";
-        }
-        $rowoldinv = pg_fetch_row($resultoldinv);
-        $oldinv = $rowoldinv;
-        pg_free_result($resultoldinv);
-        echo $oldinv['3'];
-
-
-    }
-
-
-    ?>
     <?php require('../../trailer.php'); ?>
