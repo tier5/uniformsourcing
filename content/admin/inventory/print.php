@@ -13,9 +13,13 @@
 	.top-table input[type="text"]{width: 50%;}
 	.top-table table{border-collapse: collapse;}
 	.top-table table tr td table tr td{padding: 0;}
-	.common-table table{border-collapse: collapse;}
-	.common-table table tr th{padding:5px 3px;}
-	.common-table table tr td{border: 1px solid #878787; padding:5px 3px; width: 7.69%;}
+    .common-table{width: 95%; margin:0 auto;}
+	.common-table table{border-collapse: collapse; width: 100%;}
+	.common-table table tr th{padding:5px 3px; border: 1px solid #878787;}
+    .common-table table tr th:first-child{border: none;}
+    .common-table table tr th:last-child{border: none;}
+	.common-table table tr td{border: 1px solid #878787; padding:5px 3px; width: 76px; text-align: center;}
+    .common-table table tr td:first-child{text-align: left;}
 </style>
 </head>
 <?php 

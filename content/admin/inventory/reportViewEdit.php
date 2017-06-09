@@ -1241,14 +1241,16 @@ pg_free_result($resultemp);
                     </td>
                 </tr>
                 <tr>
-                    <td width="355" height="25" align="right" valign="top">Previous: <br></td>
+                    <td width="355" height="25" align="right" valign="top">Data: <br></td>
                     <td width="10">&nbsp;</td>
                     <td align="left" valign="top">
+                        <div class="table-responsive">
                         <table>
                             <tr>
                                 <td>Scale1 &nbsp;&nbsp;</td>
                                 <td>Scale2 &nbsp;&nbsp;</td>
-                                <td>Value &nbsp;&nbsp;</td>
+                                <td>Previous &nbsp;&nbsp;</td>
+                                <td>Present &nbsp;&nbsp;</td>
                                 <td>Unit &nbsp;&nbsp;</td>
                             </tr>
                             <?php
@@ -1267,44 +1269,12 @@ pg_free_result($resultemp);
                                         ?>&nbsp;&nbsp;
                                     </td>
                                     <td><?php echo $prevalue->oldinv; ?>&nbsp;&nbsp;</td>
-                                    <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
-                                </tr>
-                            <?php } ?>
-                        </table>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td width="355" height="25" align="right" valign="top">Present: <br></td>
-                    <td width="10">&nbsp;</td>
-                    <td align="left" valign="top">
-                        <table>
-                            <tr>
-                                <td>Scale1 &nbsp;&nbsp;</td>
-                                <td>Scale2 &nbsp;&nbsp;</td>
-                                <td>Value &nbsp;&nbsp;</td>
-                                <td>Unit &nbsp;&nbsp;</td>
-                            </tr>
-                            <?php
-                            $data = json_decode($oldinv['5']);
-                            foreach ($data as $key => $prevalue) {
-                                ?>
-                                <tr>
-                                    <td><?php logCheckOStyle($prevalue->sizeScaleId, $connection); ?>&nbsp;&nbsp;</td>
-                                    <td><?php
-                                        if ($prevalue->opt1ScaleId != '') {
-                                            logCheckNStyle($prevalue->opt1ScaleId, $connection);
-                                        } else {
-                                            echo 'Qty';
-                                        }
-                                        ?>
-                                        &nbsp;&nbsp;
-                                    </td>
                                     <td><?php echo $prevalue->wareHouseQty; ?>&nbsp;&nbsp;</td>
                                     <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
                                 </tr>
                             <?php } ?>
                         </table>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
@@ -1834,8 +1804,12 @@ pg_free_result($resultemp);
                                                 if(count($opt1SizeIdHash) > 0){
                                                     foreach ($opt1SizeIdHash as $key2 => $val2) {
                                                         if (isset($data_set[$key1][$key2])) {
-                                                            if($data_set[$key1][$key2] > 0){
-                                                                $element .= '<span class="tool">';
+                                                            if (!(isset($_GET['unitId'])) || $_GET['unitId'] == '0') {
+                                                                if ($data_set[$key1][$key2] > 0) {
+                                                                    $element .= '<span class="tool">';
+                                                                } else {
+                                                                    $element .= '<span>';
+                                                                }
                                                             } else {
                                                                 $element .= '<span>';
                                                             }
@@ -1856,8 +1830,12 @@ pg_free_result($resultemp);
                                                     }
                                                 } else {
                                                     if(isset($data_set[$key1][0])){
-                                                        if($data_set[$key1][0] > 0){
-                                                            $element .= '<span class="tool">';
+                                                        if (!(isset($_GET['unitId'])) || $_GET['unitId'] == '0') {
+                                                            if ($data_set[$key1][0] > 0) {
+                                                                $element .= '<span class="tool">';
+                                                            } else {
+                                                                $element .= '<span>';
+                                                            }
                                                         } else {
                                                             $element .= '<span>';
                                                         }
