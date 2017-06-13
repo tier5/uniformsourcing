@@ -375,7 +375,7 @@ exit();*/
                 <?php
                     } else {
                 ?>
-                        <td style="width: 30%">Slot:  <?php echo $_GET['unitId']; ?></td>
+                        <td style="width: 30%">Box#:  <?php echo $_GET['unitId']; ?></td>
                 <?php
                     }
                 ?>

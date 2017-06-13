@@ -231,14 +231,14 @@ h2.custom-head{text-align:center; font-size:22px}
 
 table.my-table tr td{padding: 0;}
 
+.p-pic{width: 80px;}
+.p-pic img{max-width:100%; height: auto}
+
+table.table1 tr td{padding-bottom: 10px;}
+
+#addinventory_new{border:1px solid #ccc; background: #fff; padding: 7px 16px;	border-radius:5px; font-size: 14px;}
+.main-inventory{border:1px solid #ccc; background: #fff; padding: 7px 16px;	border-radius:5px; font-size: 14px;}
 
 
-
-
-
-
-
-
-
-
+#print{border:1px solid #ccc; background: #fff; padding: 7px 16px; border-radius:5px; font-size: 14px;}
 

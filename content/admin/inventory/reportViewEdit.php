@@ -696,7 +696,7 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0' ) {
         $data_employee = '';
         $data_type = 'All';
     }
-    
+
 } else {
     if(count($data_inv_new) > 0){
         $key_inv = 0;
@@ -888,6 +888,43 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
         $oldemp = $rowemp;
     }
 pg_free_result($resultemp);
+
+if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
+
+    //$my_data;
+
+
+    $sql = 'select str."locationId" , inv.location_details_id from "tbl_invStorage" as str  left join "tbl_inventory" as inv on inv."inventoryId" = str."invId" where str.unit = \'' . $_GET['unitId'] . '\' ';
+
+
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row = pg_fetch_array($result)) {
+        $my_data[] = $row;
+    }
+
+    $location_id = '';
+    $location_details_id = '';
+    foreach ($my_data as $key => $value) {
+
+        $location_id = $value['locationId'];
+        if ($value['location_details_id'] != '')
+            $location_details_id = $value['location_details_id'];
+    }
+
+
+    //$location_id = $my_data[0]['locationId'];
+    //$inventory_id = $my_data[0]['invId'];
+    //$location_details_id = $my_data[0]['location_details_id'];
+
+    // echo $location_id.'=='.$location_details_id;
+    // exit();
+
+    /*echo "<pre>";print_r($my_data);
+    exit();*/
+}
     /*echo '<pre>';
     print_r($dataTooltip);
     die();*/
@@ -979,7 +1016,7 @@ pg_free_result($resultemp);
                                         </strong>
                                     </td>
                                     <td colspan="2" id="slot_add" style="display: none;">
-                                        Slot:<strong>
+                                        Box#:<strong>
                                             <input type="text" name="add_new_slot" id="add_new_slot">
                                         </strong>
                                     </td>
@@ -1006,7 +1043,7 @@ pg_free_result($resultemp);
                         </div>
                         <br/><br/>
                         <div class="row">
-                                <form id="inventoryFormNewAdd">  
+                                <form id="inventoryFormNewAdd">
                                 <div class="col-md-12 right-sidebar">
                                     <div class="inventory-table">
                                         <div class="table-responsive">
@@ -1126,7 +1163,8 @@ pg_free_result($resultemp);
             <h2 class="custom-head">Report View/Edit </h2>
             <div align="center" id="message"></div>
             <form id="optForm" method="post">
-            <table class="table">
+                <strong>
+                    <table class="table1" width="60%" style="margin: 0 auto; text-align: center;">
                 <tr>
                     <td>Style: <h4><?php echo $data_style['styleNumber']; ?></h4>
                     </td>
@@ -1162,31 +1200,29 @@ pg_free_result($resultemp);
                             ?>
                         </select>
                     </td>
-                    <td>
-                        <?php if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { ?>
-                            <input type="button" value="Main Inventory" onclick="main_inv();"/>
-                        <?php } ?>
-                    </td>
-                    <td>
+                </tr>
+                <tr>
+                    <td colspan="3">
                         <button id="print" type="button"
                                 onclick="print_content('<?php echo $_GET['styleId']; ?>'
                                         ,'<?php echo $data_loc[$loc_identity]['name'] ?>'
                                         ,'<?php if (isset($_GET['unitId'])) echo $_GET['unitId'];
                                 else echo 'null' ?>')"
-                        >Print
-                        </button>
+                        >Print</button>
+                        <span id="hide" style="display: inline-block !important;">
+                        <?php if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { ?>
+                            <button type="button" id="addinventory_new">Add Inventory</button>
+                        <?php } ?>
+                        </span>
+                        <?php if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { ?>
+                            <input class="main-inventory" type="button" value="Main Inventory" onclick="main_inv();"/>
+                        <?php } ?>
                     </td>
-                    <td>
-                        <img id="imgView" src="<?php echo $upload_dir_image . trim($imageName); ?>" alt="thumbnail"
-                             width="150" height="230" border="1" class="mouseover_left"/>
-                    </td>
+
                 </tr>
                 <tr>
-                <tr id="hide">
+                <tr >
                     <td>
-                    <?php if (isset($_SESSION['employeeType']) AND $_SESSION['employeeType'] != 5) { ?>
-                        <button class="pull-left" type="button" id="addinventory_new">Add Inventory</button>
-                    <?php } ?>
                     </td>
                 </tr>
                     <td colspan="2">
@@ -1199,12 +1235,14 @@ pg_free_result($resultemp);
                     </td>
                 </tr>
             </table>
+                </strong>
             </form>
         </div>
     </div>
+</div>
     <?php
-    if ($oldinv) {
-        ?>
+/*    if ($oldinv) {
+        */?><!--
         <fieldset style="margin:10px;">
             <table width="98%" border="0" cellspacing="1" cellpadding="1">
                 <tbody>
@@ -1212,9 +1250,9 @@ pg_free_result($resultemp);
                     <td width="355" height="25" align="right" valign="top">Date: <br></td>
                     <td width="10">&nbsp;</td>
                     <td align="left" valign="top">
-                        <?php echo date("F j, Y, g:i a", $oldinv['3']); ?>
+                        <?php /*echo date("F j, Y, g:i a", $oldinv['3']); */?>
                         <?php
-                        $t = time();
+/*                        $t = time();
                         $datetime1 = date_create(date('Y-m-d', $t));
                         $datetime2 = date_create(date('Y-m-d', $oldinv['3']));
                         $interval = date_diff($datetime1, $datetime2);
@@ -1229,7 +1267,7 @@ pg_free_result($resultemp);
                             $updatedby = $oldemp['1'] . " " . $oldemp['2'];
                             echo '<div id="button" style="width:25px; height: 25px; border-radius:100%; background-color:' . $colo . ';"></div>';
                         }
-                        ?>
+                        */?>
                     </td>
                 </tr>
                 <tr>
@@ -1237,7 +1275,7 @@ pg_free_result($resultemp);
                     <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
                     <td width="10">&nbsp;</td>
                     <td align="left" valign="top">
-                        <?php echo $oldemp['1'] . " " . $oldemp['2']; ?>
+                        <?php /*echo $oldemp['1'] . " " . $oldemp['2']; */?>
                     </td>
                 </tr>
                 <tr>
@@ -1254,25 +1292,25 @@ pg_free_result($resultemp);
                                 <td>Unit &nbsp;&nbsp;</td>
                             </tr>
                             <?php
-                            $data = json_decode($oldinv['5']);
+/*                            $data = json_decode($oldinv['5']);
                             foreach ($data as $key => $prevalue) {
                                 //print_r($prevalue);
-                                ?>
+                                */?>
                                 <tr>
-                                    <td><?php logCheckOStyle($prevalue->sizeScaleId, $connection); ?> &nbsp;&nbsp;</td>
+                                    <td><?php /*logCheckOStyle($prevalue->sizeScaleId, $connection); */?> &nbsp;&nbsp;</td>
                                     <td><?php
-                                        if ($prevalue->opt1ScaleId != '') {
+/*                                        if ($prevalue->opt1ScaleId != '') {
                                             logCheckNStyle($prevalue->opt1ScaleId, $connection);
                                         } else {
                                             echo 'Qty';
                                         }
-                                        ?>&nbsp;&nbsp;
+                                        */?>&nbsp;&nbsp;
                                     </td>
-                                    <td><?php echo $prevalue->oldinv; ?>&nbsp;&nbsp;</td>
-                                    <td><?php echo $prevalue->wareHouseQty; ?>&nbsp;&nbsp;</td>
-                                    <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
+                                    <td><?php /*echo $prevalue->oldinv; */?>&nbsp;&nbsp;</td>
+                                    <td><?php /*echo $prevalue->wareHouseQty; */?>&nbsp;&nbsp;</td>
+                                    <td><?php /*echo $prevalue->unit; */?>&nbsp;&nbsp;</td>
                                 </tr>
-                            <?php } ?>
+                            <?php /*} */?>
                         </table>
                         </div>
                     </td>
@@ -1280,337 +1318,282 @@ pg_free_result($resultemp);
                 </tbody>
             </table>
         </fieldset>
-        <?php
-    }
-    ?>
-            <form id="inventoryForm" style="display: none;">
+        --><?php
+/*    }
+    */?>
+<form id="inventoryForm" style="display: none;">
+    <input type="hidden" id="_location_id" name="location_id"
+           value="<?php echo (isset($location_id) && $location_id) > 0 ? $location_id : 'null' ?>">
 
+    <input type="hidden" id="_inventory_id" name="inventory_id"
+           value="<?php echo (isset($inventory_id) && $inventory_id > 0) ? $inventory_id : 'null' ?>">
 
-                <?php
+    <input type="hidden" id="_location_details_id" name="location_details_id"
+           value="<?php echo (isset($location_details_id) && $location_details_id) > 0 ? $location_details_id : 'null' ?>">
 
-
-                if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
-
-                    //$my_data;
-
-
-                    $sql = 'select str."locationId" , inv.location_details_id from "tbl_invStorage" as str  left join "tbl_inventory" as inv on inv."inventoryId" = str."invId" where str.unit = \'' . $_GET['unitId'] . '\' ';
-
-
-                    if (!($result = pg_query($connection, $sql))) {
-                        print("Failed invQuery: " . pg_last_error($connection));
-                        exit;
-                    }
-                    while ($row = pg_fetch_array($result)) {
-                        $my_data[] = $row;
-                    }
-
-                    $location_id = '';
-                    $location_details_id = '';
-                    foreach ($my_data as $key => $value) {
-
-                        $location_id = $value['locationId'];
-                        if ($value['location_details_id'] != '')
-                            $location_details_id = $value['location_details_id'];
-                    }
-
-
-                    //$location_id = $my_data[0]['locationId'];
-                    //$inventory_id = $my_data[0]['invId'];
-                    //$location_details_id = $my_data[0]['location_details_id'];
-
-                    // echo $location_id.'=='.$location_details_id;
-                    // exit();
-
-                     /*echo "<pre>";print_r($my_data);
-                     exit();*/
-                }
-
-
-                ?>
-
-
-                <input type="hidden" id="_location_id" name="location_id"
-                       value="<?php echo (isset($location_id) && $location_id) > 0 ? $location_id : 'null' ?>">
-
-                <input type="hidden" id="_inventory_id" name="inventory_id"
-                       value="<?php echo (isset($inventory_id) && $inventory_id > 0) ? $inventory_id : 'null' ?>">
-
-                <input type="hidden" id="_location_details_id" name="location_details_id"
-                       value="<?php echo (isset($location_details_id) && $location_details_id) > 0 ? $location_details_id : 'null' ?>">
-
-                <div id="scrollLinks">
-                    <fieldset style="margin:10px;">
+    <div id="scrollLinks">
+        <fieldset style="margin:10px;">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td width="10"></td>
+                    <td width="170" align="left" valign="top" style="padding:5px;">
                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td width="10"></td>
-                                <td width="170" align="left" valign="top" style="padding:5px;">
-                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                        <tr>
-                                            <td><img id="imgView"
-                                                     src="<?php echo $upload_dir_image . trim($imageName); ?>"
-                                                     alt="thumbnail" width="150" height="230" border="1"
-                                                     class="mouseover_left"/></td>
-                                        </tr>
-                                        <tr>
-                                            <td height="100">&nbsp;</td>
-                                        </tr>
+                                <td><img id="imgView"
+                                         src="<?php echo $upload_dir_image . trim($imageName); ?>"
+                                         alt="thumbnail" width="150" height="230" border="1"
+                                         class="mouseover_left"/></td>
+                            </tr>
+                            <tr>
+                                <td height="100">&nbsp;</td>
+                            </tr>
 
 
-                                        <?php if (isset($_SESSION['employeeType']) && $_SESSION['employeeType'] < 4) { ?>
+                            <?php if (isset($_SESSION['employeeType']) && $_SESSION['employeeType'] < 4) { ?>
 
-                                            <?php
-                                            if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
-                                                ?>
-                                                <tr>
-                                                    <td>
+                                <?php
+                                if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
+                                    ?>
+                                    <tr>
+                                        <td>
 
-                                                    </td>
-                                                </tr>
-                                                <?php
-                                            }
-                                            ?>
-
-
-                                        <?php } ?>
-                                    </table>
-                                </td>
-                                <td width="10"></td>
-                                <td width="100">
-                                    <div id="header" style="float:left; width:100%;">
-                                        <div id="scrollLinks4">
-                                            <div id="scrollLinks2">
-                                                <div id="scrollLinks">
-                                                    <div id="scrollLinks3">
-                                                        <table class="HD001" width="250px" style="float:left;"
-                                                               border="0" cellspacing="1" cellpadding="1">
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td class="gridHeaderReport">sizes</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3"><a
-                                                                            class="mouseover_left" href="#"><img
-                                                                                src="<?php echo $mydirectory; ?>/images/leftArrw.gif"
-                                                                                alt="lft" width="33" height="26"
-                                                                                border="0"/></a><a
-                                                                            class="mouseover_right" href="#"><img
-                                                                                src="<?php echo $mydirectory; ?>/images/rightArrw.gif"
-                                                                                alt="lft" width="30" height="26"
-                                                                                border="0"/></a></td>
-                                                                <td class="gridHeaderReport">prices</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td class="gridHeaderReportGrids2">&nbsp;</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td colspan="2"
-                                                                    class="gridHeaderReportGrids4"><?php echo $data_optionName['opt1Name']; ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td class="gridHeaderReportGrids2"><span
-                                                                            class="gridHeaderReportGrids3"><a
-                                                                                class="mouseover_up" href="#"><img
-                                                                                    src="<?php echo $mydirectory; ?>/images/upArrw.gif"
-                                                                                    alt="lft" width="33" height="26"
-                                                                                    border="0"/></a><a
-                                                                                class="mouseover_down" href="#"><img
-                                                                                    src="<?php echo $mydirectory; ?>/images/dwnArrw.gif"
-                                                                                    alt="lft" width="33" height="26"
-                                                                                    border="0"/></a></span></td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="TopDiv">
-                                            <!-- window 1 starts here -->
-                                            <div id="wn">
-                                                <div id="lyr1">
-                                                    <table style="float:left;"
-                                                           width="<?php echo $tableWidth . "px"; ?>" border="0"
-                                                           cellspacing="1" cellpadding="1">
-                                                        <tr id="mainSizeTop">
-                                                        </tr>
-                                                        <tr id="priceTop">
-                                                        </tr>
-                                                        <tr id="dummy1">
-                                                        </tr>
-                                                        <tr id="dummy2">
-                                                        </tr>
-                                                        <tr id="columnSize">
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="wn3">
-                                        <div id="lyr3">
-                                            <div id="rowSize" style="float:left; width:250px;">
-                                                <table width="250" border="0" cellspacing="1" cellpadding="1">
-                                                    <?php
-                                                    if ($locArr[0] > 0 && $locArr[0] != "") {
-                                                        $loc_i = 0;
-                                                        for ($i = 0; $i < count($locArr); $i++, $loc_i++) {
-                                                            for (; $loc_i < count($data_loc); $loc_i++) {
-                                                                if ($locArr[$i] == $data_loc[$loc_i]['locationId'])
-                                                                    break;
-                                                            }
-                                                            ?>
-                                                            <tr>
-                                                            <td class="gridHeaderReportGrids3"><?php //echo $data_loc[$loc_i]['name'];
-                                                                $loc_identity = $loc_i; ?></td>
-                                                            <?php
-                                                            if (count($data_opt1Size) > 0) {
-                                                                for ($j = 0; $j < count($data_opt1Size); $j++) {
-                                                                    if ($j != 0) {
-                                                                        ?>
-                                                                        <tr>
-                                                                            <td class="gridHeaderReportGrids3">
-                                                                                &nbsp;
-                                                                            </td>
-                                                                            <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
-                                                                        </tr>
-
-                                                                        <?php
-                                                                    } else {
-                                                                        ?>
-                                                                        <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
-                                                                        </tr>
-                                                                        <?php
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                ?>
-                                                                <td style="visibility:hidden;"
-                                                                    class="gridHeaderReportGrids2">&nbsp;
-                                                                </td>
-                                                                </tr>
-                                                                <?php
-                                                            }
-                                                            ?>
-                                                            <tr>
-                                                                <td class="gridHeaderReportGrids3">&nbsp;</td>
-                                                                <td class="gridHeaderReportGrids2">&nbsp;</td>
-                                                            </tr>
-                                                            <?php
-                                                        }//LocArr for
-                                                    }//locArr if
-                                                    ?>
-                                                </table>
-                                            </div>
-                                            <?php if (count($data_opt1Size) > 0){ ?>
-                                            <div id="wn2"
-                                                 style="position:relative; width:600px; height:<?php echo((count($data_opt1Size) * count($locArr) * 32) + (count($data_loc) * 32)); ?>px;  overflow:hidden; float:left;">
-                                                <?php }else{ ?>
-                                                <div id="wn2"
-                                                     style="position:relative; width:600px; height:<?php echo(count($locArr) * 64); ?>px;  overflow:hidden; float:left;">
-                                                    <?php } ?>
-                                                    <div id="lyr2">
-                                                        <div id="values_">
-
-                                                            <table id="values"
-                                                                   width="<?php echo $tableWidth . "px"; ?>"
-                                                                   border="0" cellspacing="1" cellpadding="1">
-
-                                                                <?php
-                                                                // print_r($data_opt1Size); ------------ size1 ------------
-                                                                // exit;
-
-                                                                //$data_mainSize,$data_inv,$data_opt1Size[$j]['opt1SizeId'],$locArr[$i],$locIndex,$rowIndex
-                                                                // print_r($data_mainSize);
-                                                                // exit();
-
-                                                                // print_r($data_inv);
-                                                                // exit();
-                                                                if ($locArr[0] > 0 && $locArr[0] != "") {
-                                                                    for ($i = 0; $i < count($locArr); $i++) {
-                                                                        $rowIndex = 0;
-                                                                        if (count($data_opt1Size) > 0) {
-                                                                            for ($j = 0; $j < count($data_opt1Size); $j++) {
-                                                                                echo '<tr id="qty_' . $i . '_' . $rowIndex . '"></tr>';
-                                                                                $rowIndex++;
-                                                                            }
-                                                                        } else {
-                                                                            echo '<tr id="qty_' . $i . '_' . $rowIndex . '"></tr>';
-                                                                        }
-                                                                        echo '<tr id="qtyDummy' . $i . '"></tr>';
-                                                                    }
-                                                                }
-                                                                ?>
-                                                            </table>
-
-                                                        </div>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                                ?>
 
 
-                                        <div id="footer" style="width:100%; float:left;">
-                                            <table class="HD001" style="float:left; width:250px;" border="0"
-                                                   cellspacing="1" cellpadding="1">
+                            <?php } ?>
+                        </table>
+                    </td>
+                    <td width="10"></td>
+                    <td width="100">
+                        <div id="header" style="float:left; width:100%;">
+                            <div id="scrollLinks4">
+                                <div id="scrollLinks2">
+                                    <div id="scrollLinks">
+                                        <div id="scrollLinks3">
+                                            <table class="HD001" width="250px" style="float:left;"
+                                                   border="0" cellspacing="1" cellpadding="1">
                                                 <tr>
                                                     <td class="gridHeaderReportGrids3">&nbsp;</td>
                                                     <td class="gridHeaderReport">sizes</td>
                                                 </tr>
+                                                <tr>
+                                                    <td class="gridHeaderReportGrids3"><a
+                                                                class="mouseover_left" href="#"><img
+                                                                    src="<?php echo $mydirectory; ?>/images/leftArrw.gif"
+                                                                    alt="lft" width="33" height="26"
+                                                                    border="0"/></a><a
+                                                                class="mouseover_right" href="#"><img
+                                                                    src="<?php echo $mydirectory; ?>/images/rightArrw.gif"
+                                                                    alt="lft" width="30" height="26"
+                                                                    border="0"/></a></td>
+                                                    <td class="gridHeaderReport">prices</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                    <td class="gridHeaderReportGrids2">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                    <td colspan="2"
+                                                        class="gridHeaderReportGrids4"><?php echo $data_optionName['opt1Name']; ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                    <td class="gridHeaderReportGrids2"><span
+                                                                class="gridHeaderReportGrids3"><a
+                                                                    class="mouseover_up" href="#"><img
+                                                                        src="<?php echo $mydirectory; ?>/images/upArrw.gif"
+                                                                        alt="lft" width="33" height="26"
+                                                                        border="0"/></a><a
+                                                                    class="mouseover_down" href="#"><img
+                                                                        src="<?php echo $mydirectory; ?>/images/dwnArrw.gif"
+                                                                        alt="lft" width="33" height="26"
+                                                                        border="0"/></a></span></td>
+                                                </tr>
                                             </table>
-                                            <div id="wn4">
-                                                <div id="lyr4">
-                                                    <table class="TopValues"
-                                                           style="float:left; width:<?php echo $tableWidth . "px"; ?>;"
-                                                           border="0" cellspacing="1" cellpadding="1">
-                                                        <tr id="mainSizeBottom">
-                                                        </tr>
-                                                        <tr id="adjBottom"></tr>
-                                                    </table>
-                                                </div>
-                                            </div>
                                         </div>
-                                </td>
-                                <td>
-                                    <input id="update_inventory" width="117" height="98"
-                                           type="image"
-                                           src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg"
-                                           alt="Submit button"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td id="hdnVar">
-                                    <input type="hidden" name="scaleNameId"
-                                           value="<?php echo $data_style['scaleNameId']; ?>"/>
-                                    <input type="hidden" id="styleId" name="styleId"
-                                           value="<?php echo $styleId; ?>"/>
-                                    <input type="hidden" id="colorId" name="colorId" value="<?php echo $clrId; ?>"/>
-                                    <input type="hidden" id="locCount" name="locCount" value="0"/>
-                                    <input type="hidden" id="rowCount" name="rowCount" value="0"/>
-                                    <input type="hidden" id="mainCount" name="mainCount" value="0"/>
-                                </td>
-                            </tr>
-                        </table>
-                        <br/>
-                    </fieldset>
-                </div>
-            </form>
-            <!-- form print -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="TopDiv">
+                                <!-- window 1 starts here -->
+                                <div id="wn">
+                                    <div id="lyr1">
+                                        <table style="float:left;"
+                                               width="<?php echo $tableWidth . "px"; ?>" border="0"
+                                               cellspacing="1" cellpadding="1">
+                                            <tr id="mainSizeTop">
+                                            </tr>
+                                            <tr id="priceTop">
+                                            </tr>
+                                            <tr id="dummy1">
+                                            </tr>
+                                            <tr id="dummy2">
+                                            </tr>
+                                            <tr id="columnSize">
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="wn3">
+                            <div id="lyr3">
+                                <div id="rowSize" style="float:left; width:250px;">
+                                    <table width="250" border="0" cellspacing="1" cellpadding="1">
+                                        <?php
+                                        if ($locArr[0] > 0 && $locArr[0] != "") {
+                                            $loc_i = 0;
+                                            for ($i = 0; $i < count($locArr); $i++, $loc_i++) {
+                                                for (; $loc_i < count($data_loc); $loc_i++) {
+                                                    if ($locArr[$i] == $data_loc[$loc_i]['locationId'])
+                                                        break;
+                                                }
+                                                ?>
+                                                <tr>
+                                                <td class="gridHeaderReportGrids3"><?php //echo $data_loc[$loc_i]['name'];
+                                                    $loc_identity = $loc_i; ?></td>
+                                                <?php
+                                                if (count($data_opt1Size) > 0) {
+                                                    for ($j = 0; $j < count($data_opt1Size); $j++) {
+                                                        if ($j != 0) {
+                                                            ?>
+                                                            <tr>
+                                                                <td class="gridHeaderReportGrids3">
+                                                                    &nbsp;
+                                                                </td>
+                                                                <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
+                                                            </tr>
+
+                                                            <?php
+                                                        } else {
+                                                            ?>
+                                                            <td class="gridHeaderReportalt"><?php echo $data_opt1Size[$j]['opt1Size']; ?></td>
+                                                            </tr>
+                                                            <?php
+                                                        }
+                                                    }
+                                                } else {
+                                                    ?>
+                                                    <td style="visibility:hidden;"
+                                                        class="gridHeaderReportGrids2">&nbsp;
+                                                    </td>
+                                                    </tr>
+                                                    <?php
+                                                }
+                                                ?>
+                                                <tr>
+                                                    <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                                    <td class="gridHeaderReportGrids2">&nbsp;</td>
+                                                </tr>
+                                                <?php
+                                            }//LocArr for
+                                        }//locArr if
+                                        ?>
+                                    </table>
+                                </div>
+                                <?php if (count($data_opt1Size) > 0){ ?>
+                                <div id="wn2"
+                                     style="position:relative; width:600px; height:<?php echo((count($data_opt1Size) * count($locArr) * 32) + (count($data_loc) * 32)); ?>px;  overflow:hidden; float:left;">
+                                    <?php }else{ ?>
+                                    <div id="wn2"
+                                         style="position:relative; width:600px; height:<?php echo(count($locArr) * 64); ?>px;  overflow:hidden; float:left;">
+                                        <?php } ?>
+                                        <div id="lyr2">
+                                            <div id="values_">
+
+                                                <table id="values"
+                                                       width="<?php echo $tableWidth . "px"; ?>"
+                                                       border="0" cellspacing="1" cellpadding="1">
+
+                                                    <?php
+                                                    // print_r($data_opt1Size); ------------ size1 ------------
+                                                    // exit;
+
+                                                    //$data_mainSize,$data_inv,$data_opt1Size[$j]['opt1SizeId'],$locArr[$i],$locIndex,$rowIndex
+                                                    // print_r($data_mainSize);
+                                                    // exit();
+
+                                                    // print_r($data_inv);
+                                                    // exit();
+                                                    if ($locArr[0] > 0 && $locArr[0] != "") {
+                                                        for ($i = 0; $i < count($locArr); $i++) {
+                                                            $rowIndex = 0;
+                                                            if (count($data_opt1Size) > 0) {
+                                                                for ($j = 0; $j < count($data_opt1Size); $j++) {
+                                                                    echo '<tr id="qty_' . $i . '_' . $rowIndex . '"></tr>';
+                                                                    $rowIndex++;
+                                                                }
+                                                            } else {
+                                                                echo '<tr id="qty_' . $i . '_' . $rowIndex . '"></tr>';
+                                                            }
+                                                            echo '<tr id="qtyDummy' . $i . '"></tr>';
+                                                        }
+                                                    }
+                                                    ?>
+                                                </table>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
 
 
-        </td>
-    </tr>
-</table>
-        </div>
-        </div>
+                            <div id="footer" style="width:100%; float:left;">
+                                <table class="HD001" style="float:left; width:250px;" border="0"
+                                       cellspacing="1" cellpadding="1">
+                                    <tr>
+                                        <td class="gridHeaderReportGrids3">&nbsp;</td>
+                                        <td class="gridHeaderReport">sizes</td>
+                                    </tr>
+                                </table>
+                                <div id="wn4">
+                                    <div id="lyr4">
+                                        <table class="TopValues"
+                                               style="float:left; width:<?php echo $tableWidth . "px"; ?>;"
+                                               border="0" cellspacing="1" cellpadding="1">
+                                            <tr id="mainSizeBottom">
+                                            </tr>
+                                            <tr id="adjBottom"></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                    </td>
+                    <td>
+                        <input id="update_inventory" width="117" height="98"
+                               type="image"
+                               src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg"
+                               alt="Submit button"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="hdnVar">
+                        <input type="hidden" name="scaleNameId"
+                               value="<?php echo $data_style['scaleNameId']; ?>"/>
+                        <input type="hidden" id="styleId" name="styleId"
+                               value="<?php echo $styleId; ?>"/>
+                        <input type="hidden" id="colorId" name="colorId" value="<?php echo $clrId; ?>"/>
+                        <input type="hidden" id="locCount" name="locCount" value="0"/>
+                        <input type="hidden" id="rowCount" name="rowCount" value="0"/>
+                        <input type="hidden" id="mainCount" name="mainCount" value="0"/>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+        </fieldset>
     </div>
-</div>
+</form>
+
 <div class="inventory-box">
     <div class="container">
         <br/><br/>
@@ -1618,125 +1601,159 @@ pg_free_result($resultemp);
             <div class="top-table">
                 <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td style="width: 30%">Style #: <strong><?php echo $data_style['styleNumber']; ?></strong></td>
-                        <td style="width: 35%">
-                            Employee:<strong><?php echo $data_employee['firstname'] . ' ' . $data_employee['lastname']; ?></strong>
-                        </td>
-                        <td style="width: 35%">Date Entered:
-                            <strong><?php echo ($latest != '0')?date("F j, Y, g:i a", $latest):''; ?></strong></td>
-                    </tr>
-                    <tr>
-                        <td style="width: 30%">Garment Type:
-                            <strong><?php echo $data_garment["garmentName"]; ?></strong></td>
-                        <td style="width: 35%">Color:<strong>
+                        <td style="width:87%">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="width: 30%">Style #: <strong><?php echo $data_style['styleNumber']; ?></strong></td>
+                                    <td style="width: 35%">
+                                        Employee:<strong><?php echo $data_employee['firstname'] . ' ' . $data_employee['lastname']; ?></strong>
+                                    </td>
+                                    <td style="width: 35%">Date Entered:
+                                        <strong><?php echo ($latest != '0')?date("F j, Y, g:i a", $latest):''; ?></strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 30%">Garment Type:
+                                        <strong><?php echo $data_garment["garmentName"]; ?></strong></td>
+                                    <td style="width: 35%">Color:<strong>
+                                            <?php
+                                            for ($i = 0; $i < count($data_color); $i++) {
+                                                if ($data_color[$i]['name'] != "") {
+                                                    if ($data_color[$i]['colorId'] == $clrId) {
+                                                        echo $data_color[$i]['name'];
+                                                        break;
+                                                    }
+                                                } else {
+                                                    echo 'Unknown';
+                                                }
+                                            }
+                                            ?></strong>
+                                    </td>
+                                    <td style="width: 35%">Gender :<strong><?php echo(" " . $data_style['sex']); ?></strong></td>
+                                </tr>
                                 <?php
-                                for ($i = 0; $i < count($data_color); $i++) {
-                                    if ($data_color[$i]['name'] != "") {
-                                        if ($data_color[$i]['colorId'] == $clrId) {
-                                            echo $data_color[$i]['name'];
-                                            break;
-                                        }
-                                    } else {
-                                        echo 'Unknown';
-                                    }
-                                }
-                                ?></strong>
-                        </td>
-                        <td style="width: 35%">Gender :<strong><?php echo(" " . $data_style['sex']); ?></strong></td>
-                    </tr>
-                    <?php
-/*                    echo '<pre>';
-                    print_r($arr_location);die();
-                    */?>
+                                /*                    echo '<pre>';
+                                                    print_r($arr_location);die();
+                                                    */?>
 
-                    <tr>
-                        <td style="width: 30%">Client: <strong><?php echo $data_client['client'] ?></strong></td>
-                        <td colspan="2">Location:
-                            <strong>
+                                <tr>
+                                    <td style="width: 30%">Client: <strong><?php echo $data_client['client'] ?></strong></td>
+                                    <td colspan="2">Location:
+                                        <strong>
+                                            <?php
+                                            if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0')
+                                                echo $data_loc[$loc_identity]['name'];
+                                            else echo "All Location";
+                                            ?>
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 10%">
+                                        Box#:<strong> <?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') echo $_REQUEST['unitId']; else echo "All Box" ?></strong>
+                                    </td>
+                                    <td>Box#:
+                                        <strong> <select name="unit_num" class="slot_num">
+                                                <option value="0">---- All box # ----</option>
+                                                <?php
+                                                for ($i = 0; $i < count($data_storage); $i++) {
+                                                    if ($data_storage[$i]['unit'] != "")
+                                                        echo '<option value="' . $data_storage[$i]['unit'] . '"';
+                                                    if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] == $data_storage[$i]['unit']) echo ' selected="selected" ';
+                                                    echo '>' . $data_storage[$i]['unit'] . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                            echo '<button class="btn btn-danger" type="button" onclick="Delete()" style="color: #cd0a0a"> Delete </button>';
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
                                 <?php
-                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0')
-                                    echo $data_loc[$loc_identity]['name'];
-                                else echo "All Location";
-                                ?>
-                            </strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 10%">
-                            Box#:<strong> <?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') echo $_REQUEST['unitId']; else echo "All Box" ?></strong>
-                        </td>
-                        <td>Slot:
-                            <strong> <select name="unit_num" class="slot_num">
-                                    <option value="0">---- All box # ----</option>
-                                    <?php
-                                    for ($i = 0; $i < count($data_storage); $i++) {
-                                        if ($data_storage[$i]['unit'] != "")
-                                            echo '<option value="' . $data_storage[$i]['unit'] . '"';
-                                        if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] == $data_storage[$i]['unit']) echo ' selected="selected" ';
-                                        echo '>' . $data_storage[$i]['unit'] . '</option>';
-                                    }
+                                $unitPost = $_GET['unitId'];
+                                $explode = explode('_',$unitPost);
+                                $words = preg_replace('/\d+/', '', $explode[1] );
+                                if($words == 'W' || $words == ''){
                                     ?>
-                                </select>
-                            </strong>
+                                    <tr>
+                                        <td>Row:
+                                            <strong>
+                                                <?php
+                                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                                    echo '<input type="text" id="up_row" value="' . $data_product[0]['row'] . '">';
+                                                } else {
+                                                    echo 'All';
+                                                }
+                                                ?>
+                                            </strong>
+                                        </td>
+                                        <td>Rack:
+                                            <strong>
+                                                <?php
+                                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                                    echo '<input type="text" id="up_rack"  value="' . $data_product[0]['rack'] . '">';
+                                                } else {
+                                                    echo 'All';
+                                                }
+                                                ?>
+                                            </strong>
+                                        </td>
+                                        <td>Shelf:
+                                            <strong>
+                                                <?php
+                                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                                    echo '<input type="text" id="up_shelf"  value="' . $data_product[0]['shelf'] . '">';
+                                                } else {
+                                                    echo 'All';
+                                                }
+                                                ?>
+                                            </strong>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                                echo '<button class="btn btn btn-success" onclick="UpdateNew()">Update</button>';
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                                </tr>
+                                <tr>
+                                    <td id="hdnVar">
+                                        <input type="hidden" name="scaleNameId"
+                                               value="<?php echo $data_style['scaleNameId']; ?>"/>
+                                        <input type="hidden" id="styleId" name="styleId"
+                                               value="<?php echo $styleId; ?>"/>
+                                        <input type="hidden" id="colorId" name="colorId" value="<?php echo $clrId; ?>"/>
+                                        <input type="hidden" id="locCount" name="locCount" value="0"/>
+                                        <input type="hidden" id="rowCount" name="rowCount" value="0"/>
+                                        <input type="hidden" id="mainCount" name="mainCount" value="0"/>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
-                        <td>
-                            <?php
-                            if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
-                                echo '<button class="btn btn-danger" type="button" onclick="Delete()" style="color: #cd0a0a"> Delete </button>';
-                            }
-                            ?>
+                        <td style="width: 13%;">
+                            <table width="100%" cellpadding="0" cellspacing="0" >
+                                <tr>
+                                    <td>
+                            <span class="p-pic">
+                            <img id="imgView" src="<?php echo $upload_dir_image . trim($imageName); ?>" alt="thumbnail"
+                                 width="150" height="230" border="1" class="mouseover_left"/>
+                            </span>
+                                    </td>
+                                </tr>
+
+
+
+                            </table>
                         </td>
                     </tr>
-                    <?php
-                    $unitPost = $_GET['unitId'];
-                    $explode = explode('_',$unitPost);
-                    $words = preg_replace('/\d+/', '', $explode[1] );
-                    if($words == 'W' || $words == ''){
-                    ?>
-                    <tr>
-                        <td>Row:
-                            <strong>
-                                <?php
-                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
-                                    echo '<input type="text" id="up_row" value="' . $data_product[0]['row'] . '">';
-                                } else {
-                                    echo 'All';
-                                }
-                                ?>
-                            </strong>
-                        </td>
-                        <td>Rack:
-                            <strong>
-                                <?php
-                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
-                                    echo '<input type="text" id="up_rack"  value="' . $data_product[0]['rack'] . '">';
-                                } else {
-                                    echo 'All';
-                                }
-                                ?>
-                            </strong>
-                        </td>
-                        <td>Shelf:
-                            <strong>
-                                <?php
-                                if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
-                                    echo '<input type="text" id="up_shelf"  value="' . $data_product[0]['shelf'] . '">';
-                                } else {
-                                    echo 'All';
-                                }
-                                ?>
-                            </strong>
-                        </td>
-                        <td>
-                            <?php
-                            if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
-                                echo '<button class="btn btn btn-success" onclick="UpdateNew()">Update</button>';
-                            }
-                            ?>
-                        </td>
-                    </tr>
-                    <?php } ?>
-                    </tr>
+
                 </table>
             </div>
             <br/><br/>
@@ -1962,7 +1979,7 @@ pg_free_result($resultemp);
     </div>
 </div>
 
-    <div id="dialog-form" title="Submit By Email">
+<div id="dialog-form" title="Submit By Email">
         <p class="validateTips">All form fields are required.</p>
         <form action='reportMail.php?styleId=<?php echo $styleId; ?>' id="frmmailsendform" method="POST">
             <fieldset>
@@ -2932,7 +2949,7 @@ pg_free_result($resultemp);
             }
             if ($('#unit_num').val() == 0 || $('#unit_num').val() == 'undefined') {
                 $('#view_details').hide();
-                $("#hide").css("display", "block");
+                $("#hide").css("display", "inline-block");
             } else {
                 $("#hide").css("display", "none");
                 $('#addinventory_new').hide();
