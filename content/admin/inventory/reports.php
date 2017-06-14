@@ -23,6 +23,8 @@
     visibility: visible;
 }
 </style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.min.css"
+      rel="stylesheet">
 <?php
 require('Application.php');
 require('../../jsonwrapper/jsonwrapper.php');?>
@@ -276,22 +278,22 @@ if(isset($_REQUEST['notes']) && $_REQUEST['notes']!="") {
 if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']!="") {
 	//echo $_REQUEST['box_num'];
 	//exit();
-	$search_sql .=' and storage."box" ILIKE \'%' .$_REQUEST['box_num'].'%\' ';
+	$search_sql .=' and storage."unit" LIKE \'%' .$_REQUEST['box_num'].'%\' ';
 	if($search_uri)  {
-		 $search_uri.="&notes=".$_REQUEST['box_num'];
+		 $search_uri.="&box_num=".$_REQUEST['box_num'];
 	} else {
-		$search_uri.="?notes=".$_REQUEST['box_num'];
+		$search_uri.="?box_num=".$_REQUEST['box_num'];
 	}
 }
 $sql='select DISTINCT st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" '.
         ' left join "tbl_invStorage" as storage  on storage."styleId"=st."styleId" where st."isActive"=1'.$search_sql.' order by st."styleId" desc';
 
 
-        // if($search_sql != '')
-        // {
-        // 	echo $search_sql;
-        // 	exit();
-        // }
+        /* if($search_sql != '')
+         {
+         	echo $search_sql;
+         	exit();
+         }*/
         
 
 if(!($result=pg_query($connection,$sql))){
@@ -576,7 +578,7 @@ $(document).ready(function()
                 <td class="grid001">Box #:</td>
                 <td class="grid001"><select name="box_num" id="box_num">
 
-                  <option value="">---- Select Box # ----</option>
+                  <option value="">---- Pick Box # ----</option>
                    <?php 
                   for($i=0; $i < count($data_storage); $i++)
                   {
@@ -710,6 +712,10 @@ else
       </table>
      
 </form>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+<script>
+    $('#box_num').selectize();
+</script>
 <?php  require('../../trailer.php');
 ?>

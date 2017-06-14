@@ -618,19 +618,33 @@
     $arr_all_location = call_user_func_array('array_merge', $loc_all_new);
     $newAllLocation = [];
     foreach ($arr_all_location as $arrAllLocationKey => $arrAlllocationValue){
-    $exp = explode('_',$arrAlllocationValue);
-    $keyAllLoc = preg_replace('/\d/', '', $exp[1] );
-    if($keyAllLoc == 'W'){
-        $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
-        $newAllLocation[$arrAllLocationKey]['type'] = 'warehouse';
-    } elseif ($keyAllLoc == 'C'){
-        $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
-        $newAllLocation[$arrAllLocationKey]['type'] = 'container';
-    } else {
-        $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
-        $newAllLocation[$arrAllLocationKey]['type'] = 'conveyor';
+        $exp = explode('_',$arrAlllocationValue);
+        $sql = '';
+        $sql = "SELECT \"locationId\" FROM \"tbl_invLocation\" WHERE identifier='".$exp[0]."'";
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $locId = pg_fetch_row($result);
+        $sql = '';
+        $sql = "SELECT * FROM \"locationDetails\" WHERE \"locationId\"='".$locId[0]."'";
+        $sql .= " and ( warehouse='".$exp[1]."' OR container='".$exp[1]."' OR conveyor ='".$exp[1]."' )";
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $warehouses_all = pg_fetch_row($result);
+        if($warehouses_all[4] != ''){
+            $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
+            $newAllLocation[$arrAllLocationKey]['type'] = 'conveyor';
+        } elseif ($warehouses_all[3] != ''){
+            $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
+            $newAllLocation[$arrAllLocationKey]['type'] = 'container';
+        } else {
+            $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
+            $newAllLocation[$arrAllLocationKey]['type'] = 'warehouse';
+        }
     }
-}
     $dataTooltip = [];
     foreach ($data_mainSizeIdHash as $key1 => $val1) {
 
@@ -1479,8 +1493,22 @@
                                 <?php
                                 $unitPost = $_GET['unitId'];
                                 $explode = explode('_',$unitPost);
-                                $words = preg_replace('/\d+/', '', $explode[1] );
-                                if($words == 'W' || $words == ''){
+                                $sql = '';
+                                $sql = "SELECT \"locationId\" FROM \"tbl_invLocation\" WHERE identifier='".$explode[0]."'";
+                                if (!($result = pg_query($connection, $sql))) {
+                                    print("Failed invQuery: " . pg_last_error($connection));
+                                    exit;
+                                }
+                                $locIdbody = pg_fetch_row($result);
+                                $sql = '';
+                                $sql = "SELECT * FROM \"locationDetails\" WHERE \"locationId\"='".$locIdbody[0]."'";
+                                $sql .= " and ( warehouse='".$explode[1]."' OR container='".$explode[1]."' OR conveyor ='".$explode[1]."' )";
+                                if (!($result = pg_query($connection, $sql))) {
+                                    print("Failed invQuery: " . pg_last_error($connection));
+                                    exit;
+                                }
+                                $warehouses_all_body = pg_fetch_row($result);
+                                if($warehouses_all_body[3] == '' && $warehouses_all_body[4] == ''){
                                     ?>
                                     <tr>
                                         <td>Row:
@@ -1684,88 +1712,8 @@
                                             </table>
                                         </td>
                                     </tr>
-
-
-
                                 </table>
                             </div>
-
-
-
-                            <!--<div class="col-xs-1">
-                                <input type="hidden" name="scaleNameId"
-                                       value="<?php /*echo $data_style['scaleNameId']; */?>"/>
-                                <input type="hidden" id="styleId" name="styleId"
-                                       value="<?php /*echo $styleId; */?>"/>
-                                <input type="hidden" id="colorId" name="colorId" value="<?php /*echo $clrId; */?>"/>
-
-                                <?php
-/*                                // echo "<pre>";print_r($data_style);
-                                $len = sizeof($data_mainSizeIdHash);
-                                $row = $len / sizeof($data_mainSizeIdHash);
-                                $row += $len % 4 == 0 ? 0 : 1;
-                                $row = 1;
-
-                                $start_head = "<div class='row'>";
-                                $end = "</div>";
-                                $start_div = "<div class='title-section'><div class='col-md-12 nopadding'>";
-                                $end_div = "</div></div>";
-                                $data_div = $start_div . '<p>sizes</p>' . $end_div;
-                                $data_div .= $start_div . '<p>prices</p>' . $end_div;
-                                $cnt = 0;
-                                foreach ($opt1SizeIdHash as $key => $value) {
-                                    $cnt++;
-                                    $data_div .= $start_div . "<p>" . $value . "</p>" . $end_div;
-                                    //echo $data_div."<br>";
-                                }
-
-
-                                //var_dump($row);exit();
-                                while ($row--) {
-                                    echo $start_head . $data_div . $end;
-                                }
-                                */?>
-
-
-                            </div>-->
-
-                            <div class="col-xs-10">
-
-                                <div class="row">
-                                    <?php
-/*                                    $mainsize_div = '<div class="col-xs-1 col-sm-1 col-md-1 nopadding"><div class="each-section">';
-                                    $mainsize_div_end = '</div></div>';
-                                    $data = '';
-                                    $element = '';
-                                    foreach ($data_mainSizeIdHash as $key1 => $val1) {
-                                        $element .= '<span>' . $val1 . '</span>'; //for sizes
-                                        $price = isset($data_style['price'])
-                                            ? $data_style['price']
-                                            : ' ';
-                                        $element .= '<span><input type="text" value="' . $price . '" readonly></span>'; //for prices
-                                        foreach ($opt1SizeIdHash as $key2 => $val2) {
-                                            if (isset($data_set[$key1][$key2])) {
-                                                $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . $key2 . '" type="text" id="" value="' . $data_set[$key1][$key2] . '" name="new_qty_data[]"></span>';
-                                                $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
-                                                $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
-                                                $element .= '<input type="hidden" id="_' . $key1 . '_' . $key2 . '" value="0" name="is_change[]">';
-                                            } else {
-                                                $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . $key2 . '" type="text" value="0" name="new_qty_data[]"></span>';
-                                                $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
-                                                $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
-                                                $element .= '<input id="_' . $key1 . '_' . $key2 . '" type="hidden" value="0" name="is_change[]">';
-                                            }
-                                        }
-                                        $data .= $mainsize_div . $element . $mainsize_div_end;
-                                        $element = '';
-                                    }
-                                    echo $data;
-                                    */?>
-                                </div>
-
-                            </div>
-
-
                         </div>
                     </div>
                     <div class="row col-md-12 align-right">
@@ -1782,19 +1730,19 @@
     </div>
 </div>
 <div id="dialog-form" title="Submit By Email">
-        <p class="validateTips">All form fields are required.</p>
-        <form action='reportMail.php?styleId=<?php echo $styleId; ?>' id="frmmailsendform" method="POST">
-            <fieldset>
-                <label for="email">Email</label>
-                <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all"/>
-                <label for="subject">Subject:</label>
-                <input type="text" name="subject" id="subject" class="text ui-widget-content ui-corner-all"/>
-            </fieldset>
-            <input type="hidden" name="colorId" id="colorid_mail" value="<?php echo $_GET['colorId']; ?>"/>
-            <input type="hidden" name="unitId" id="unitId_mail" value="<?php echo $_GET['unitId']; ?>"/>
-            <input type="hidden" name="styleId" id="styleId_mail" value="<?php echo $_GET['styleId']; ?>"/>
-        </form>
-    </div>
+    <p class="validateTips">All form fields are required.</p>
+    <form action='reportMail.php?styleId=<?php echo $styleId; ?>' id="frmmailsendform" method="POST">
+        <fieldset>
+            <label for="email">Email</label>
+            <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all"/>
+            <label for="subject">Subject:</label>
+            <input type="text" name="subject" id="subject" class="text ui-widget-content ui-corner-all"/>
+        </fieldset>
+        <input type="hidden" name="colorId" id="colorid_mail" value="<?php echo $_GET['colorId']; ?>"/>
+        <input type="hidden" name="unitId" id="unitId_mail" value="<?php echo $_GET['unitId']; ?>"/>
+        <input type="hidden" name="styleId" id="styleId_mail" value="<?php echo $_GET['styleId']; ?>"/>
+    </form>
+</div>
 <script type="text/javascript">
         var opt1Array_str = null;
         var obj_arr = new Array();
@@ -1806,7 +1754,7 @@
                 obj_arr.push(temp[1].slice(1, -1));
             }
         }
-    </script>
+</script>
 <script>
         $('#add_new_location').change(function(){
             var arr = <?php echo json_encode($newAllLocation); ?>;
@@ -1864,6 +1812,7 @@
                 $('#message_add').show();
                 return false;
             }
+            return false;
             var type = '';
             for(var i=0;i<arr.length;i++){
                 if(arr[i]['location'] == location){
@@ -2377,7 +2326,7 @@
                 console.log('cancel');
             }
         }
-    </script>
+</script>
 <script type="text/javascript">
         var unique_id = 0;
         function print_content(stylId, loc, unitId) {
@@ -2530,7 +2479,7 @@
 
             $(location).attr('href', "storage.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&invId=" + inventoryId + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
         }
-    </script>
+</script>
 <script type="text/javascript">
         $(document).ready(function () {
             <?php if(!isset($_REQUEST['unitId']) || $_REQUEST['unitId'] == 0): ?>
@@ -2812,17 +2761,13 @@
                 PostRequest();
 
             });
-
-            $("#unit_num").change(function () {
-
+            $("#unit_num").change(function ()   {
                 $("#unitId_mail").val($("#unit_num").val());
                 PostRequest();
-
             });
             $(".slot_num").change(function () {
                 $("#unit_num").val($(this).val());
                 PostRequest();
-
             });
             $("#sConveyor").change(function () {
                 PostRequest();
@@ -2831,7 +2776,7 @@
                 PostRequest();
             });
             function PostRequest() {
-                alert('PostRequest');
+                //alert('PostRequest');
                 var stylId = document.getElementById('styleId').value;
                 var clrId = 0;
                 if ($("#color").val() != undefined) {
@@ -2889,7 +2834,7 @@
             //dw_Util.writeStyleSheet('css/scroll.css');
             dw_Event.add(window, 'load', init_dw_Scroll);
         }
-    </script>
+</script>
 <script type="text/javascript">
         $(function () {
             $("#inventoryFormNew").submit(function (e) {
@@ -3016,8 +2961,6 @@
                 url += "&del=true";
             location.href = url;
         }
-
-
         function main_inv() {
             location.href = './reportViewEdit.php?styleId=' + $('#styleId_mail').val() + '&colorId=' + $('#colorid_mail').val();
         }
@@ -3080,6 +3023,5 @@
             })
 
         }
-
-    </script>
+</script>
 <?php require('../../trailer.php'); ?>
