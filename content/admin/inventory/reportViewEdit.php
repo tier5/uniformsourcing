@@ -2,12 +2,10 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <style>
     .container{width:95%;}
-
      .tool {
          position: relative;
          display: inline-block;
      }
-
     .tooltext {
         /*visibility: hidden;*/
         display: none;
@@ -22,16 +20,14 @@
         position: absolute;
         z-index: 1;
     }
-
     .tool:hover .tooltext {
         visibility: visible;
     }
 </style>
 <?php
-require('Application.php');
-require('../../header.php');
-//$sql='select st."styleId" st."styleNumber",st."scaleNameId",st."scaleNameId" from "tbl_invStyle" st left join tbl_inventory inv on st."styleId"=inv."styleId" where st."styleId"='.$_GET['StyleId'];
-function locationDetails($locId,$connection){
+    require('Application.php');
+    require('../../header.php');
+    function locationDetails($locId,$connection){
     $sql = 'SELECT * from "tbl_invLocation" WHERE "locationId"='.$locId;
     if (!($result2 = pg_query($connection, $sql))) {
         print("Failed OptionQuery: " . pg_last_error($connection));
@@ -69,7 +65,7 @@ function locationDetails($locId,$connection){
     }
     return $data;
 }
-function logCheckOStyle($styleId,$connection)
+    function logCheckOStyle($styleId,$connection)
 {
     $sql = '';
     $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . ' LIMIT 1';
@@ -81,10 +77,8 @@ function logCheckOStyle($styleId,$connection)
     $oldinv = $rowoldinv;
     pg_free_result($resultoldinv);
     echo $oldinv['2'];
-
-
 }
-function logCheckNStyle($styleId,$connection)
+    function logCheckNStyle($styleId,$connection)
 {
     $sql = '';
     $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . ' LIMIT 1';
@@ -96,17 +90,14 @@ function logCheckNStyle($styleId,$connection)
     $oldinv = $rowoldinv;
     pg_free_result($resultoldinv);
     echo $oldinv['3'];
-
-
 }
-$loc_identity = 0;
-if (isset($_GET["del"]) && $_GET["del"] == "true") {
+    $loc_identity = 0;
+    if (isset($_GET["del"]) && $_GET["del"] == "true") {
     $sql = 'select "inventoryId" from "tbl_inventory" as inv where inv."styleId"=' . $_GET['styleId'] . ' and inv."colorId"=' . $_GET['colorId'];
     if (!($result2 = pg_query($connection, $sql))) {
         print("Failed StyleQuery: " . pg_last_error($connection));
         exit;
     }
-
     while ($row2 = pg_fetch_array($result2)) {
         $sql = 'delete  from "tbl_invStorage"  where "invId"=' . $row2["inventoryId"];
         //$sql .=';update "tbl_inventory" set quantity=0 where "inventoryId"='.$row2["inventoryId"];
@@ -124,10 +115,8 @@ if (isset($_GET["del"]) && $_GET["del"] == "true") {
     <script type="text/javascript">location.href = "<?php echo $sp[0];?>"</script>
     <?php
 }
-
-
-$search = "";
-if (isset($_GET['styleId'])) {
+    $search = "";
+    if (isset($_GET['styleId'])) {
 
     $styleId = $_GET['styleId'];
     $search = "";
@@ -154,31 +143,25 @@ if (isset($_GET['styleId'])) {
     if(isset($_GET['location']) && $_GET['location'] != '0'){
         $search .= " and sti.unit LIKE '".$_GET['location']."%'";
     }
-
 }
-
-$sql = 'select "styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds", "clientId" from "tbl_invStyle" where "styleId"=' . $styleId;
-if (!($result = pg_query($connection, $sql))) {
+    $sql = 'select "styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds", "clientId" from "tbl_invStyle" where "styleId"=' . $styleId;
+    if (!($result = pg_query($connection, $sql))) {
     print("Failed StyleQuery: " . pg_last_error($connection));
     exit;
 }
-$row = pg_fetch_array($result);
-$data_style = $row; //--------------------------- data style----------------
-
-
-//echo "<pre>";print_r($data_style);
-
-pg_free_result($result);
-$query2 = 'Select * from "tbl_invColor" where "styleId"=' . $data_style['styleId'];
-if (!($result2 = pg_query($connection, $query2))) {
+    $row = pg_fetch_array($result);
+    $data_style = $row; //--------------------------- data style----------------
+    pg_free_result($result);
+    $query2 = 'Select * from "tbl_invColor" where "styleId"=' . $data_style['styleId'];
+    if (!($result2 = pg_query($connection, $query2))) {
     print("Failed OptionQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row2 = pg_fetch_array($result2)) {
-    $data_color[] = $row2; // -------------------------- data_color ---------
+    while ($row2 = pg_fetch_array($result2)) {
+    $data_color[] = $row2;
 }
-pg_free_result($result2);
-if ($data_style['scaleNameId'] != "") {
+    pg_free_result($result2);
+    if ($data_style['scaleNameId'] != "") {
     $query2 = 'Select * from "tbl_invScaleName" where "scaleId"=' . $data_style['scaleNameId'];
     if (!($result = pg_query($connection, $query2))) {
         print("Failed OptionQuery: " . pg_last_error($connection));
@@ -187,7 +170,6 @@ if ($data_style['scaleNameId'] != "") {
     $row = pg_fetch_array($result);
     $data_optionName = $row;
     pg_free_result($result);
-
     $query2 = 'Select "sizeScaleId" as "mainSizeId", "scaleSize" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "scaleSize" IS NOT NULL  and "scaleSize" <>\'\'  order by "mainOrder","sizeScaleId"';
     if (!($result2 = pg_query($connection, $query2))) {
         print("Failed OptionQuery: " . pg_last_error($connection));
@@ -195,7 +177,7 @@ if ($data_style['scaleNameId'] != "") {
     }
     while ($row2 = pg_fetch_array($result2)) {
         $data_mainSize[] = $row2;
-    }//---------------------------data_mainSize-----------------------------
+    }
     pg_free_result($result2);
     $query2 = 'Select "sizeScaleId" as "opt1SizeId", "opt1Size" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "opt1Size" IS NOT NULL  and "opt1Size" <>\'\' order by "opt1Order","sizeScaleId"';
     if (!($result2 = pg_query($connection, $query2))) {
@@ -204,11 +186,8 @@ if ($data_style['scaleNameId'] != "") {
     }
     while ($row2 = pg_fetch_array($result2)) {
         $data_opt1Size[] = $row2;
-    }//------------------------data_opt1Size----------------------------
-
-
+    }
     pg_free_result($result2);
-
     $query2 = 'Select "sizeScaleId" as "opt2SizeId", "opt2Size" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "opt2Size" IS NOT NULL and "opt2Size" <>\'\' order by "opt2Order","sizeScaleId"';
     if (!($result2 = pg_query($connection, $query2))) {
         print("Failed OptionQuery: " . pg_last_error($connection));
@@ -218,11 +197,7 @@ if ($data_style['scaleNameId'] != "") {
         $data_opt2Size[] = $row2;
     }
     pg_free_result($result2);
-
-
     $sql = 'select distinct unit from "tbl_invStorage" where "styleId"=' . $_GET['styleId'];
-
-    //$sql = 'select distinct unit from "tbl_invStorage" where "styleId"=' . $_GET['styleId'];
     if ($_GET['colorId'] > 0) {
         $sql .= ' and "colorId"=' . $_GET['colorId'];
     } else if (count($data_color) > 0) {
@@ -232,7 +207,6 @@ if ($data_style['scaleNameId'] != "") {
         $sql .= " and unit LIKE '".$_GET['location']."%'";
     }
     $sql .= ' order by unit asc';
-   // print_r($sql);die();
     if (!($result_cnt9 = pg_query($connection, $sql))) {
         print("Failed InvData: " . pg_last_error($connection));
         exit;
@@ -241,33 +215,19 @@ if ($data_style['scaleNameId'] != "") {
         $data_storage[] = $row_cnt9;
     }
     pg_free_result($result_cnt9);
-
-    // echo "<pre>";print_r($data_storage);
-    // exit();
-
 }
-
-$totalScale = count($data_mainSize);
-$tableWidth = 0;
-
-
-$tableWidth = $totalScale * 100;
-
-
-//query changed -- added 'where "styleId"='.$_GET['styleId']';
-
-$sql = 'select "inventoryId",quantity,"newQty","isStorage","warehouse_id" from "tbl_inventory" where "styleId"=' . $_GET['styleId'];
-
-if (!($result = pg_query($connection, $sql))) {
+    $totalScale = count($data_mainSize);
+    $tableWidth = 0;
+    $tableWidth = $totalScale * 100;
+    $sql = 'select "inventoryId",quantity,"newQty","isStorage","warehouse_id" from "tbl_inventory" where "styleId"=' . $_GET['styleId'];
+    if (!($result = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row = pg_fetch_array($result)) {
+    while ($row = pg_fetch_array($result)) {
     $data_inv[] = $row;
 }
-
-
-for ($i = 0; $i < count($data_inv); $i++) {
+    for ($i = 0; $i < count($data_inv); $i++) {
     if ($data_inv[$i]['newQty'] > 0) {
         if (($data_inv[$i]['quantity'] != "" && $data_inv[$i]['quantity'] > 0)) {
             $sql = 'update "tbl_inventory" set "isStorage"=1 ,"newQty"=0';
@@ -284,9 +244,7 @@ for ($i = 0; $i < count($data_inv); $i++) {
         }
     }
 }
-
-
-if (count($data_color) > 0) {
+    if (count($data_color) > 0) {
     if ($search != "") {
         $query = 'select inv."inventoryId", inv."sizeScaleId", inv.price, inv."locationId",inv."opt1ScaleId", inv."opt2ScaleId"';
         if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
@@ -307,8 +265,6 @@ if (count($data_color) > 0) {
         $clrId = $data_color[0]['colorId'];
         $query = 'select "updatedBy","updatedDate","inventoryId", "sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty" from "tbl_inventory" where "styleId"=' . $data_style['styleId'] . ' and "colorId"=' . $data_color[0]['colorId'] . '  and "isActive"=1 order by "inventoryId"';
     }
-     /*echo $query;
-     exit();*/
     if (!($result = pg_query($connection, $query))) {
         print("Failed invQuery: " . pg_last_error($connection));
         exit;
@@ -328,10 +284,6 @@ if (count($data_color) > 0) {
             }
         }
     }
-    /*echo '<pre>';
-    print_r($data_inv);*/
-
-
     $sql = 'select distinct warehouse , "locationId" from "locationDetails" where warehouse != \'null\'';
     $all_location_inv;
     if (!($result = pg_query($connection, $sql))) {
@@ -341,9 +293,6 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $all_location_inv[] = $row;
     }
-    // echo "<pre>"; print_r($all_location_inv);
-    // exit();
-
     $location_string = " ";
     foreach ($all_location_inv as $key => $value) {
         if ($location_string == " ")
@@ -351,10 +300,7 @@ if (count($data_color) > 0) {
         else
             $location_string .= ',' . $value['locationId'];
     }
-    // echo "<pre>"; print_r($location_string);
-    // exit();
     $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
-
     $warehouse_info;
     if (!($result = pg_query($connection, $sql))) {
         print("Failed invQuery: " . pg_last_error($connection));
@@ -363,13 +309,8 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $warehouse_info[] = $row;
     }
-    // echo "<pre>"; print_r($warehouse_info);
-    // exit();
-
-
     $sql = 'select distinct container , "locationId" from "locationDetails" where container != \'null\'';
     $containers;
-
     if (!($result = pg_query($connection, $sql))) {
         print("Failed invQuery: " . pg_last_error($connection));
         exit;
@@ -385,7 +326,6 @@ if (count($data_color) > 0) {
             $location_string .= ',' . $value['locationId'];
     }
     $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
-
     $containers_location;
     if (!($result = pg_query($connection, $sql))) {
         print("Failed invQuery: " . pg_last_error($connection));
@@ -394,13 +334,8 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $containers_location[] = $row;
     }
-    // echo "<pre>"; print_r( $containers_location);
-    // exit();
-
-
     $sql = 'select distinct conveyor , "locationId" from "locationDetails" where conveyor != \'null\'';
     $conveyors;
-
     if (!($result = pg_query($connection, $sql))) {
         print("Failed invQuery: " . pg_last_error($connection));
         exit;
@@ -408,8 +343,6 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $conveyors[] = $row;
     }
-
-
     $location_string = " ";
     foreach ($conveyors as $key => $value) {
         if ($location_string == " ")
@@ -418,7 +351,6 @@ if (count($data_color) > 0) {
             $location_string .= ',' . $value['locationId'];
     }
     $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
-
     $conveyors_location;
     if (!($result = pg_query($connection, $sql))) {
         print("Failed invQuery: " . pg_last_error($connection));
@@ -427,27 +359,18 @@ if (count($data_color) > 0) {
     while ($row = pg_fetch_array($result)) {
         $conveyors_location[] = $row;
     }
-
-
 }
-
-$query = 'select * from "tbl_invLocation" order by "locationId"';
-if (!($result = pg_query($connection, $query))) {
+    $query = 'select * from "tbl_invLocation" order by "locationId"';
+    if (!($result = pg_query($connection, $query))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row = pg_fetch_array($result)) {
+    while ($row = pg_fetch_array($result)) {
     $data_loc[] = $row;
 }
-pg_free_result($result);
-$locArr = array();
-// if ($data_style['locationIds'] != "") {
-//     $locArr = explode(",", $data_style['locationIds']);
-// }
-
-
-if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
-
+    pg_free_result($result);
+    $locArr = array();
+    if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
     $sql = 'select "locationId" from "tbl_invStorage" where unit = \'' . $_GET['unitId'] . '\' LIMIT 1';
     if (!($result = pg_query($connection, $sql))) {
         print("Failed invQuery: " . pg_last_error($connection));
@@ -455,55 +378,31 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
     }
     $row = pg_fetch_array($result);
     $this_location[] = $row;
-
     pg_free_result($row);
-
-
     $locArr[0] = $this_location[0]['locationId'];
-
-    //var_dump($this_location[0]['locationId']);
-    //exit();
-
-
 } else {
     if ($data_style['locationIds'] != "") {
         $locArr = explode(",", $data_style['locationIds']);
     }
 }
-
-// print_r($locArr);
-// exit();
-
-
-$sql = '';
-$sql = 'SELECT * FROM "tbl_invLocation" WHERE "locationId"=' . $locArr[0];
-if (!($resultClient = pg_query($connection, $sql))) {
+    $sql = '';
+    $sql = 'SELECT * FROM "tbl_invLocation" WHERE "locationId"=' . $locArr[0];
+    if (!($resultClient = pg_query($connection, $sql))) {
     print("Failed StyleQuery: " . pg_last_error($connection));
     exit;
 }
-$row = pg_fetch_array($resultClient);
-$data_LocationName = $row;
-
-
-$is_slot = false;
-
-if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
-
+    $row = pg_fetch_array($resultClient);
+    $data_LocationName = $row;
+    $is_slot = false;
+    if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
     $temp = explode('_', $_GET['unitId']);
-
     if (isset($temp[1])) {
         $tmp = substr($temp[1], 0, 2);
         if ($tmp == 'CV' || substr($temp[1], 0, 1) == 'C') {
             $is_slot = true;
         }
     }
-
-    //var_dump ($is_slot);
-    //exit();
-
-
     $query = 'select * from "tbl_invStorage" WHERE unit=' . "'" . $_GET['unitId'] . "'";
-
     if (!($resultProduct = pg_query($connection, $query))) {
         print("Failed invQuery: " . pg_last_error($connection));
         exit;
@@ -512,26 +411,20 @@ if (!isset($_GET['unitId']) || $_GET['unitId'] != '0') {
         $data_product[] = $rowProduct;
     }
     pg_free_result($rowProduct);
-
-    // echo "<pre>"; print_r($data_product);
-    // exit();
-
 }
-
-
-$sql = 'select distinct "unit" , "wareHouseQty" as "quantity",
+    $sql = 'select distinct "unit" , "wareHouseQty" as "quantity",
            "opt1ScaleId",
            "sizeScaleId" as "mainSizeId",
            "invId","styleId" from "tbl_invStorage" where "styleId"=' . $_GET['styleId'] . ' ORDER BY unit';
-if (!($result = pg_query($connection, $sql))) {
+    if (!($result = pg_query($connection, $sql))) {
     print("Failed StyleQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row = pg_fetch_array($result)) {
+    while ($row = pg_fetch_array($result)) {
     $_store[] = $row; // -------------------------- data_color ---------
 }
-$store_new = [];
-foreach ($_store as $key=>$value){
+    $store_new = [];
+    foreach ($_store as $key=>$value){
     if($value['quantity'] > 0){
         if(isset($store_new[$value['opt1ScaleId']][$value['mainSizeId']])) {
             $store_new[$value['opt1ScaleId']][$value['mainSizeId']] = $store_new[$value['opt1ScaleId']][$value['mainSizeId']].'<br>'.$value['unit'].' : '.$value['quantity'];
@@ -540,28 +433,19 @@ foreach ($_store as $key=>$value){
         }
     }
 }
-
-/*echo "<pre>"; print_r($store_new);
- exit();*/
-//----------------------------------Location-----------------------
-$query = '';
-$query = "SELECT * from \"locationDetails\"";
-$query .= "  where \"locationId\"='" . $data_style['locationIds'] . "' ";
-//  $query .= " INNER JOIN \"tbl_invLocation\" ON (\"locationDetails.locationId\"=\"tbl_invLocation.locationId\")";
-if (!($resultProduct = pg_query($connection, $query))) {
+    $query = '';
+    $query = "SELECT * from \"locationDetails\"";
+    $query .= "  where \"locationId\"='" . $data_style['locationIds'] . "' ";
+    if (!($resultProduct = pg_query($connection, $query))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row = pg_fetch_array($resultProduct)) {
+    while ($row = pg_fetch_array($resultProduct)) {
     $data_location[] = $row;
 }
-pg_free_result($resultProduct);
-
-
-if (!isset($_GET['unitId']) || $_GET['unitId'] == '0' /*|| !isset($_GET['location']) || $_GET['location'] == '0'*/) {
+    pg_free_result($resultProduct);
+    if (!isset($_GET['unitId']) || $_GET['unitId'] == '0' /*|| !isset($_GET['location']) || $_GET['location'] == '0'*/) {
     $bckup_data_inv = $data_inv;
-    //echo "<pre>";print_r($data_inv);
-    //exit();
     $hash = array();
     for ($i = 0; $i < count($data_inv); $i++) {
         //if(isset($data_inv[$i]['opt1ScaleId']) && isset($data_inv[$i]['sizeScaleId']))
@@ -576,9 +460,6 @@ if (!isset($_GET['unitId']) || $_GET['unitId'] == '0' /*|| !isset($_GET['locatio
             }
         }
     }
-    // echo "<pre>";print_r($hash);
-    // exit();
-
     for ($i = 0; $i < count($data_inv); $i++) {
         if (isset($data_inv[$i]['sizeScaleId'])) {
 
@@ -589,42 +470,24 @@ if (!isset($_GET['unitId']) || $_GET['unitId'] == '0' /*|| !isset($_GET['locatio
     $locArr = array();
     $locArr[0] = 1;
 }
-
-
-// echo "<pre>";print_r($data_mainSize);
-// exit();
-
-//echo "<pre>";print_r($data_inv);
-//exit();
-
-// echo "<pre>";print_r($data_opt1Size);
-// exit();
-
-// echo "<pre>";print_r($locArr);
-// exit();
-
-// echo "<pre>";print_r($data_style);
-// exit();
-
-$locHash = array_flip($locArr);
-$opt1SizeIdHash = array();
-foreach ($data_opt1Size as $key => $val)
-    if (isset($val['opt1SizeId']))
+    $locHash = array_flip($locArr);
+    $opt1SizeIdHash = array();
+    foreach ($data_opt1Size as $key => $val) {
+    if (isset($val['opt1SizeId'])) {
         $opt1SizeIdHash[(int)$val['opt1SizeId']] = $val['opt1Size'];
-
-// echo "<pre>";print_r($opt1SizeIdHash);
-// exit();
-
-$data_mainSizeIdHash = array();
-foreach ($data_mainSize as $key => $val)
-    if (isset($val['mainSizeId']))
+    }
+}
+    $data_mainSizeIdHash = array();
+    foreach ($data_mainSize as $key => $val){
+    if (isset($val['mainSizeId'])){
         $data_mainSizeIdHash[(int)$val['mainSizeId']] = $val['scaleSize'];
-
-$data_set = array();
-$data_set_price = array();
-$d_i = 0;
-$d_j = 0;
-foreach ($data_inv as $key => $val) {
+    }
+}
+    $data_set = array();
+    $data_set_price = array();
+    $d_i = 0;
+    $d_j = 0;
+    foreach ($data_inv as $key => $val) {
     if (isset($locHash[$val['locationId']])
         && isset($opt1SizeIdHash[$val['opt1ScaleId']])
         && isset($data_mainSizeIdHash[$val['sizeScaleId']])
@@ -641,33 +504,24 @@ foreach ($data_inv as $key => $val) {
         $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null;
     }
 }
-
-//echo "<pre>";print_r($data_set);exit();
-
-//echo "<pre>";print_r($data_mainSizeIdHash);
-//exit();
-
-//echo "<pre>";print_r($data_product );
-//exit();
-$sql = '';
-$sql = 'select * from "tbl_garment" where "garmentID"=' . $data_style["garmentId"];
-if (!($result = pg_query($connection, $sql))) {
+    $sql = '';
+    $sql = 'select * from "tbl_garment" where "garmentID"=' . $data_style["garmentId"];
+    if (!($result = pg_query($connection, $sql))) {
     print("Failed StyleQuery: " . pg_last_error($connection));
     exit;
 }
-$row = pg_fetch_array($result);
-$data_garment = $row;
-
-$sql = '';
-$sql = 'SELECT * FROM "clientDB" where "ID"=' . $data_style['clientId'];
-if (!($resultClient = pg_query($connection, $sql))) {
+    $row = pg_fetch_array($result);
+    $data_garment = $row;
+    $sql = '';
+    $sql = 'SELECT * FROM "clientDB" where "ID"=' . $data_style['clientId'];
+    if (!($resultClient = pg_query($connection, $sql))) {
     print("Failed StyleQuery: " . pg_last_error($connection));
     exit;
 }
-$row = pg_fetch_array($resultClient);
-$data_client = $row;
-$latest = 0;
-if (isset($_GET['unitId']) && $_GET['unitId'] != '0' ) {
+    $row = pg_fetch_array($resultClient);
+    $data_client = $row;
+    $latest = 0;
+    if (isset($_GET['unitId']) && $_GET['unitId'] != '0' ) {
     if(count($data_product) > 0){
         $key_product = 0;
         foreach ($data_product as $dk => $dv) {
@@ -719,79 +573,80 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0' ) {
         $data_employee = '';
         $data_type = 'All';
     }
-
 }
-$sql = '';
-$sql = 'SELECT "locationId" FROM "tbl_invStorage" WHERE "styleId"='.$data_style['styleId'];
-if (!($result = pg_query($connection, $sql))) {
+    $sql = '';
+    $sql = 'SELECT "locationId" FROM "tbl_invStorage" WHERE "styleId"='.$data_style['styleId'];
+    if (!($result = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row = pg_fetch_array($result)) {
+    while ($row = pg_fetch_array($result)) {
     $data_locDrop[] = $row;
 }
-
-$userdupe=array();
-
-foreach ($data_locDrop as $index=>$t) {
+    $userdupe=array();
+    foreach ($data_locDrop as $index=>$t) {
     if (isset($userdupe[$t["locationId"]])) {
         unset($data_locDrop[$index]);
         continue;
     }
     $userdupe[$t["locationId"]]=true;
 }
-foreach ($data_locDrop as $keyDrop=>$valueDrop){
+    foreach ($data_locDrop as $keyDrop=>$valueDrop){
     $loc_d[] = locationDetails($valueDrop['locationId'],$connection);
 }
-/*
-echo '<pre>';
-print_r($loc_d);
-die();
-*/
-$arr_location = call_user_func_array('array_merge', $loc_d);
-
-
-$sql = '';
-$sql = 'SELECT * FROM "locationDetails"';
-if (!($result = pg_query($connection, $sql))) {
+    $arr_location = call_user_func_array('array_merge', $loc_d);
+    $sql = '';
+    $sql = 'SELECT * FROM "locationDetails"';
+    if (!($result = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row = pg_fetch_array($result)) {
+    while ($row = pg_fetch_array($result)) {
     $data_all_loc[] = $row;
 }
-
-$all_loc=array();
-
-foreach ($data_all_loc as $index=>$allL) {
+    $all_loc=array();
+    foreach ($data_all_loc as $index=>$allL) {
     if (isset($all_loc[$allL["locationId"]])) {
         unset($data_all_loc[$index]);
         continue;
     }
     $all_loc[$allL["locationId"]]=true;
 }
-foreach ($data_all_loc as $keyAll=>$valueAll){
+    foreach ($data_all_loc as $keyAll=>$valueAll){
     $loc_all_new[] = locationDetails($valueAll['locationId'],$connection);
 }
-$arr_all_location = call_user_func_array('array_merge', $loc_all_new);
-$newAllLocation = [];
-foreach ($arr_all_location as $arrAllLocationKey => $arrAlllocationValue){
-    $exp = explode('_',$arrAlllocationValue);
-    $keyAllLoc = preg_replace('/\d/', '', $exp[1] );
-    if($keyAllLoc == 'W'){
-        $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
-        $newAllLocation[$arrAllLocationKey]['type'] = 'warehouse';
-    } elseif ($keyAllLoc == 'C'){
-        $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
-        $newAllLocation[$arrAllLocationKey]['type'] = 'container';
-    } else {
-        $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
-        $newAllLocation[$arrAllLocationKey]['type'] = 'conveyor';
+    $arr_all_location = call_user_func_array('array_merge', $loc_all_new);
+    $newAllLocation = [];
+    foreach ($arr_all_location as $arrAllLocationKey => $arrAlllocationValue){
+        $exp = explode('_',$arrAlllocationValue);
+        $sql = '';
+        $sql = "SELECT \"locationId\" FROM \"tbl_invLocation\" WHERE identifier='".$exp[0]."'";
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $locId = pg_fetch_row($result);
+        $sql = '';
+        $sql = "SELECT * FROM \"locationDetails\" WHERE \"locationId\"='".$locId[0]."'";
+        $sql .= " and ( warehouse='".$exp[1]."' OR container='".$exp[1]."' OR conveyor ='".$exp[1]."' )";
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $warehouses_all = pg_fetch_row($result);
+        if($warehouses_all[4] != ''){
+            $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
+            $newAllLocation[$arrAllLocationKey]['type'] = 'conveyor';
+        } elseif ($warehouses_all[3] != ''){
+            $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
+            $newAllLocation[$arrAllLocationKey]['type'] = 'container';
+        } else {
+            $newAllLocation[$arrAllLocationKey]['location'] = $arrAlllocationValue;
+            $newAllLocation[$arrAllLocationKey]['type'] = 'warehouse';
+        }
     }
-}
-$dataTooltip = [];
-
-foreach ($data_mainSizeIdHash as $key1 => $val1) {
+    $dataTooltip = [];
+    foreach ($data_mainSizeIdHash as $key1 => $val1) {
 
     if(count($opt1SizeIdHash) > 0){
 
@@ -877,7 +732,6 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
     $rowoldinv = pg_fetch_row($resultoldinv);
     $oldinv = $rowoldinv;
     pg_free_result($resultoldinv);
-
     if ($oldinv) {
         $empsql = 'select * from "employeeDB" where "employeeID" =' . $oldinv['2'] . ' LIMIT 1';
         if (!($resultemp = pg_query($connection, $empsql))) {
@@ -887,9 +741,8 @@ foreach ($data_mainSizeIdHash as $key1 => $val1) {
         $rowemp = pg_fetch_row($resultemp);
         $oldemp = $rowemp;
     }
-pg_free_result($resultemp);
-
-if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
+    pg_free_result($resultemp);
+    if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
 
     //$my_data;
 
@@ -913,56 +766,36 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
         if ($value['location_details_id'] != '')
             $location_details_id = $value['location_details_id'];
     }
-
-
-    //$location_id = $my_data[0]['locationId'];
-    //$inventory_id = $my_data[0]['invId'];
-    //$location_details_id = $my_data[0]['location_details_id'];
-
-    // echo $location_id.'=='.$location_details_id;
-    // exit();
-
-    /*echo "<pre>";print_r($my_data);
-    exit();*/
 }
-    /*echo '<pre>';
-    print_r($dataTooltip);
-    die();*/
 ?>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/jquery-ui.min-1.8.2.js"></script>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/samplerequest.js"></script>
-
 <script src="<?php echo $mydirectory; ?>/js/modernizr.js"></script>
 <script src="<?php echo $mydirectory; ?>/js/tabs.js"></script>
-
 <link href="<?php echo $mydirectory; ?>/css/style.css" rel="stylesheet">
 <div class="container">
-<div class="row">
-<div class="col-md-12 col-sm-12">
-<table width="90%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-        <td align="left"><input type="button" value="Back" onclick="location.href='reports.php'"/></td>
-        <td>&nbsp;</td>
-        <td align="right"><label>
-                <input type="button" name="send-email" id="send-email" value="Send Email"/>
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <table width="90%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="left"><input type="button" value="Back" onclick="location.href='reports.php'"/></td>
+                    <td>&nbsp;</td>
+                    <td align="right"><label>
+                        <input type="button" name="send-email" id="send-email" value="Send Email"/>
                 &nbsp;&nbsp; </label></td>
-    </tr>
-</table>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>
-</div>
-</div>
-<!-- Trigger/Open The Modal -->
-<!-- <button id="myBtn">Open Modal</button>
- -->
 <!-- The Modal -->
 <div id="myModal" class="modal">
-
     <!-- Modal content -->
     <div class="modal-content">
         <span id="close_warehouse_f" class="close">&times;</span>
         <div class="modal-header">
                 <h4 class="modal-title" style="text-align: center;">ADD INVENTORY</h4>
-             </div>
+        </div>
         <div class="modal-body">
             <div class="inventory-box">
                 <div class="container">
@@ -970,7 +803,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                     <div class="wrapper">
                         <div class="top-table">
                             <table width="100%" cellpadding="0" cellspacing="0">
-
                                 <tr>
                                     <td style="width: 30%">Style #:
                                         <strong>
@@ -1047,16 +879,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                                 <div class="col-md-12 right-sidebar">
                                     <div class="inventory-table">
                                         <div class="table-responsive">
-
-                                            <!--<div class="my-table">
-                                                <table class="table">
-                                                    <tr>
-                                                        <th>1</th>
-                                                        <td></td>
-                                                    </tr>
-
-                                                </table>
-                                            </div>-->
                                             <table class="table my-table">
                                                 <tr>
                                                     <td>
@@ -1133,30 +955,24 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                                                         </table>
                                                     </td>
                                                 </tr>
-
-
-
                                             </table>
-                                        </div>
                                         </div>
                                     </div>
                                 </div>
+                        </div>
                         <div class="row col-md-12 align-right">
                             <div id="message_add"></div>
                         </div>
-                                <div class="row col-md-12 align-right">
-                                    <button class="btn btn-success btn-lg" id="add_inventory_new">Add Inventory</button>
-                                </div>
+                        <div class="row col-md-12 align-right">
+                            <button class="btn btn-success btn-lg" id="add_inventory_new">Add Inventory</button>
+                        </div>
                             </form>
                         </div>
-                    </div>
                 </div>
-        </div>
+            </div>
         </div>
     </div>
 </div>
-
-
 <div class="container">
     <div class="row">
         <div class="col-md-12 col-sm-12">
@@ -1240,9 +1056,10 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
         </div>
     </div>
 </div>
+<div style="display:none">
     <?php
-/*    if ($oldinv) {
-        */?><!--
+    if ($oldinv) {
+        ?>
         <fieldset style="margin:10px;">
             <table width="98%" border="0" cellspacing="1" cellpadding="1">
                 <tbody>
@@ -1250,9 +1067,9 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                     <td width="355" height="25" align="right" valign="top">Date: <br></td>
                     <td width="10">&nbsp;</td>
                     <td align="left" valign="top">
-                        <?php /*echo date("F j, Y, g:i a", $oldinv['3']); */?>
+                        <?php echo date("F j, Y, g:i a", $oldinv['3']); ?>
                         <?php
-/*                        $t = time();
+                        $t = time();
                         $datetime1 = date_create(date('Y-m-d', $t));
                         $datetime2 = date_create(date('Y-m-d', $oldinv['3']));
                         $interval = date_diff($datetime1, $datetime2);
@@ -1267,7 +1084,7 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                             $updatedby = $oldemp['1'] . " " . $oldemp['2'];
                             echo '<div id="button" style="width:25px; height: 25px; border-radius:100%; background-color:' . $colo . ';"></div>';
                         }
-                        */?>
+                        ?>
                     </td>
                 </tr>
                 <tr>
@@ -1275,7 +1092,7 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                     <td width="355" height="25" align="right" valign="top">Updated By: <br></td>
                     <td width="10">&nbsp;</td>
                     <td align="left" valign="top">
-                        <?php /*echo $oldemp['1'] . " " . $oldemp['2']; */?>
+                        <?php echo $oldemp['1'] . " " . $oldemp['2']; ?>
                     </td>
                 </tr>
                 <tr>
@@ -1283,44 +1100,45 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                     <td width="10">&nbsp;</td>
                     <td align="left" valign="top">
                         <div class="table-responsive">
-                        <table>
-                            <tr>
-                                <td>Scale1 &nbsp;&nbsp;</td>
-                                <td>Scale2 &nbsp;&nbsp;</td>
-                                <td>Previous &nbsp;&nbsp;</td>
-                                <td>Present &nbsp;&nbsp;</td>
-                                <td>Unit &nbsp;&nbsp;</td>
-                            </tr>
-                            <?php
-/*                            $data = json_decode($oldinv['5']);
-                            foreach ($data as $key => $prevalue) {
-                                //print_r($prevalue);
-                                */?>
+                            <table>
                                 <tr>
-                                    <td><?php /*logCheckOStyle($prevalue->sizeScaleId, $connection); */?> &nbsp;&nbsp;</td>
-                                    <td><?php
-/*                                        if ($prevalue->opt1ScaleId != '') {
-                                            logCheckNStyle($prevalue->opt1ScaleId, $connection);
-                                        } else {
-                                            echo 'Qty';
-                                        }
-                                        */?>&nbsp;&nbsp;
-                                    </td>
-                                    <td><?php /*echo $prevalue->oldinv; */?>&nbsp;&nbsp;</td>
-                                    <td><?php /*echo $prevalue->wareHouseQty; */?>&nbsp;&nbsp;</td>
-                                    <td><?php /*echo $prevalue->unit; */?>&nbsp;&nbsp;</td>
+                                    <td>Scale1 &nbsp;&nbsp;</td>
+                                    <td>Scale2 &nbsp;&nbsp;</td>
+                                    <td>Previous &nbsp;&nbsp;</td>
+                                    <td>Present &nbsp;&nbsp;</td>
+                                    <td>Unit &nbsp;&nbsp;</td>
                                 </tr>
-                            <?php /*} */?>
-                        </table>
+                                <?php
+                                $data = json_decode($oldinv['5']);
+                                foreach ($data as $key => $prevalue) {
+                                    //print_r($prevalue);
+                                    ?>
+                                    <tr>
+                                        <td><?php logCheckOStyle($prevalue->sizeScaleId, $connection); ?> &nbsp;&nbsp;</td>
+                                        <td><?php
+                                            if ($prevalue->opt1ScaleId != '') {
+                                                logCheckNStyle($prevalue->opt1ScaleId, $connection);
+                                            } else {
+                                                echo 'Qty';
+                                            }
+                                            ?>&nbsp;&nbsp;
+                                        </td>
+                                        <td><?php echo $prevalue->oldinv; ?>&nbsp;&nbsp;</td>
+                                        <td><?php echo $prevalue->wareHouseQty; ?>&nbsp;&nbsp;</td>
+                                        <td><?php echo $prevalue->unit; ?>&nbsp;&nbsp;</td>
+                                    </tr>
+                                <?php } ?>
+                            </table>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </fieldset>
-        --><?php
-/*    }
-    */?>
+        <?php
+    }
+    ?>
+</div>
 <form id="inventoryForm" style="display: none;">
     <input type="hidden" id="_location_id" name="location_id"
            value="<?php echo (isset($location_id) && $location_id) > 0 ? $location_id : 'null' ?>">
@@ -1593,7 +1411,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
         </fieldset>
     </div>
 </form>
-
 <div class="inventory-box">
     <div class="container">
         <br/><br/>
@@ -1676,8 +1493,22 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                                 <?php
                                 $unitPost = $_GET['unitId'];
                                 $explode = explode('_',$unitPost);
-                                $words = preg_replace('/\d+/', '', $explode[1] );
-                                if($words == 'W' || $words == ''){
+                                $sql = '';
+                                $sql = "SELECT \"locationId\" FROM \"tbl_invLocation\" WHERE identifier='".$explode[0]."'";
+                                if (!($result = pg_query($connection, $sql))) {
+                                    print("Failed invQuery: " . pg_last_error($connection));
+                                    exit;
+                                }
+                                $locIdbody = pg_fetch_row($result);
+                                $sql = '';
+                                $sql = "SELECT * FROM \"locationDetails\" WHERE \"locationId\"='".$locIdbody[0]."'";
+                                $sql .= " and ( warehouse='".$explode[1]."' OR container='".$explode[1]."' OR conveyor ='".$explode[1]."' )";
+                                if (!($result = pg_query($connection, $sql))) {
+                                    print("Failed invQuery: " . pg_last_error($connection));
+                                    exit;
+                                }
+                                $warehouses_all_body = pg_fetch_row($result);
+                                if($warehouses_all_body[3] == '' && $warehouses_all_body[4] == ''){
                                     ?>
                                     <tr>
                                         <td>Row:
@@ -1881,88 +1712,8 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                                             </table>
                                         </td>
                                     </tr>
-
-
-
                                 </table>
                             </div>
-
-
-
-                            <!--<div class="col-xs-1">
-                                <input type="hidden" name="scaleNameId"
-                                       value="<?php /*echo $data_style['scaleNameId']; */?>"/>
-                                <input type="hidden" id="styleId" name="styleId"
-                                       value="<?php /*echo $styleId; */?>"/>
-                                <input type="hidden" id="colorId" name="colorId" value="<?php /*echo $clrId; */?>"/>
-
-                                <?php
-/*                                // echo "<pre>";print_r($data_style);
-                                $len = sizeof($data_mainSizeIdHash);
-                                $row = $len / sizeof($data_mainSizeIdHash);
-                                $row += $len % 4 == 0 ? 0 : 1;
-                                $row = 1;
-
-                                $start_head = "<div class='row'>";
-                                $end = "</div>";
-                                $start_div = "<div class='title-section'><div class='col-md-12 nopadding'>";
-                                $end_div = "</div></div>";
-                                $data_div = $start_div . '<p>sizes</p>' . $end_div;
-                                $data_div .= $start_div . '<p>prices</p>' . $end_div;
-                                $cnt = 0;
-                                foreach ($opt1SizeIdHash as $key => $value) {
-                                    $cnt++;
-                                    $data_div .= $start_div . "<p>" . $value . "</p>" . $end_div;
-                                    //echo $data_div."<br>";
-                                }
-
-
-                                //var_dump($row);exit();
-                                while ($row--) {
-                                    echo $start_head . $data_div . $end;
-                                }
-                                */?>
-
-
-                            </div>-->
-
-                            <div class="col-xs-10">
-
-                                <div class="row">
-                                    <?php
-/*                                    $mainsize_div = '<div class="col-xs-1 col-sm-1 col-md-1 nopadding"><div class="each-section">';
-                                    $mainsize_div_end = '</div></div>';
-                                    $data = '';
-                                    $element = '';
-                                    foreach ($data_mainSizeIdHash as $key1 => $val1) {
-                                        $element .= '<span>' . $val1 . '</span>'; //for sizes
-                                        $price = isset($data_style['price'])
-                                            ? $data_style['price']
-                                            : ' ';
-                                        $element .= '<span><input type="text" value="' . $price . '" readonly></span>'; //for prices
-                                        foreach ($opt1SizeIdHash as $key2 => $val2) {
-                                            if (isset($data_set[$key1][$key2])) {
-                                                $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . $key2 . '" type="text" id="" value="' . $data_set[$key1][$key2] . '" name="new_qty_data[]"></span>';
-                                                $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
-                                                $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
-                                                $element .= '<input type="hidden" id="_' . $key1 . '_' . $key2 . '" value="0" name="is_change[]">';
-                                            } else {
-                                                $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . $key2 . '" type="text" value="0" name="new_qty_data[]"></span>';
-                                                $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
-                                                $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
-                                                $element .= '<input id="_' . $key1 . '_' . $key2 . '" type="hidden" value="0" name="is_change[]">';
-                                            }
-                                        }
-                                        $data .= $mainsize_div . $element . $mainsize_div_end;
-                                        $element = '';
-                                    }
-                                    echo $data;
-                                    */?>
-                                </div>
-
-                            </div>
-
-
                         </div>
                     </div>
                     <div class="row col-md-12 align-right">
@@ -1978,139 +1729,33 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
         </div>
     </div>
 </div>
-
 <div id="dialog-form" title="Submit By Email">
-        <p class="validateTips">All form fields are required.</p>
-        <form action='reportMail.php?styleId=<?php echo $styleId; ?>' id="frmmailsendform" method="POST">
-            <fieldset>
-                <label for="email">Email</label>
-                <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all"/>
-                <label for="subject">Subject:</label>
-                <input type="text" name="subject" id="subject" class="text ui-widget-content ui-corner-all"/>
-            </fieldset>
-            <input type="hidden" name="colorId" id="colorid_mail" value="<?php echo $_GET['colorId']; ?>"/>
-            <input type="hidden" name="unitId" id="unitId_mail" value="<?php echo $_GET['unitId']; ?>"/>
-            <input type="hidden" name="styleId" id="styleId_mail" value="<?php echo $_GET['styleId']; ?>"/>
-        </form>
-    </div>
-
-    <script type="text/javascript">
-        /*
-         ===================================
-         Inventory table responsive
-         ===================================
-         */
-
+    <p class="validateTips">All form fields are required.</p>
+    <form action='reportMail.php?styleId=<?php echo $styleId; ?>' id="frmmailsendform" method="POST">
+        <fieldset>
+            <label for="email">Email</label>
+            <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all"/>
+            <label for="subject">Subject:</label>
+            <input type="text" name="subject" id="subject" class="text ui-widget-content ui-corner-all"/>
+        </fieldset>
+        <input type="hidden" name="colorId" id="colorid_mail" value="<?php echo $_GET['colorId']; ?>"/>
+        <input type="hidden" name="unitId" id="unitId_mail" value="<?php echo $_GET['unitId']; ?>"/>
+        <input type="hidden" name="styleId" id="styleId_mail" value="<?php echo $_GET['styleId']; ?>"/>
+    </form>
+</div>
+<script type="text/javascript">
         var opt1Array_str = null;
         var obj_arr = new Array();
-
         function storeopt1Array(str) {
             opt1Array_str = str;
-
             var obj = opt1Array_str.split(",").map(String);
-            console.log(obj);
-
             for (var key in obj) {
-                //console.log('key :',key,' obj :',obj[key],' type :',typeof obj[key]);
-
                 var temp = obj[key].split("=").map(String);
-                obj_arr.push(temp[1].slice(1, -1));//temp[1].replace(/\'\s*$/, "");
-                //console.log('temp :',temp);
+                obj_arr.push(temp[1].slice(1, -1));
             }
-
-            for (i = 0; i < obj_arr.length; i++) {
-                console.log(' i:', i, 'obj_arr :', obj_arr[i]);
-            }
-
         }
-
-
-        $(document).ready(function () {
-
-            //console.log('obj_arr ::>>',obj_arr);
-
-            //var windowWidth = $(window).width();
-            //$(".inventory-table .col-md-3").each(function(i){
-
-            // var div_header = "<div class='row'>";
-            // var div_content = "<div class='title-section'>";
-            // div_content += "<div class='col-md-12 nopadding'>";
-            // var div_content_end = "</div></div>";
-            // var div_header_end = "</div>";
-
-            // var data='';
-            // data += div_content+'<p>'+'sizes'+'</p>'+div_content_end;
-            // data += div_content+'<p>'+'prices'+'</p>'+div_content_end;
-
-            // console.log('lllllllllllllllllllll',obj_arr.length)
-            // for(i=0;i<obj_arr.length;i++)
-            // {
-            //     console.log('obj_arr ::::',obj_arr[i],' LENGTH :: ',obj_arr.length);
-            //     data += div_content+'<p>'+obj_arr[i]+'</p>'+div_content_end;
-            // }
-            // data = div_header + data + div_header_end;
-
-            // alert(data);
-
-            // var data = "<div class='row'>";
-            // data += "<div class='title-section'>";
-            // data += "<div class='col-md-12 nopadding'>";
-            // data += "<p>sizes</p>";
-            // data += "</div>";
-            // data += "</div>";
-            // data += "<div class='title-section'>";
-            // data += "<div class='col-md-12 nopadding'>";
-            // data += "<p>prices</p>";
-            // data += "</div>";
-            // data += "</div>";
-            // data += "<div class='title-section'>";
-            // data += "<div class='col-md-12 nopadding'>";
-            // data += "<p>Petite</p>";
-            // data += "</div>";
-            // data += "</div>";
-            // data += "<div class='title-section'>";
-            // data += "<div class='col-md-12 nopadding'>";
-            // data += "<p>Short</p>";
-            // data += "</div>";
-            // data += "</div>";
-            // data += "<div class='title-section'>";
-            // data += "<div class='col-md-12 nopadding'>";
-            // data += "<p>Reg</p>";
-            // data += "</div>";
-            // data += "</div>";
-            // data += "<div class='title-section'>";
-            // data += "<div class='col-md-12 nopadding'>";
-            // data += "<p>Tall</p>";
-            // data += "</div>";
-            // data += "</div>";
-            // data += "</div>";
-            //alert(data);
-
-            // if(windowWidth > 991){
-            //     if( i % 4 === 0 ) {
-            //         $(".inventory-table .col-xs-2").append(data);
-            //     }
-            // }
-
-            // if(windowWidth > 767 && windowWidth <= 991){
-            //     if( i % 3 === 0 ) {
-            //         $(".inventory-table .col-xs-2").append(data);
-            //     }
-            // }
-
-            // if(windowWidth <= 767){
-            //     if( i % 2 === 0 ) {
-            //         $(".inventory-table .col-xs-2").append(data);
-            //     }
-            // }
-
-            //});
-        });
-        /*
-         =============================================
-         */
-    </script>
-    <script>
+</script>
+<script>
         $('#add_new_location').change(function(){
             var arr = <?php echo json_encode($newAllLocation); ?>;
             var select = $('#add_new_location').val();
@@ -2147,7 +1792,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 $('#shelf_add').hide();
             }
         });
-
         $('#add_inventory_new').click(function () {
             var arr = <?php echo json_encode($newAllLocation); ?>;
             var location = $('#add_new_location').val();
@@ -2168,6 +1812,7 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 $('#message_add').show();
                 return false;
             }
+            return false;
             var type = '';
             for(var i=0;i<arr.length;i++){
                 if(arr[i]['location'] == location){
@@ -2260,31 +1905,24 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
         $(document).ready(function () {
             $('#warehouse_link').hide();
         });
-
         $('#container_link').click(function (e) {
             $('#container_link').hide();
             $('#conveyor_link').show();
             $('#warehouse_link').show();
         });
-
         $('#conveyor_link').click(function (e) {
             $('#container_link').show();
             $('#conveyor_link').hide();
             $('#warehouse_link').show();
         });
-
         $('#warehouse_link').click(function (e) {
             $('#container_link').show();
             $('#conveyor_link').show();
             $('#warehouse_link').hide();
         });
-
-
         $('#warehouse_dropdown').select(function (e) {
             // alert(this.value);
         });
-
-
         $('#conveyor_loc_dropdown').change(function (e) {
             id = this.value;
             if (id != 0) {
@@ -2296,7 +1934,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                         id: id
                     },
                     success: function (data) {
-                        console.log(data);
                         $('#conveyor_td').show();
                         $('#conveyor_dropdown').empty();
                         $('#conveyor_dropdown').append($('<option>',
@@ -2320,7 +1957,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             }
 
         });
-
         $('#container_loc_dropdown').change(function (e) {
             id = this.value;
             if (id != 0) {
@@ -2332,7 +1968,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                         id: id
                     },
                     success: function (data) {
-                        console.log(data);
                         $('#container_td').show();
                         $('#container_dropdown').empty();
                         $('#container_dropdown').append($('<option>',
@@ -2356,8 +1991,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 $('#container_dropdown').empty();
             }
         });
-
-
         $('.location_dropdown').change(function (e) {
             id = this.value;
             if (id != 0) {
@@ -2369,8 +2002,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                         id: id
                     },
                     success: function (data) {
-
-                        console.log(data);
                         length = Object.keys(data).length;
                         //console.log(length);
                         $('#warehouse_td').show();
@@ -2382,7 +2013,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                             }));
 
                         $.each(data, function (i) {
-                            console.log(i);
                             $('#warehouse_dropdown').append($('<option>',
                                 {
                                     value: data[i].id,
@@ -2396,13 +2026,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 $('#warehouse_dropdown').empty();
             }
         });
-
-        // function warehouse_dropdown()
-        //     {
-        //         console.log(1);
-        //     }
-
-
         $('#new_conveyor_form').submit(function (e) {
             e.preventDefault();
             var styleId = document.getElementById('styleId').value;
@@ -2410,14 +2033,10 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             var slot = $('input[name="cv_slot"]').val();
             var locationId = $('#conveyor_loc_dropdown').val();
             var conveyorId = $('#conveyor_dropdown').val();
-
-            console.log(slot, locationId, conveyorId);
             if (slot == '' || conveyorId == '0' || conveyorId == null || locationId == '0' || locationId == null) {
                 console.log(slot, conveyorId, locationId);
             }
             else {
-                //alert (locationId+' '+styleId);
-                console.log(slot, conveyorId, locationId, styleId, colorId);
                 $.ajax({
                     url: 'add_unit_to_conveyor.php',
                     type: "post",
@@ -2431,18 +2050,14 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                         type: 'slot'
                     },
                     success: function (data) {
-                        console.log(data);
                         if (data == 'slot not available') {
-
                             $('#conv_err_msg').empty();
                             $('#conv_err_msg').text(' -- slot not available');
                             $('#conv_err_msg').show();
                             $('#conv_err_msg').delay(3000).fadeOut();
-
                         }
                         else {
                             $('#close_warehouse_f').trigger("click");
-
                             window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&unitId=" + data);
                             $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
                         }
@@ -2450,8 +2065,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 });
             }
         });
-
-
         $('#new_container_form').submit(function (e) {
             e.preventDefault();
             var styleId = document.getElementById('styleId').value;
@@ -2459,12 +2072,10 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             var unit = $('input[name="co_unit"]').val();
             var locationId = $('#container_loc_dropdown').val();
             var containerId = $('#container_dropdown').val();
-
             if (unit == '' || containerId == '0' || containerId == null || locationId == '0' || locationId == null) {
                 console.log(unit, containerId, locationId);
             }
             else {
-                console.log(unit, containerId, locationId, styleId, colorId);
                 //alert (locationId+' '+styleId);
                 $.ajax({
                     url: 'add_unit_to_container.php',
@@ -2479,7 +2090,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                         type: 'unit_c'
                     },
                     success: function (data) {
-                        console.log(data);
                         if (data == 'box not available') {
                             //alert(data);
                             $('#cont_err_msg').empty();
@@ -2500,8 +2110,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 });
             }
         });
-
-
         $('#warehouse_new_form').submit(function (e) {
             e.preventDefault();
             var styleId = document.getElementById('styleId').value;
@@ -2512,12 +2120,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             var row = $('input[name="row"]').val();
             var shelf = $('input[name="shelf"]').val();
             var unit = $('input[name="unit"]').val();
-            //var location_details_id = $('input[name="location_details_id"]').val();
-
-            //alert(location+' '+styleId);
-
-            //console.log(warehouse,location);
-
             if (colorId == '' || styleId == '' || unit == '' || shelf == '' || row == '' || rack == '' || warehouse == '' || location == null || location == '0') {
                 $('#close_warehouse_f').trigger("click");
                 $("#message").html("<div class='errorMessage'><strong>All fields are mandatory. Please fill all fields and try later.</strong></div>").delay(3000).fadeOut();
@@ -2537,40 +2139,29 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                         colorId: colorId,
                         styleId: styleId,
                         type: 'type_w'
-                        //location_details_id:location_details_id
                     },
                     success: function (data) {
-                        console.log(data);
-
                         if (data != null) {
                             if (data == "box not available") {
-
                                 $('#warehouse_err_msg').empty();
                                 $('#warehouse_err_msg').text(' -- unit not available');
                                 $('#warehouse_err_msg').show();
                                 $('#warehouse_err_msg').delay(3000).fadeOut();
-                                console.log('kaudfy---------');
                             }
                             else {
-                                console.log('kajdfgaludfgluiyf');
-
                                 $('#close_warehouse_f').trigger("click");
-
                                 window.location.replace("reportViewEdit.php?styleId=" + styleId + "&colorId=" + colorId + "&unitId=" + data);
                                 $("#message").html("<div class='successMessage'><strong>Inventory Added. Thank you.</strong></div>");
                             }
                         }
                         else {
-
                             $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
                         }
                     }
                 });
             }
         });
-
         function clear_form_data() {
-
             //empty warehouse form
             $('#warehouse_form_row').val('');
             $('#warehouse_form_rack').val('');
@@ -2583,7 +2174,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             $('#warehouse_err_msg').text('');
             $('#warehouse_err_msg').hide();
             document.getElementById("location_dropdown").options[0].selected = true;
-
             //empty container form
             $('#co_unit').val('');
             $('#container_dropdown').empty();
@@ -2591,7 +2181,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             $('#cont_err_msg').empty();
             $('#cont_err_msg').hide();
             document.getElementById("container_loc_dropdown").options[0].selected = true;
-
             //empty conveyor form
             $('#cv_slot').val('');
             $('#conveyor_dropdown').empty();
@@ -2601,27 +2190,21 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             document.getElementById("conveyor_loc_dropdown").options[0].selected = true;
 
         };
-
         // Get the modal
         var modal = document.getElementById('myModal');
-
         // Get the button that opens the modal
         var btn = document.getElementById("addinventory_new");
-
         // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
-
         // When the user clicks the button, open the modal
         btn.onclick = function () {
             modal.style.display = "block";
-        }
-
+        };
         // When the user clicks on <span> (x), close the modal
         span.onclick = function () {
             modal.style.display = "none";
             clear_form_data();
-        }
-
+        };
         // When the user clicks anywhere outside of the modal, close it
         window.onclick = function (event) {
             if (event.target == modal) {
@@ -2629,15 +2212,10 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             }
         }
     </script>
-    <script>
-
-
+<script>
         $('#newInventory').click(function (e) {
-
             $('#inventory_form').show();
             $('#warehouse_form').show();
-
-
         });
         function UpdateNew() {
             var room = $('#up_room').val();
@@ -2678,8 +2256,7 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 }
             });
             // $(location).attr('href', "updateInventory.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
-        }
-
+        };
         function Update() {
             room = $('#updateroom').val();
             // if(room == '') {
@@ -2724,7 +2301,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             });
             // $(location).attr('href', "updateInventory.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
         }
-
         function Delete() {
             if (confirm("Are you Sure you want to delete this unit") == true) {
                 $.ajax({
@@ -2750,16 +2326,10 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 console.log('cancel');
             }
         }
-
-    </script>
-    <script type="text/javascript">
-
+</script>
+<script type="text/javascript">
         var unique_id = 0;
-
         function print_content(stylId, loc, unitId) {
-            //alert($('#unique_0').val());
-            //alert($('#unique_30').val());
-
             var data_ = "";
             for (i = 0; ; i++) {
                 var data = $('#unique_' + i).val();
@@ -2771,18 +2341,14 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                     break;
                 }
             }
-            // alert(data_);
-
             if (stylId == 'null' || unitId == 'null') {
                 alert('error');
             } else {
-                //alert(window.location);
                 var clrId = $('#color option[selected="selected"]').attr('data-color');
                 //window.location.href = "https://www.w3schools.com";
                 window.location.replace("print.php" + '?styleId=' + stylId + '&colorId=' + clrId + '&unitId=' + unitId + '&location=' + loc + '&all_data=' + data_);
             }
-        }
-
+        };
         function AddRow(type, cellId, value) {
             switch (type) {
                 case 'main': {
@@ -2828,7 +2394,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                     var cell = trd.insertCell(cellId);
                     cell.className = 'gridHeaderReportGrids2';
                     cell.innerHTML = value;
-
                     trd = document.getElementById('dummy2');
                     cell = trd.insertCell(cellId);
                     cell.className = 'gridHeaderReportGrids2';
@@ -2836,12 +2401,9 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                     break;
                 }
             }
-        }
-
-
+        };
         function AddQty(trId, type, cellId, i, j, data, locIndex, rowIndex, qty, invIdValue) {
                 //alert(qty);
-            console.log(locIndex, cellId, data, type);
             // console.log(i,j,qty);
             //alert(data);
             //alert(invIdValue);
@@ -2899,7 +2461,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 }
             }
         }
-
         function StoreInitialValues(locIndex, rowIndex, txtValue, newQty) {
             var td = document.getElementById('hdnVar');
             var element1 = document.createElement("input");
@@ -2918,8 +2479,8 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
 
             $(location).attr('href', "storage.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&invId=" + inventoryId + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
         }
-    </script>
-    <script type="text/javascript">
+</script>
+<script type="text/javascript">
         $(document).ready(function () {
             <?php if(!isset($_REQUEST['unitId']) || $_REQUEST['unitId'] == 0): ?>
             $('.tool').bind({
@@ -2931,7 +2492,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
 
                 }
             });
-
             $('.tooltext').bind({
                 mouseenter: function(){
                     $(this).show();
@@ -2941,7 +2501,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 }
             });
             <?php endif; ?>
-
             if ($('#unit_num').val() == 0 || $('#unit_num').val() == 'undefined') {
                 $('#update_inventory').hide();
                 $('#update_inventory_new').hide();
@@ -3202,17 +2761,13 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 PostRequest();
 
             });
-
-            $("#unit_num").change(function () {
-
+            $("#unit_num").change(function ()   {
                 $("#unitId_mail").val($("#unit_num").val());
                 PostRequest();
-
             });
             $(".slot_num").change(function () {
                 $("#unit_num").val($(this).val());
                 PostRequest();
-
             });
             $("#sConveyor").change(function () {
                 PostRequest();
@@ -3263,59 +2818,41 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             }
         });
     </script>
-    <script type="text/javascript">
+<script type="text/javascript">
         function init_dw_Scroll() {
-
             var wndo = new dw_scrollObj('wn', 'lyr1');
             wndo.setUpScrollControls('scrollLinks');
-
             var wndo = new dw_scrollObj('wn2', 'lyr2');
             wndo.setUpScrollControls('scrollLinks2');
-
             var wndo1 = new dw_scrollObj('wn3', 'lyr3');
             wndo1.setUpScrollControls('scrollLinks3');
-
             var wndo1 = new dw_scrollObj('wn4', 'lyr4');
             wndo1.setUpScrollControls('scrollLinks4');
-
-        }
-
+        };
         // if code supported, link in the style sheet and call the init function onload
         if (dw_scrollObj.isSupported()) {
             //dw_Util.writeStyleSheet('css/scroll.css');
             dw_Event.add(window, 'load', init_dw_Scroll);
         }
-    </script>
-    <script type="text/javascript">
+</script>
+<script type="text/javascript">
         $(function () {
             $("#inventoryFormNew").submit(function (e) {
-
                 var location_id = $('#_location_id').val();
-                //var inventory_id = $('#_inventory_id').val();
                 var location_details_id = $('#_location_details_id').val();
-
-
-                //alert(location_id+' '+location_details_id);
-
                 var unitId = 0;
                 if ($("#unit_num").val() != undefined) {
                     unitId = $("#unit_num").val();
                 }
-                //alert(unitId);
                 var row = "<?php echo $data_product[0]['row']; ?>";
                 var room = "<?php echo $data_product[0]['room']; ?>";
                 var shelf = "<?php echo $data_product[0]['shelf']; ?>";
                 var rack = "<?php echo $data_product[0]['rack']; ?>";
-
                 dataString = $("#inventoryFormNew").serialize();
                 dataString += "&type=e";
                 dataString += "&unitId=" + unitId;
                 dataString += "&location_id=" + location_id;
-                //dataString += "&inventory_id=" + inventory_id;
                 dataString += "&location_details_id=" + location_details_id;
-                //console.log(dataString);
-
-                //var data_ = "";
                 flag = 0;
                 for (i = 0; ; i++) {
                     var data = $('#unique_' + i).val();
@@ -3329,42 +2866,29 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                         break;
                     }
                 }
-
                 if (unitId == '') {
-                    //alert(row+' '+rack+' '+' '+room+' '+shelf);
-                    //alert('here');
                     alert('unitId is null! not submiting the form');
                 }
                 else if (flag == 1) {
                     alert('Negative value not accepted!');
                 }
                 else {
-                    //alert('in else');
                     $("#message").html("<div class='errorMessage'><strong>Processing, Please wait...!</strong></div>");
-                    //alert(location_id)
-                    //alert('*********');
-                    //alert(location_id+' '+inventory_id+' '+location_details_id+' '+document.getElementById('styleId').value);
                     $.ajax({
                         type: "POST",
                         url: "invReportSubmit.php",
                         data: dataString,
                         dataType: "json",
                         success: function (data) {
-
-
-                            //return false;
-                            console.log(data);
                             if (data != null) {
                                 if (data[0].name || data[0].error) {
                                     $("#message").html("<div class='errorMessage'><strong>Sorry, " + data[0].name + data[0].error + "</strong></div>");
                                     if (data[0].flag) {
-                                        //console.log('first');
                                         $.ajax({
                                             url: "newStorageSubmit.php?type=a&styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "&unitId=" + unitId + "&row=" + row + "&rack=" + rack + "&room=" + room + "&shelf=" + shelf,
                                             type: "GET",
                                             success: function (data) {
                                                 //return false;
-                                                console.log(data);
                                                 if (data != null) {
                                                     if (data.name || data.error) {
                                                         $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
@@ -3379,10 +2903,8 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                                                 }
                                             }
                                         });
-                                        //$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&unitId="+unitId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
                                     }
-                                }
-                                else {
+                                } else {
                                     if (data[0].flag) {
                                         $("#message").html("<div class='successMessage'><strong>Inventory Quantity Updated. Thank you.</strong></div>");
                                         $.ajax({
@@ -3390,7 +2912,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                                             type: "GET",
                                             success: function (data) {
                                                 //return false;
-                                                console.log(data);
                                                 if (data != null) {
                                                     if (data.name || data.error) {
                                                         $("#message").html("<div class='errorMessage'><strong>" + data.name + data.error + "</strong></div>");
@@ -3407,11 +2928,11 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                                         });
                                         //$(location).attr('href',"newStorageSubmit.php?type=a&styleId="+document.getElementById('styleId').value+"&colorId="+document.getElementById('colorId').value+"&unitId="+unitId+"&row="+row+"&rack="+rack+"&room="+room+"&shelf="+shelf);
                                     } else {
-                                        $("#message").html("<div class='successMessage'><strong> All inventorys are up to date...</strong></div>");
+                                        $("#message").html("<div class='successMessage'><strong> All Inventories are up to date...</strong></div>");
                                     }
                                 }
                             } else {
-                                $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
+                                    $("#message").html("<div class='errorMessage'><strong>Sorry, Unable to process.Please try again later.</strong></div>");
                             }
                         }
                     });
@@ -3440,8 +2961,6 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
                 url += "&del=true";
             location.href = url;
         }
-
-
         function main_inv() {
             location.href = './reportViewEdit.php?styleId=' + $('#styleId_mail').val() + '&colorId=' + $('#colorid_mail').val();
         }
@@ -3504,6 +3023,5 @@ if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             })
 
         }
-
-    </script>
-    <?php require('../../trailer.php'); ?>
+</script>
+<?php require('../../trailer.php'); ?>

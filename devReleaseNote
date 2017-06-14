@@ -42,3 +42,7 @@ Inventory V2.4 Stable Released
 Inventory V2.5 Stable Released
 	Change Inventory report layout
 	change slot to box
+Inventory V2.7 Stable Released
+	Implement Storage Identifier
+	Make Box Select Box autocomplete
+

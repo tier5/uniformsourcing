@@ -1,47 +1,53 @@
-<?php require('Application.php');
-require('../../header.php');
-$sql ='select * from "tbl_invLocation" WHERE "locationId"='.$_GET['locationId'];
-if(!($result=pg_query($connection,$sql))){
+<style>
+    .error {
+        border: solid 2px #FF0000;
+    }
+</style>
+<?php
+    require('Application.php');
+    require('../../header.php');
+    $sql ='select * from "tbl_invLocation" WHERE "locationId"='.$_GET['locationId'];
+    if(!($result=pg_query($connection,$sql))){
     $return_arr[0]['error'] = pg_last_error($connection);
     echo json_encode($return_arr);
     return;
 }
-$row = pg_fetch_array($result);
-$data_location[] = $row;
-$query = '';
-$query = "SELECT warehouse from \"locationDetails\"";
-$query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
-if (!($resultProduct = pg_query($connection, $query))) {
+    $row = pg_fetch_array($result);
+    $data_location[] = $row;
+    $query = '';
+    $query = "SELECT warehouse from \"locationDetails\"";
+    $query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
+    if (!($resultProduct = pg_query($connection, $query))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row = pg_fetch_array($resultProduct)) {
+    while ($row = pg_fetch_array($resultProduct)) {
     $data_warehouse[] = $row;
 }
-pg_free_result($result);
-pg_free_result($resultProduct);
-$query = '';
-$query = "SELECT container from \"locationDetails\"";
-$query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
-if (!($resultProduct = pg_query($connection, $query))) {
+    pg_free_result($result);
+    pg_free_result($resultProduct);
+    $query = '';
+    $query = "SELECT container from \"locationDetails\"";
+    $query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
+    if (!($resultProduct = pg_query($connection, $query))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row = pg_fetch_array($resultProduct)) {
+    while ($row = pg_fetch_array($resultProduct)) {
     $data_container[] = $row;
 }
-pg_free_result($resultProduct);
-$query = '';
-$query = "SELECT conveyor from \"locationDetails\"";
-$query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
-if (!($resultProduct = pg_query($connection, $query))) {
+    pg_free_result($resultProduct);
+    $query = '';
+    $query = "SELECT conveyor from \"locationDetails\"";
+    $query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
+    if (!($resultProduct = pg_query($connection, $query))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-while ($row = pg_fetch_array($resultProduct)) {
+    while ($row = pg_fetch_array($resultProduct)) {
     $conveyor[] = $row;
 }
-pg_free_result($resultProduct);
+    pg_free_result($resultProduct);
 ?>
     <table width="100%">
         <tr>
@@ -70,9 +76,27 @@ pg_free_result($resultProduct);
                         </table>
                         <br /><br/><br/>
                         <table width="50%">
-                            <tr><button onclick="addWarehouse()">Add Warehouse</button></tr>
-                            <tr><button onclick="addContainer()">Add Container</button></tr>
-                            <tr><button onclick="addConveyor()">Add Conveyor</button></tr>
+                            <tr><button id="addWarehouse">Add Warehouse</button></tr>
+                            <tr><button id="addContainer">Add Container</button></tr>
+                            <tr><button id="addconveyor">Add Conveyor</button></tr>
+                        </table>
+                        <br/><br/><br/>
+                        <table with="50%" style="font-size: 12px;">
+                            <tr id="warehouseIdentifier" style="display: none;">
+                                <td style="color: #0c00d2"><strong>Add Warehouse Identifier</strong></td>
+                                <td><input type="text" id="warehouse"></td>
+                                <td><button onclick="addWarehouse()">Add</button></td>
+                            </tr>
+                            <tr id="containerIdentifier" style="display: none;">
+                                <td style="color: #0c00d2"><strong>Add Container Identifier</strong></td>
+                                <td><input type="text" id="container"></td>
+                                <td><button onclick="addContainer()">Add</button></td>
+                            </tr>
+                            <tr id="conveyorIdentifier" style="display: none;">
+                                <td style="color: #0c00d2"><strong>Add Conveyor Identifier</strong></td>
+                                <td><input type="text" id="conveyor"></td>
+                                <td><button onclick="addConveyor()">Add</button></td>
+                            </tr>
                         </table>
                         <br/><br/><br/>
                         <table width="25%" border="1" style="float: left">
@@ -130,6 +154,21 @@ pg_free_result($resultProduct);
 <br/><br/>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript">
+        $('#addWarehouse').on('click',function () {
+            $('#warehouseIdentifier').show();
+            $('#containerIdentifier').hide();
+            $('#conveyorIdentifier').hide();
+        });
+        $('#addContainer').on('click',function () {
+            $('#warehouseIdentifier').hide();
+            $('#containerIdentifier').show();
+            $('#conveyorIdentifier').hide();
+        });
+        $('#addconveyor').on('click',function () {
+            $('#warehouseIdentifier').hide();
+            $('#containerIdentifier').hide();
+            $('#conveyorIdentifier').show();
+        });
         function addLocation() {
             var locationName = document.getElementById('location').value;
             if(locationName == '') {
@@ -164,59 +203,107 @@ pg_free_result($resultProduct);
                 }
             });
         };
+        $('#warehouse').keyup(function () {
+            $('#message').hide();
+            $('#warehouse').removeClass('error');
+        });
+        $('#container').keyup(function () {
+            $('#message').hide();
+            $('#container').removeClass('error');
+        })
+        ;$('#conveyor').keyup(function () {
+            $('#message').hide();
+            $('#conveyor').removeClass('error');
+        });
         function addWarehouse() {
+            var name = $('#warehouse').val();
+            if(name == ''){
+                $('#warehouse').addClass('error');
+                $('#message').html('<h2 style="color:red;">Please Enter Warehouse Identifier<h3>');
+                return false;
+            }
             $.ajax({
                 url: "addWarehouse.php",
                 type: "post",
                 data: {
                     id: document.getElementById('dataId').value,
+                    name: name
                 },
                 success: function (data) {
                     if(data==1){
                         $("#message").html("<div class='successMessage'><strong>Warehouse Added Successfully. Please Wait....</strong></div>");
+                        $('#message').show();
                         setTimeout(function(){
                             location.reload();
                         }, 2000);
+                    } else if(data == 2) {
+                        $('#message').html('<h1 style="color: red;">Storage Identifier is Already Exists</h1>')
+                        $('#message').show();
                     } else {
                         $("#message").html("<div class='errorMessage'><strong>Something wrong Please try again later</strong></div>");
+                        $('#message').show();
                     }
                 }
             });
         };
         function addContainer() {
+            var name = $('#container').val();
+            if(name == ''){
+                $('#container').addClass('error');
+                $('#message').html('<h2 style="color:red;">Please Enter Container Identifier<h3>');
+                return false;
+            }
             $.ajax({
                 url: "addContainer.php",
                 type: "post",
                 data: {
                     id: document.getElementById('dataId').value,
+                    name: name
                 },
                 success: function (data) {
                     if(data==1){
                         $("#message").html("<div class='successMessage'><strong>Container Added Successfully. Please Wait....</strong></div>");
+                        $('#message').show();
                         setTimeout(function(){
                               location.reload();
                         }, 2000);
+                    } else if(data == 2) {
+                        $('#message').html('<h1 style="color: red;">Storage Identifier is Already Exists</h1>')
+                        $('#message').show();
                     } else {
                         $("#message").html("<div class='errorMessage'><strong>Something wrong Please try again later</strong></div>");
+                        $('#message').show();
                     }
                 }
             });
         };
         function addConveyor() {
+            var name = $('#conveyor').val();
+            if(name == ''){
+                $('#conveyor').addClass('error');
+                $('#message').html('<h2 style="color: red">Please Enter Conveyor Identifier<h3>');
+                return false;
+            }
             $.ajax({
                 url: "addConveyor.php",
                 type: "post",
                 data: {
                     id: document.getElementById('dataId').value,
+                    name: name
                 },
                 success: function (data) {
                     if(data==1){
                         $("#message").html("<div class='successMessage'><strong>Conveyor Added Successfully. Please Wait....</strong></div>");
+                        $('#message').show();
                         setTimeout(function(){
                             location.reload();
                         }, 2000);
+                    } else if(data == 2) {
+                        $('#message').html('<h1 style="color: red;">Storage Identifier is Already Exists</h1>')
+                        $('#message').show();
                     } else {
                         $("#message").html("<div class='errorMessage'><strong>Something wrong Please try again later</strong></div>");
+                        $('#message').show();
                     }
                 }
             });
