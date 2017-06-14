@@ -303,14 +303,36 @@ $row = pg_fetch_array($resultClient);
 $data_client = $row;
 
 $exp = explode('_',$_GET['unitId']);
-$keyAllLoc = preg_replace('/\d/', '', $exp[1] );
+$sql = '';
+$sql = "SELECT \"locationId\" FROM \"tbl_invLocation\" WHERE identifier='".$exp[0]."'";
+if (!($result = pg_query($connection, $sql))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+$locId = pg_fetch_row($result);
+$sql = '';
+$sql = "SELECT * FROM \"locationDetails\" WHERE \"locationId\"='".$locId[0]."'";
+$sql .= " and ( warehouse='".$exp[1]."' OR container='".$exp[1]."' OR conveyor ='".$exp[1]."' )";
+if (!($result = pg_query($connection, $sql))) {
+    print("Failed invQuery: " . pg_last_error($connection));
+    exit;
+}
+$warehouses_all = pg_fetch_row($result);
+if($warehouses_all[4] != ''){
+    $typeBox = 'conveyor';
+} elseif ($warehouses_all[3] != ''){
+    $typeBox = 'container';
+} else {
+    $typeBox = 'warehouse';
+}
+/*$keyAllLoc = preg_replace('/\d/', '', $exp[1] );
 if($keyAllLoc == 'CV'){
    $typeBox = 'conveyor';
 } elseif ($keyAllLoc == 'C'){
     $typeBox = 'container';
 } else {
     $typeBox = 'warehouse';
-}
+}*/
 $query = 'select * from "tbl_invStorage" WHERE unit=' . "'" . $_GET['unitId'] . "'";
 
 if (!($resultProduct = pg_query($connection, $query))) {

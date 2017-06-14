@@ -1812,7 +1812,6 @@
                 $('#message_add').show();
                 return false;
             }
-            return false;
             var type = '';
             for(var i=0;i<arr.length;i++){
                 if(arr[i]['location'] == location){
