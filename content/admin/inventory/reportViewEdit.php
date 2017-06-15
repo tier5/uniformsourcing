@@ -197,7 +197,7 @@
         $data_opt2Size[] = $row2;
     }
     pg_free_result($result2);
-    $sql = 'select distinct unit from "tbl_invStorage" where "styleId"=' . $_GET['styleId'];
+    $sql = 'select distinct unit from "tbl_invStorage" where "styleId"=' . $_GET['styleId']." and merged = '0'";
     if ($_GET['colorId'] > 0) {
         $sql .= ' and "colorId"=' . $_GET['colorId'];
     } else if (count($data_color) > 0) {
@@ -767,6 +767,22 @@
             $location_details_id = $value['location_details_id'];
     }
 }
+    if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+        $sql = "select distinct unit from \"tbl_invStorage\" where \"styleId\"=" . $_GET['styleId']." and unit<>'".$_GET['unitId']."' and merged = '0'";
+        if ($_GET['colorId'] > 0) {
+            $sql .= ' and "colorId"=' . $_GET['colorId'];
+        } else if (count($data_color) > 0) {
+            $sql .= ' and "colorId"=' . $data_color[0]['colorId'];
+        }
+        $sql .= ' order by unit asc';
+        if (!($result_cnt9 = pg_query($connection, $sql))) {
+            print("Failed InvData: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row_cnt9 = pg_fetch_array($result_cnt9)) {
+            $mergeBox[] = $row_cnt9;
+        }
+    }
 ?>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/jquery-ui.min-1.8.2.js"></script>
 <script type="text/javascript" src="<?php echo $mydirectory; ?>/js/samplerequest.js"></script>
@@ -1426,7 +1442,8 @@
                                         Employee:<strong><?php echo $data_employee['firstname'] . ' ' . $data_employee['lastname']; ?></strong>
                                     </td>
                                     <td style="width: 35%">Date Entered:
-                                        <strong><?php echo ($latest != '0')?date("F j, Y, g:i a", $latest):''; ?></strong></td>
+                                        <strong><?php echo ($latest != '0')?date("F j, Y, g:i a", $latest):''; ?></strong>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td style="width: 30%">Garment Type:
@@ -1447,14 +1464,9 @@
                                     </td>
                                     <td style="width: 35%">Gender :<strong><?php echo(" " . $data_style['sex']); ?></strong></td>
                                 </tr>
-                                <?php
-                                /*                    echo '<pre>';
-                                                    print_r($arr_location);die();
-                                                    */?>
-
                                 <tr>
                                     <td style="width: 30%">Client: <strong><?php echo $data_client['client'] ?></strong></td>
-                                    <td colspan="2">Location:
+                                    <td style="width: 30%">Location:
                                         <strong>
                                             <?php
                                             if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0')
@@ -1462,6 +1474,26 @@
                                             else echo "All Location";
                                             ?>
                                         </strong>
+                                    </td>
+                                    <td>
+                                        <?php
+                                            if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
+                                                ?>
+                                                <button class="btn btn-warning" type="button" id="mergeBoxButton" onclick="mergrButton()" style="color: #6f4215"> Merge  </button>
+                                                <span id="margeBoxId" style="display: none; border: 1px solid red;">
+                                                    <label>Select A Box to Merge</label>
+                                                    <select name="mergebox" id="mergeBox" class="select-style">
+                                                        <option value="">Select a Box</option>
+                                                         <?php
+                                                            for ($i = 0; $i < count($mergeBox); $i++) {
+                                                                echo '<option value="' . $mergeBox[$i]['unit'] . '">' . $mergeBox[$i]['unit'] . '</option>';
+                                                            }
+                                                         ?>
+                                                    </select>
+                                                </span>
+                                            <?php
+                                            }
+                                        ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -1572,15 +1604,12 @@
                             <table width="100%" cellpadding="0" cellspacing="0" >
                                 <tr>
                                     <td>
-                            <span class="p-pic">
-                            <img id="imgView" src="<?php echo $upload_dir_image . trim($imageName); ?>" alt="thumbnail"
-                                 width="150" height="230" border="1" class="mouseover_left"/>
-                            </span>
+                                        <span class="p-pic">
+                                            <img id="imgView" src="<?php echo $upload_dir_image . trim($imageName); ?>" alt="thumbnail"
+                                                    width="150" height="230" border="1" class="mouseover_left"/>
+                                        </span>
                                     </td>
                                 </tr>
-
-
-
                             </table>
                         </td>
                     </tr>
@@ -1701,9 +1730,7 @@
                                                         $element .= '<input type="hidden" id="_' . $key1 . '_' . 0 . '" value="0" name="is_change[]">';
                                                         $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new[]" value="'.$data_invNew[$key1][0].'">';
                                                     }
-
                                                 }
-
                                                 $data .= $mainsize_div . $element . $mainsize_div_end;
                                                 $element = '';
                                             }
@@ -2299,7 +2326,7 @@
                 }
             });
             // $(location).attr('href', "updateInventory.php?styleId=" + document.getElementById('styleId').value + "&colorId=" + document.getElementById('colorId').value + "<?php if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '') echo '&unitId=' . $_REQUEST['unitId'];?>");
-        }
+        };
         function Delete() {
             if (confirm("Are you Sure you want to delete this unit") == true) {
                 $.ajax({
@@ -2324,7 +2351,11 @@
             } else {
                 console.log('cancel');
             }
-        }
+        };
+        function mergrButton(){
+            $('#mergeBoxButton').hide();
+            $('#margeBoxId').show();
+        };
 </script>
 <script type="text/javascript">
         var unique_id = 0;
@@ -2773,6 +2804,36 @@
             });
             $("#main_location").change(function () {
                 PostRequest();
+            });
+            $('#mergeBox').change(function (){
+                var styleId = document.getElementById('styleId').value;
+                var colorId = document.getElementById('colorId').value;
+                var unit = "<?php echo $_REQUEST['unitId'];?>";
+                var newUnit = $('#mergeBox').val();
+                if(newUnit != ''){
+                    if (confirm("Are you Sure you want to Merge \n\n\t"+unit+"\n\t\t to \n\t"+newUnit) == true) {
+                        $.ajax({
+                            url: "mergeInventory.php",
+                            type: "post",
+                            data: {
+                                styleId: styleId,
+                                colorId: colorId,
+                                unit: unit,
+                                newUnit: newUnit
+                            },
+                            success: function (response) {
+                                if (response == 1) {
+                                    alert("unit Merged SuccessFully");
+                                    window.location.replace("reportViewEdit.php?styleId=" + document.getElementById('styleId').value);
+                                } else {
+                                    alert('Internal server error please try again after some time \n'+response);
+                                }
+                            }
+                        });
+                    } else {
+                        console.log('cancel');
+                    }
+                }
             });
             function PostRequest() {
                 //alert('PostRequest');

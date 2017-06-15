@@ -242,3 +242,24 @@ table.table1 tr td{padding-bottom: 10px;}
 
 #print{border:1px solid #ccc; background: #fff; padding: 7px 16px; border-radius:5px; font-size: 14px;}
 
+.select-style {
+	border: 1px solid #ccc;
+	width: 120px;
+	border-radius: 3px;
+	overflow: hidden;
+	background: #fafafa url("images/select-botton.png") no-repeat 90% 50%;
+}
+
+.select-style select {
+	padding: 5px 8px;
+	width: 130%;
+	border: none;
+	box-shadow: none;
+	background: transparent;
+	background-image: none;
+	-webkit-appearance: none;
+}
+
+.select-style select:focus {
+	outline: none;
+}
