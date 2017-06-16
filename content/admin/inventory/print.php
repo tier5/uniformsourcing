@@ -25,7 +25,7 @@
     }
 
     .my-table th, .my-table td{
-        font-size: 15px;
+        font-size: 20px;
         color: #333;
         padding: 5px !important;
         width: 5%;
@@ -36,11 +36,12 @@
         color: #333;
         padding: 5px 10px;
     }
-   /* body {
-        text-align: center;
+
+    body {
+        font-size: 200%;
     }
 
-    .wrapper {
+   /* .wrapper {
         text-align: left;
         width: 800px;
         margin: 0 auto;
@@ -317,6 +318,9 @@ require('Application.php');
                                 <td style="width: 35%">Date Entered: <?php echo ($latest != '0')?date("F j, Y, g:i a", $latest):''; ?></td>
                             </tr>
                             <tr>
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
                                 <td style="width: 30%">Garment Type: <?php echo $data_garment["garmentName"]; ?></td>
                                 <td style="width: 35%">Color:
                                     <?php
@@ -335,8 +339,14 @@ require('Application.php');
                                 <td style="width: 35%">Gender :<?php echo (" ".$data_style['sex']); ?></td>
                             </tr>
                             <tr>
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
                                 <td>Client: <?php echo $data_client['client']; ?></td>
                                 <td colspan="2">Location: <?php echo $_GET['location']; ?></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">&nbsp;</td>
                             </tr>
                             <tr>
                                 <?php
@@ -372,6 +382,9 @@ require('Application.php');
 
                             </tr>
                             <tr>
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
                                 <td style="width: 30%"></td>
                                 <td style="width: 35%"></td>
                                 <td style="width: 35%"></td>
@@ -401,7 +414,7 @@ require('Application.php');
                                                 $element .= '<td class="text-left">'.$value1.'</td>';
                                                 foreach ($data_mainSizeIdHash as $key2 => $value2){;
                                                     if (isset($data_set[$key2][$key1])) {
-                                                        $element .= '<td>' . $data_set[$key2][$key1] . '</td>';
+                                                        $element .= '<td class="text-center">' . $data_set[$key2][$key1] . '</td>';
                                                     } else {
                                                         $element .= '<td>&nbsp;</td>';
                                                     }
@@ -411,9 +424,9 @@ require('Application.php');
                                         } else {
                                             $element .= '<tr>';
                                             $element .= '<td class="text-left">Qty</td>';
-                                            foreach ($data_mainSizeIdHash as $key2 => $value2){;
-                                                if (isset($data_set[0][$key2])) {
-                                                    $element .= '<td>' . $data_set[0][$key2] . '</td>';
+                                            foreach ($data_mainSizeIdHash as $key2 => $value2){
+                                                if (isset($data_set[$key2][0])) {
+                                                    $element .= '<td class="text-center">' . $data_set[$key2][0] . '</td>';
                                                 } else {
                                                     $element .= '<td>&nbsp;</td>';
                                                 }

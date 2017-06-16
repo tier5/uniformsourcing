@@ -8,45 +8,45 @@
     require('../../header.php');
     $sql ='select * from "tbl_invLocation" WHERE "locationId"='.$_GET['locationId'];
     if(!($result=pg_query($connection,$sql))){
-    $return_arr[0]['error'] = pg_last_error($connection);
-    echo json_encode($return_arr);
-    return;
-}
+        $return_arr[0]['error'] = pg_last_error($connection);
+        echo json_encode($return_arr);
+        return;
+    }
     $row = pg_fetch_array($result);
     $data_location[] = $row;
     $query = '';
     $query = "SELECT warehouse from \"locationDetails\"";
     $query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
     if (!($resultProduct = pg_query($connection, $query))) {
-    print("Failed invQuery: " . pg_last_error($connection));
-    exit;
-}
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
     while ($row = pg_fetch_array($resultProduct)) {
-    $data_warehouse[] = $row;
-}
+        $data_warehouse[] = $row;
+    }
     pg_free_result($result);
     pg_free_result($resultProduct);
     $query = '';
     $query = "SELECT container from \"locationDetails\"";
     $query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
     if (!($resultProduct = pg_query($connection, $query))) {
-    print("Failed invQuery: " . pg_last_error($connection));
-    exit;
-}
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
     while ($row = pg_fetch_array($resultProduct)) {
-    $data_container[] = $row;
-}
+        $data_container[] = $row;
+    }
     pg_free_result($resultProduct);
     $query = '';
     $query = "SELECT conveyor from \"locationDetails\"";
     $query .= "  where \"locationId\"='" . $_GET['locationId'] . "' ";
     if (!($resultProduct = pg_query($connection, $query))) {
-    print("Failed invQuery: " . pg_last_error($connection));
-    exit;
-}
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
     while ($row = pg_fetch_array($resultProduct)) {
-    $conveyor[] = $row;
-}
+        $conveyor[] = $row;
+    }
     pg_free_result($resultProduct);
 ?>
     <table width="100%">
@@ -106,7 +106,10 @@
                             if (count($data_warehouse) > 0) {
                                 for ($i=0;$i<count($data_warehouse);$i++){
                                     if($data_warehouse[$i]['warehouse'] != null) { ?>
-                                        <tr><td align="center"><?php echo $data_warehouse[$i]['warehouse']; ?></td></tr>
+                                        <tr>
+                                            <td align="center"><?php echo $data_warehouse[$i]['warehouse']; ?>
+                                            <button>Edit</button><button>Delete</button></td>
+                                        </tr>
                                     <?php  }
                                 }
                             } else {
@@ -122,7 +125,10 @@
                                 if (count($data_container) > 0) {
                                     for ($i=0;$i<count($data_container);$i++){
                                         if($data_container[$i]['container'] != null) { ?>
-                                            <tr><td align="center"><?php echo $data_container[$i]['container']; ?></td></tr>
+                                            <tr>
+                                                <td align="center"><?php echo $data_container[$i]['container']; ?>
+                                                <button>Edit</button><button>Delete</button></td>
+                                            </tr>
                                         <?php  }
                                     }
                                 }else {
@@ -138,7 +144,11 @@
                             if (count($conveyor) > 0) {
                                 for ($i=0;$i<count($conveyor);$i++){
                                     if($conveyor[$i]['conveyor'] != null) { ?>
-                                        <tr><td align="center"><?php echo $conveyor[$i]['conveyor']; ?></td></tr>
+                                        <tr>
+                                            <td align="center"><?php echo $conveyor[$i]['conveyor']; ?>
+                                            <button>Edit</button>
+                                            <button>Delete</button></td>
+                                        </tr>
                                     <?php  }
                                 }
                             } else {

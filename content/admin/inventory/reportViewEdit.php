@@ -1478,7 +1478,7 @@
                                     <td>
                                         <?php
                                             if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
-                                                if(count($mergeBox) > 1) {
+                                                if(count($mergeBox) > 0){
                                                     ?>
                                                     <button class="btn btn-warning" type="button" id="mergeBoxButton"
                                                             onclick="mergrButton()" style="color: #6f4215"> Merge
