@@ -9,37 +9,20 @@ if (!($resultProduct = pg_query($connection, $sql))) {
 while ($row = pg_fetch_array($resultProduct)) {
     $data_storage[] = $row;
 }
-$count =0;
 if(count($data_storage) > 0){
-    for($i=0;$i<count($data_storage);$i++){
-        $sql = '';
-        $sql = 'SELECT SUM(quantity) FROM "tbl_inventory" where "inventoryId"='.$data_storage[$i]['invId'];
-        if (!($resultProduct = pg_query($connection, $sql))) {
-            print("Failed invQuery: " . pg_last_error($connection));
-            exit;
-        }
-        $row = pg_fetch_row($resultProduct);
-        $count = $count + $row[0];
+    $count = 0;
+    foreach ($data_storage as $key => $val){
+        $count = $count+$val['wareHouseQty'];
     }
     if($count == 0){
         for ($i=0;$i<count($data_storage);$i++){
-            $sql = '';
-            $sql = 'DELETE FROM "tbl_inventory" WHERE "inventoryId"='.$data_storage[$i]['invId'].'RETURNING *';
-            if (!($resultProduct = pg_query($connection, $sql))) {
+            $query = 'DELETE FROM "tbl_invStorage" WHERE "storageId"='.$data_storage[$i]['storageId'];
+            if (!($resultProduct = pg_query($connection, $query))) {
                 print("Failed invQuery: " . pg_last_error($connection));
                 exit;
             }
             $row = pg_fetch_array($resultProduct);
-            $data_inv = $row;
-            if($data_inv){
-                $query = 'DELETE FROM "tbl_invStorage" WHERE "storageId"='.$data_storage[$i]['storageId'];
-                if (!($resultProduct = pg_query($connection, $query))) {
-                    print("Failed invQuery: " . pg_last_error($connection));
-                    exit;
-                }
-                $row = pg_fetch_array($resultProduct);
-                $data_str = $row;
-            }
+            $data_str = $row;
         }
         $sql = '';
         $sql = "INSERT INTO \"audit_logs\" (";

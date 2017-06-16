@@ -473,37 +473,37 @@
     $locHash = array_flip($locArr);
     $opt1SizeIdHash = array();
     foreach ($data_opt1Size as $key => $val) {
-    if (isset($val['opt1SizeId'])) {
-        $opt1SizeIdHash[(int)$val['opt1SizeId']] = $val['opt1Size'];
+        if (isset($val['opt1SizeId'])) {
+            $opt1SizeIdHash[(int)$val['opt1SizeId']] = $val['opt1Size'];
+        }
     }
-}
     $data_mainSizeIdHash = array();
     foreach ($data_mainSize as $key => $val){
-    if (isset($val['mainSizeId'])){
-        $data_mainSizeIdHash[(int)$val['mainSizeId']] = $val['scaleSize'];
+        if (isset($val['mainSizeId'])){
+            $data_mainSizeIdHash[(int)$val['mainSizeId']] = $val['scaleSize'];
+        }
     }
-}
     $data_set = array();
     $data_set_price = array();
     $d_i = 0;
     $d_j = 0;
     foreach ($data_inv as $key => $val) {
-    if (isset($locHash[$val['locationId']])
-        && isset($opt1SizeIdHash[$val['opt1ScaleId']])
-        && isset($data_mainSizeIdHash[$val['sizeScaleId']])
-    ) {
-        $data_set[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['quantity'];
-        $data_invNew[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['inventoryId'];
-        $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null;
-    }else if (isset($locHash[$val['locationId']])
-        && !isset($opt1SizeIdHash[$val['opt1ScaleId']])
-        && isset($data_mainSizeIdHash[$val['sizeScaleId']])
-    ) {
-        $data_set[$val['sizeScaleId']][0] = $val['quantity'];
-        $data_invNew[$val['sizeScaleId']][0] = $val['inventoryId'];
-        $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null;
+        if (isset($locHash[$val['locationId']])
+            && isset($opt1SizeIdHash[$val['opt1ScaleId']])
+            && isset($data_mainSizeIdHash[$val['sizeScaleId']])
+        ) {
+            $data_set[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['quantity'];
+            $data_invNew[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['inventoryId'];
+            $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null;
+        }else if (isset($locHash[$val['locationId']])
+            && !isset($opt1SizeIdHash[$val['opt1ScaleId']])
+            && isset($data_mainSizeIdHash[$val['sizeScaleId']])
+        ) {
+            $data_set[$val['sizeScaleId']][0] = $val['quantity'];
+            $data_invNew[$val['sizeScaleId']][0] = $val['inventoryId'];
+            $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null;
+        }
     }
-}
     $sql = '';
     $sql = 'select * from "tbl_garment" where "garmentID"=' . $data_style["garmentId"];
     if (!($result = pg_query($connection, $sql))) {
@@ -1478,20 +1478,24 @@
                                     <td>
                                         <?php
                                             if (isset($_REQUEST['unitId']) && $_REQUEST['unitId'] != '0') {
-                                                ?>
-                                                <button class="btn btn-warning" type="button" id="mergeBoxButton" onclick="mergrButton()" style="color: #6f4215"> Merge  </button>
-                                                <span id="margeBoxId" style="display: none; border: 1px solid red;">
+                                                if(count($mergeBox) > 1) {
+                                                    ?>
+                                                    <button class="btn btn-warning" type="button" id="mergeBoxButton"
+                                                            onclick="mergrButton()" style="color: #6f4215"> Merge
+                                                    </button>
+                                                    <span id="margeBoxId" style="display: none; border: 1px solid red;">
                                                     <label>Select A Box to Merge</label>
                                                     <select name="mergebox" id="mergeBox" class="select-style">
                                                         <option value="">Select a Box</option>
-                                                         <?php
-                                                            for ($i = 0; $i < count($mergeBox); $i++) {
-                                                                echo '<option value="' . $mergeBox[$i]['unit'] . '">' . $mergeBox[$i]['unit'] . '</option>';
-                                                            }
-                                                         ?>
+                                                        <?php
+                                                        for ($i = 0; $i < count($mergeBox); $i++) {
+                                                            echo '<option value="' . $mergeBox[$i]['unit'] . '">' . $mergeBox[$i]['unit'] . '</option>';
+                                                        }
+                                                        ?>
                                                     </select>
                                                 </span>
-                                            <?php
+                                                    <?php
+                                                }
                                             }
                                         ?>
                                     </td>
@@ -2360,23 +2364,11 @@
 <script type="text/javascript">
         var unique_id = 0;
         function print_content(stylId, loc, unitId) {
-            var data_ = "";
-            for (i = 0; ; i++) {
-                var data = $('#unique_' + i).val();
-                if (typeof(data) != "undefined" && data !== null) {
-                    if (i > 0) data_ += ",";
-                    data_ += data;
-                }
-                else {
-                    break;
-                }
-            }
             if (stylId == 'null' || unitId == 'null') {
                 alert('error');
             } else {
-                var clrId = $('#color option[selected="selected"]').attr('data-color');
-                //window.location.href = "https://www.w3schools.com";
-                window.location.replace("print.php" + '?styleId=' + stylId + '&colorId=' + clrId + '&unitId=' + unitId + '&location=' + loc + '&all_data=' + data_);
+                var clrId = $('#color option[selected="selected"]').val();
+                window.location.replace("print.php" + '?styleId=' + stylId + '&colorId=' + clrId + '&unit=' + unitId + '&location=' + loc );
             }
         };
         function AddRow(type, cellId, value) {
