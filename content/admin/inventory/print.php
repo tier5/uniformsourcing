@@ -413,7 +413,7 @@ require('Application.php');
                                                 $element .= '<tr>';
                                                 $element .= '<td class="text-left">'.$value1.'</td>';
                                                 foreach ($data_mainSizeIdHash as $key2 => $value2){;
-                                                    if (isset($data_set[$key2][$key1])) {
+                                                    if (isset($data_set[$key2][$key1]) && $data_set[$key2][$key1] >0) {
                                                         $element .= '<td class="text-center">' . $data_set[$key2][$key1] . '</td>';
                                                     } else {
                                                         $element .= '<td>&nbsp;</td>';
@@ -425,7 +425,7 @@ require('Application.php');
                                             $element .= '<tr>';
                                             $element .= '<td class="text-left">Qty</td>';
                                             foreach ($data_mainSizeIdHash as $key2 => $value2){
-                                                if (isset($data_set[$key2][0])) {
+                                                if (isset($data_set[$key2][0]) && $data_set[$key2][0] > 0) {
                                                     $element .= '<td class="text-center">' . $data_set[$key2][0] . '</td>';
                                                 } else {
                                                     $element .= '<td>&nbsp;</td>';
