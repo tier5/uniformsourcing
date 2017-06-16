@@ -108,7 +108,7 @@
                                     if($data_warehouse[$i]['warehouse'] != null) { ?>
                                         <tr>
                                             <td align="center"><?php echo $data_warehouse[$i]['warehouse']; ?>
-                                            <button>Edit</button><button>Delete</button></td>
+                                            <!--<button>Edit</button><button>Delete</button>--></td>
                                         </tr>
                                     <?php  }
                                 }
@@ -127,7 +127,7 @@
                                         if($data_container[$i]['container'] != null) { ?>
                                             <tr>
                                                 <td align="center"><?php echo $data_container[$i]['container']; ?>
-                                                <button>Edit</button><button>Delete</button></td>
+                                                <!--<button>Edit</button><button>Delete</button>--></td>
                                             </tr>
                                         <?php  }
                                     }
@@ -146,8 +146,8 @@
                                     if($conveyor[$i]['conveyor'] != null) { ?>
                                         <tr>
                                             <td align="center"><?php echo $conveyor[$i]['conveyor']; ?>
-                                            <button>Edit</button>
-                                            <button>Delete</button></td>
+                                            <!--<button>Edit</button>
+                                            <button>Delete</button>--></td>
                                         </tr>
                                     <?php  }
                                 }

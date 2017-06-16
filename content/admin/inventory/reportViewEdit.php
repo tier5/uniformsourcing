@@ -2803,7 +2803,7 @@
                 var unit = "<?php echo $_REQUEST['unitId'];?>";
                 var newUnit = $('#mergeBox').val();
                 if(newUnit != ''){
-                    if (confirm("Are you Sure you want to Merge \n\n\t"+unit+"\n\t\t to \n\t"+newUnit) == true) {
+                    if (confirm("Are you sure you want to Merge \n\n\t"+unit+"\n\t\t to \n\t"+newUnit) == true) {
                         $.ajax({
                             url: "mergeInventory.php",
                             type: "post",
@@ -2815,7 +2815,7 @@
                             },
                             success: function (response) {
                                 if (response == 1) {
-                                    alert("unit Merged SuccessFully");
+                                    alert("Unit Merged Successfull");
                                     window.location.replace("reportViewEdit.php?styleId=" + document.getElementById('styleId').value);
                                 } else {
                                     alert('Internal server error please try again after some time \n'+response);
