@@ -1031,6 +1031,43 @@ if($column_exists['exists'] === 'f')
 
 }
 
+$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_invStorage' and column_name='locationDetailsId')";
+
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+    $sql = 'ALTER TABLE "tbl_invStorage" ADD COLUMN 
+			"locationDetailsId" character varying(30)';
+    // var_dump($sql);
+    // exit();
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+        print_r('successfully added column locationDetailsId tbl_invStorage');
+        exit();
+    }
+    pg_free_result($result);
+
+}
+
 // CREATE TABLE "tbl_invLocation" (
 //     "locationId" bigint DEFAULT nextval(('tbl_invLocation_locationId_seq'::text)::regclass) NOT NULL,
 //     name character varying(200),

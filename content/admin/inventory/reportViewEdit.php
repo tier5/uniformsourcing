@@ -28,363 +28,361 @@
     require('Application.php');
     require('../../header.php');
     function locationDetails($locId,$connection){
-    $sql = 'SELECT * from "tbl_invLocation" WHERE "locationId"='.$locId;
-    if (!($result2 = pg_query($connection, $sql))) {
-        print("Failed OptionQuery: " . pg_last_error($connection));
-        exit;
+        $sql = 'SELECT * from "tbl_invLocation" WHERE "locationId"='.$locId;
+        if (!($result2 = pg_query($connection, $sql))) {
+            print("Failed OptionQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $row2 = pg_fetch_array($result2);
+        $data_locationFun = $row2;
+        $sql = '';
+        $sql = "SELECT * from \"locationDetails\" where \"warehouse\" is not null and  \"locationId\"='".$locId."'";
+        if (!($result2 = pg_query($connection, $sql))) {
+            print("Failed OptionQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row2 = pg_fetch_array($result2)) {
+            $data[] = $data_locationFun['identifier'].'_'.$row2['warehouse'];
+        }
+        $sql = '';
+        $sql = "SELECT * from \"locationDetails\" where \"container\" is not null and \"locationId\"='".$locId."'";
+        if (!($result2 = pg_query($connection, $sql))) {
+            print("Failed OptionQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row2 = pg_fetch_array($result2)) {
+            $data[] = $data_locationFun['identifier'].'_'.$row2['container'];
+        }
+        $sql = '';
+        $sql = "SELECT * from \"locationDetails\" where \"conveyor\" is not null and \"locationId\"='".$locId."'";
+        if (!($result2 = pg_query($connection, $sql))) {
+            print("Failed OptionQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row2 = pg_fetch_array($result2)) {
+            $data[] = $data_locationFun['identifier'].'_'.$row2['conveyor'];
+        }
+        return $data;
     }
-    $row2 = pg_fetch_array($result2);
-    $data_locationFun = $row2;
-    $sql = '';
-    $sql = "SELECT * from \"locationDetails\" where \"warehouse\" is not null and  \"locationId\"='".$locId."'";
-    if (!($result2 = pg_query($connection, $sql))) {
-        print("Failed OptionQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row2 = pg_fetch_array($result2)) {
-        $data[] = $data_locationFun['identifier'].'_'.$row2['warehouse'];
-    }
-
-    $sql = '';
-    $sql = "SELECT * from \"locationDetails\" where \"container\" is not null and \"locationId\"='".$locId."'";
-    if (!($result2 = pg_query($connection, $sql))) {
-        print("Failed OptionQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row2 = pg_fetch_array($result2)) {
-        $data[] = $data_locationFun['identifier'].'_'.$row2['container'];
-    }
-    $sql = '';
-    $sql = "SELECT * from \"locationDetails\" where \"conveyor\" is not null and \"locationId\"='".$locId."'";
-    if (!($result2 = pg_query($connection, $sql))) {
-        print("Failed OptionQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row2 = pg_fetch_array($result2)) {
-        $data[] = $data_locationFun['identifier'].'_'.$row2['conveyor'];
-    }
-    return $data;
-}
-    function logCheckOStyle($styleId,$connection)
-{
-    $sql = '';
-    $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . ' LIMIT 1';
-    if (!($resultoldinv = pg_query($connection, $sql))) {
-        print("Failed StyleQuery: " . pg_last_error($connection));
-        exit;
-    }
-    $rowoldinv = pg_fetch_row($resultoldinv);
-    $oldinv = $rowoldinv;
-    pg_free_result($resultoldinv);
-    echo $oldinv['2'];
-}
-    function logCheckNStyle($styleId,$connection)
-{
-    $sql = '';
-    $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . ' LIMIT 1';
-    if (!($resultoldinv = pg_query($connection, $sql))) {
-        print("Failed StyleQuery: " . pg_last_error($connection));
-        exit;
-    }
-    $rowoldinv = pg_fetch_row($resultoldinv);
-    $oldinv = $rowoldinv;
-    pg_free_result($resultoldinv);
-    echo $oldinv['3'];
-}
-    $loc_identity = 0;
-    if (isset($_GET["del"]) && $_GET["del"] == "true") {
-    $sql = 'select "inventoryId" from "tbl_inventory" as inv where inv."styleId"=' . $_GET['styleId'] . ' and inv."colorId"=' . $_GET['colorId'];
-    if (!($result2 = pg_query($connection, $sql))) {
-        print("Failed StyleQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row2 = pg_fetch_array($result2)) {
-        $sql = 'delete  from "tbl_invStorage"  where "invId"=' . $row2["inventoryId"];
-        //$sql .=';update "tbl_inventory" set quantity=0 where "inventoryId"='.$row2["inventoryId"];
-        $sql .= ';delete from "tbl_inventory" where "inventoryId"=' . $row2["inventoryId"];
-        //echo $sql;
-        if (!($result = pg_query($connection, $sql))) {
+    function logCheckOStyle($styleId,$connection){
+        $sql = '';
+        $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . ' LIMIT 1';
+        if (!($resultoldinv = pg_query($connection, $sql))) {
             print("Failed StyleQuery: " . pg_last_error($connection));
             exit;
         }
-        pg_free_result($result);
+        $rowoldinv = pg_fetch_row($resultoldinv);
+        $oldinv = $rowoldinv;
+        pg_free_result($resultoldinv);
+        echo $oldinv['2'];
     }
-    pg_free_result($result2);
-    unset($row2);
-    $sp = split("&del", $_SERVER['REQUEST_URI']); ?>
-    <script type="text/javascript">location.href = "<?php echo $sp[0];?>"</script>
-    <?php
-}
+    function logCheckNStyle($styleId,$connection){
+        $sql = '';
+        $sql = 'select * from "tbl_invScaleSize" where "sizeScaleId" =' . $styleId . ' LIMIT 1';
+        if (!($resultoldinv = pg_query($connection, $sql))) {
+            print("Failed StyleQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $rowoldinv = pg_fetch_row($resultoldinv);
+        $oldinv = $rowoldinv;
+        pg_free_result($resultoldinv);
+        echo $oldinv['3'];
+    }
+    $loc_identity = 0;
+    if (isset($_GET["del"]) && $_GET["del"] == "true") {
+        $sql = 'select "inventoryId" from "tbl_inventory" as inv where inv."styleId"=' . $_GET['styleId'] . ' and inv."colorId"=' . $_GET['colorId'];
+        if (!($result2 = pg_query($connection, $sql))) {
+            print("Failed StyleQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row2 = pg_fetch_array($result2)) {
+            $sql = 'delete  from "tbl_invStorage"  where "invId"=' . $row2["inventoryId"];
+            //$sql .=';update "tbl_inventory" set quantity=0 where "inventoryId"='.$row2["inventoryId"];
+            $sql .= ';delete from "tbl_inventory" where "inventoryId"=' . $row2["inventoryId"];
+            //echo $sql;
+            if (!($result = pg_query($connection, $sql))) {
+                print("Failed StyleQuery: " . pg_last_error($connection));
+                exit;
+            }
+            pg_free_result($result);
+        }
+        pg_free_result($result2);
+        unset($row2);
+        $sp = split("&del", $_SERVER['REQUEST_URI']); ?>
+        <script type="text/javascript">location.href = "<?php echo $sp[0];?>"</script>
+        <?php
+    }
     $search = "";
     if (isset($_GET['styleId'])) {
+        $styleId = $_GET['styleId'];
+        $search = "";
+        if (isset($_GET['colorId'])) {
+            $clrId = $_GET['colorId'];
+            $opt1Id = $_GET['opt1Id'];
+            $opt2Id = $_GET['opt2Id'];
+        } else {
+            $clrId = 0;
+            $opt1Id = 0;
+            $opt2Id = 0;
+        }
+        if ($clrId > 0) {
+            $search = " and inv.\"colorId\"=$clrId ";
+            if ($opt1Id > 0)
+                $search .= "and \"opt1ScaleId\"=$opt1Id ";
+            if ($opt2Id > 0)
+                $search .= "and \"opt2ScaleId\"=$opt2Id ";
+        }
 
-    $styleId = $_GET['styleId'];
-    $search = "";
-    if (isset($_GET['colorId'])) {
-        $clrId = $_GET['colorId'];
-        $opt1Id = $_GET['opt1Id'];
-        $opt2Id = $_GET['opt2Id'];
-    } else {
-        $clrId = 0;
-        $opt1Id = 0;
-        $opt2Id = 0;
+        if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
+            $search .= " and st.\"unit\"='" . $_GET['unitId'] . "'";
+        }
+        if(isset($_GET['location']) && $_GET['location'] != '0'){
+            $search .= " and sti.unit LIKE '".$_GET['location']."%'";
+        }
     }
-    if ($clrId > 0) {
-        $search = " and inv.\"colorId\"=$clrId ";
-        if ($opt1Id > 0)
-            $search .= "and \"opt1ScaleId\"=$opt1Id ";
-        if ($opt2Id > 0)
-            $search .= "and \"opt2ScaleId\"=$opt2Id ";
-    }
-
-    if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
-        $search .= " and st.\"unit\"='" . $_GET['unitId'] . "'";
-    }
-    if(isset($_GET['location']) && $_GET['location'] != '0'){
-        $search .= " and sti.unit LIKE '".$_GET['location']."%'";
-    }
-}
     $sql = 'select "styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds", "clientId" from "tbl_invStyle" where "styleId"=' . $styleId;
     if (!($result = pg_query($connection, $sql))) {
-    print("Failed StyleQuery: " . pg_last_error($connection));
-    exit;
-}
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit;
+    }
     $row = pg_fetch_array($result);
     $data_style = $row; //--------------------------- data style----------------
     pg_free_result($result);
     $query2 = 'Select * from "tbl_invColor" where "styleId"=' . $data_style['styleId'];
     if (!($result2 = pg_query($connection, $query2))) {
-    print("Failed OptionQuery: " . pg_last_error($connection));
-    exit;
-}
+        print("Failed OptionQuery: " . pg_last_error($connection));
+        exit;
+    }
     while ($row2 = pg_fetch_array($result2)) {
-    $data_color[] = $row2;
-}
+        $data_color[] = $row2;
+    }
     pg_free_result($result2);
     if ($data_style['scaleNameId'] != "") {
-    $query2 = 'Select * from "tbl_invScaleName" where "scaleId"=' . $data_style['scaleNameId'];
-    if (!($result = pg_query($connection, $query2))) {
-        print("Failed OptionQuery: " . pg_last_error($connection));
-        exit;
+        $query2 = 'Select * from "tbl_invScaleName" where "scaleId"=' . $data_style['scaleNameId'];
+        if (!($result = pg_query($connection, $query2))) {
+            print("Failed OptionQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $row = pg_fetch_array($result);
+        $data_optionName = $row;
+        pg_free_result($result);
+        $query2 = 'Select "sizeScaleId" as "mainSizeId", "scaleSize" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "scaleSize" IS NOT NULL  and "scaleSize" <>\'\'  order by "mainOrder","sizeScaleId"';
+        if (!($result2 = pg_query($connection, $query2))) {
+            print("Failed OptionQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row2 = pg_fetch_array($result2)) {
+            $data_mainSize[] = $row2;
+        }
+        pg_free_result($result2);
+        $query2 = 'Select "sizeScaleId" as "opt1SizeId", "opt1Size" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "opt1Size" IS NOT NULL  and "opt1Size" <>\'\' order by "opt1Order","sizeScaleId"';
+        if (!($result2 = pg_query($connection, $query2))) {
+            print("Failed OptionQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row2 = pg_fetch_array($result2)) {
+            $data_opt1Size[] = $row2;
+        }
+        pg_free_result($result2);
+        $query2 = 'Select "sizeScaleId" as "opt2SizeId", "opt2Size" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "opt2Size" IS NOT NULL and "opt2Size" <>\'\' order by "opt2Order","sizeScaleId"';
+        if (!($result2 = pg_query($connection, $query2))) {
+            print("Failed OptionQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row2 = pg_fetch_array($result2)) {
+            $data_opt2Size[] = $row2;
+        }
+        pg_free_result($result2);
+        $sql = 'select distinct unit from "tbl_invStorage" where "styleId"=' . $_GET['styleId']." and merged = '0'";
+        if ($_GET['colorId'] > 0) {
+            $sql .= ' and "colorId"=' . $_GET['colorId'];
+        } else if (count($data_color) > 0) {
+            $sql .= ' and "colorId"=' . $data_color[0]['colorId'];
+        }
+        if(isset($_GET['location']) && $_GET['location'] != '0'){
+            $sql .= " and unit LIKE '".$_GET['location']."%'";
+        }
+        $sql .= ' order by unit asc';
+        if (!($result_cnt9 = pg_query($connection, $sql))) {
+            print("Failed InvData: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row_cnt9 = pg_fetch_array($result_cnt9)) {
+            $data_storage[] = $row_cnt9;
+        }
+        pg_free_result($result_cnt9);
     }
-    $row = pg_fetch_array($result);
-    $data_optionName = $row;
-    pg_free_result($result);
-    $query2 = 'Select "sizeScaleId" as "mainSizeId", "scaleSize" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "scaleSize" IS NOT NULL  and "scaleSize" <>\'\'  order by "mainOrder","sizeScaleId"';
-    if (!($result2 = pg_query($connection, $query2))) {
-        print("Failed OptionQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row2 = pg_fetch_array($result2)) {
-        $data_mainSize[] = $row2;
-    }
-    pg_free_result($result2);
-    $query2 = 'Select "sizeScaleId" as "opt1SizeId", "opt1Size" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "opt1Size" IS NOT NULL  and "opt1Size" <>\'\' order by "opt1Order","sizeScaleId"';
-    if (!($result2 = pg_query($connection, $query2))) {
-        print("Failed OptionQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row2 = pg_fetch_array($result2)) {
-        $data_opt1Size[] = $row2;
-    }
-    pg_free_result($result2);
-    $query2 = 'Select "sizeScaleId" as "opt2SizeId", "opt2Size" from "tbl_invScaleSize" where "scaleId"=' . $data_style['scaleNameId'] . ' and "opt2Size" IS NOT NULL and "opt2Size" <>\'\' order by "opt2Order","sizeScaleId"';
-    if (!($result2 = pg_query($connection, $query2))) {
-        print("Failed OptionQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row2 = pg_fetch_array($result2)) {
-        $data_opt2Size[] = $row2;
-    }
-    pg_free_result($result2);
-    $sql = 'select distinct unit from "tbl_invStorage" where "styleId"=' . $_GET['styleId']." and merged = '0'";
-    if ($_GET['colorId'] > 0) {
-        $sql .= ' and "colorId"=' . $_GET['colorId'];
-    } else if (count($data_color) > 0) {
-        $sql .= ' and "colorId"=' . $data_color[0]['colorId'];
-    }
-    if(isset($_GET['location']) && $_GET['location'] != '0'){
-        $sql .= " and unit LIKE '".$_GET['location']."%'";
-    }
-    $sql .= ' order by unit asc';
-    if (!($result_cnt9 = pg_query($connection, $sql))) {
-        print("Failed InvData: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row_cnt9 = pg_fetch_array($result_cnt9)) {
-        $data_storage[] = $row_cnt9;
-    }
-    pg_free_result($result_cnt9);
-}
     $totalScale = count($data_mainSize);
     $tableWidth = 0;
     $tableWidth = $totalScale * 100;
     $sql = 'select "inventoryId",quantity,"newQty","isStorage","warehouse_id" from "tbl_inventory" where "styleId"=' . $_GET['styleId'];
     if (!($result = pg_query($connection, $sql))) {
-    print("Failed invQuery: " . pg_last_error($connection));
-    exit;
-}
-    while ($row = pg_fetch_array($result)) {
-    $data_inv[] = $row;
-}
-    for ($i = 0; $i < count($data_inv); $i++) {
-    if ($data_inv[$i]['newQty'] > 0) {
-        if (($data_inv[$i]['quantity'] != "" && $data_inv[$i]['quantity'] > 0)) {
-            $sql = 'update "tbl_inventory" set "isStorage"=1 ,"newQty"=0';
-            if (!($result = pg_query($connection, $sql))) {
-                print("Failed invUpdateQuery: " . pg_last_error($connection));
-                exit;
-            }
-        } else if (($data_inv[$i]['quantity'] == "" || $data_inv[$i]['quantity'] == 0)) {
-            $sql = 'Delete from "tbl_inventory" where "inventoryId"=' . $data_inv[$i]['inventoryId'];
-            if (!($result = pg_query($connection, $sql))) {
-                print("Failed deleteInvQuery: " . pg_last_error($connection));
-                exit;
-            }
-        }
-    }
-}
-    if (count($data_color) > 0) {
-    if ($search != "") {
-        $query = 'select inv."inventoryId", inv."sizeScaleId", inv.price, inv."locationId",inv."opt1ScaleId", inv."opt2ScaleId"';
-        if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
-            $query .= ',st."wareHouseQty" as st_quantity ';
-        }
-        if(isset($_GET['location']) && $_GET['location'] != '0'){
-            $query .= ',sti."wareHouseQty" as sti_quantity ';
-        }
-        $query .= ', inv."updatedBy",inv."updatedDate",inv.quantity, inv."newQty" from "tbl_inventory" as inv ';
-        if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
-            $query .= ' left join "tbl_invStorage" as st on st."invId"=inv."inventoryId" ';
-        }
-        if(isset($_GET['location']) && $_GET['location'] != '0'){
-            $query .=" left join \"tbl_invStorage\" as sti on sti.\"invId\"=inv.\"inventoryId\"";
-        }
-        $query .= ' where inv."styleId"=' . $data_style['styleId'] . ' and inv."isActive"=1 '.$search.' order by "inventoryId"';
-    } else {
-        $clrId = $data_color[0]['colorId'];
-        $query = 'select "updatedBy","updatedDate","inventoryId", "sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty" from "tbl_inventory" where "styleId"=' . $data_style['styleId'] . ' and "colorId"=' . $data_color[0]['colorId'] . '  and "isActive"=1 order by "inventoryId"';
-    }
-    if (!($result = pg_query($connection, $query))) {
         print("Failed invQuery: " . pg_last_error($connection));
         exit;
     }
     while ($row = pg_fetch_array($result)) {
         $data_inv[] = $row;
-        $data_inv_new[] = $row;
     }
-    pg_free_result($result);
-    if (count($data_inv) > 0) {
-        for ($l = 0; $l < count($data_inv); $l++) {
-            if (isset($data_inv[$l]['st_quantity']) && $data_inv[$l]['st_quantity'] != '') {
-                $data_inv[$l]['quantity'] = $data_inv[$l]['st_quantity'];
-            }
-            if (isset($data_inv[$l]['sti_quantity']) && $data_inv[$l]['sti_quantity'] != '') {
-                $data_inv[$l]['quantity'] = $data_inv[$l]['sti_quantity'];
+    for ($i = 0; $i < count($data_inv); $i++) {
+        if ($data_inv[$i]['newQty'] > 0) {
+            if (($data_inv[$i]['quantity'] != "" && $data_inv[$i]['quantity'] > 0)) {
+                $sql = 'update "tbl_inventory" set "isStorage"=1 ,"newQty"=0';
+                if (!($result = pg_query($connection, $sql))) {
+                    print("Failed invUpdateQuery: " . pg_last_error($connection));
+                    exit;
+                }
+            } else if (($data_inv[$i]['quantity'] == "" || $data_inv[$i]['quantity'] == 0)) {
+                $sql = 'Delete from "tbl_inventory" where "inventoryId"=' . $data_inv[$i]['inventoryId'];
+                if (!($result = pg_query($connection, $sql))) {
+                    print("Failed deleteInvQuery: " . pg_last_error($connection));
+                    exit;
+                }
             }
         }
     }
-    $sql = 'select distinct warehouse , "locationId" from "locationDetails" where warehouse != \'null\'';
-    $all_location_inv;
-    if (!($result = pg_query($connection, $sql))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
+    if (count($data_color) > 0) {
+        if ($search != "") {
+            $query = 'select inv."inventoryId", inv."sizeScaleId", inv.price, inv."locationId",inv."opt1ScaleId", inv."opt2ScaleId"';
+            if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
+                $query .= ',st."wareHouseQty" as st_quantity ';
+            }
+            if(isset($_GET['location']) && $_GET['location'] != '0'){
+                $query .= ',sti."wareHouseQty" as sti_quantity ';
+            }
+            $query .= ', inv."updatedBy",inv."updatedDate",inv.quantity, inv."newQty" from "tbl_inventory" as inv ';
+            if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
+                $query .= ' left join "tbl_invStorage" as st on st."invId"=inv."inventoryId" ';
+            }
+            if(isset($_GET['location']) && $_GET['location'] != '0'){
+                $query .=" left join \"tbl_invStorage\" as sti on sti.\"invId\"=inv.\"inventoryId\"";
+            }
+            $query .= ' where inv."styleId"=' . $data_style['styleId'] . ' and inv."isActive"=1 '.$search.' order by "inventoryId"';
+        } else {
+            $clrId = $data_color[0]['colorId'];
+            $query = 'select "updatedBy","updatedDate","inventoryId", "sizeScaleId", price, "locationId","opt1ScaleId", "opt2ScaleId", quantity, "newQty" from "tbl_inventory" where "styleId"=' . $data_style['styleId'] . ' and "colorId"=' . $data_color[0]['colorId'] . '  and "isActive"=1 order by "inventoryId"';
+        }
+        if (!($result = pg_query($connection, $query))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row = pg_fetch_array($result)) {
+            $data_inv[] = $row;
+            $data_inv_new[] = $row;
+        }
+        pg_free_result($result);
+        if (count($data_inv) > 0) {
+            for ($l = 0; $l < count($data_inv); $l++) {
+                if (isset($data_inv[$l]['st_quantity']) && $data_inv[$l]['st_quantity'] != '') {
+                    $data_inv[$l]['quantity'] = $data_inv[$l]['st_quantity'];
+                }
+                if (isset($data_inv[$l]['sti_quantity']) && $data_inv[$l]['sti_quantity'] != '') {
+                    $data_inv[$l]['quantity'] = $data_inv[$l]['sti_quantity'];
+                }
+            }
+        }
+        $sql = 'select distinct warehouse , "locationId" from "locationDetails" where warehouse != \'null\'';
+        $all_location_inv;
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row = pg_fetch_array($result)) {
+            $all_location_inv[] = $row;
+        }
+        $location_string = " ";
+        foreach ($all_location_inv as $key => $value) {
+            if ($location_string == " ")
+                $location_string .= $value['locationId'];
+            else
+                $location_string .= ',' . $value['locationId'];
+        }
+
+        $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
+        $warehouse_info;
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row = pg_fetch_array($result)) {
+            $warehouse_info[] = $row;
+        }
+        $sql = 'select distinct container , "locationId" from "locationDetails" where container != \'null\'';
+        $containers;
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row = pg_fetch_array($result)) {
+            $containers[] = $row;
+        }
+        $location_string = " ";
+        foreach ($containers as $key => $value) {
+            if ($location_string == " ")
+                $location_string .= $value['locationId'];
+            else
+                $location_string .= ',' . $value['locationId'];
+        }
+        $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
+        $containers_location;
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row = pg_fetch_array($result)) {
+            $containers_location[] = $row;
+        }
+        $sql = 'select distinct conveyor , "locationId" from "locationDetails" where conveyor != \'null\'';
+        $conveyors;
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row = pg_fetch_array($result)) {
+            $conveyors[] = $row;
+        }
+        $location_string = " ";
+        foreach ($conveyors as $key => $value) {
+            if ($location_string == " ")
+                $location_string .= $value['locationId'];
+            else
+                $location_string .= ',' . $value['locationId'];
+        }
+        $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
+        $conveyors_location;
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row = pg_fetch_array($result)) {
+            $conveyors_location[] = $row;
+        }
     }
-    while ($row = pg_fetch_array($result)) {
-        $all_location_inv[] = $row;
-    }
-    $location_string = " ";
-    foreach ($all_location_inv as $key => $value) {
-        if ($location_string == " ")
-            $location_string .= $value['locationId'];
-        else
-            $location_string .= ',' . $value['locationId'];
-    }
-    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
-    $warehouse_info;
-    if (!($result = pg_query($connection, $sql))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row = pg_fetch_array($result)) {
-        $warehouse_info[] = $row;
-    }
-    $sql = 'select distinct container , "locationId" from "locationDetails" where container != \'null\'';
-    $containers;
-    if (!($result = pg_query($connection, $sql))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row = pg_fetch_array($result)) {
-        $containers[] = $row;
-    }
-    $location_string = " ";
-    foreach ($containers as $key => $value) {
-        if ($location_string == " ")
-            $location_string .= $value['locationId'];
-        else
-            $location_string .= ',' . $value['locationId'];
-    }
-    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
-    $containers_location;
-    if (!($result = pg_query($connection, $sql))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row = pg_fetch_array($result)) {
-        $containers_location[] = $row;
-    }
-    $sql = 'select distinct conveyor , "locationId" from "locationDetails" where conveyor != \'null\'';
-    $conveyors;
-    if (!($result = pg_query($connection, $sql))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row = pg_fetch_array($result)) {
-        $conveyors[] = $row;
-    }
-    $location_string = " ";
-    foreach ($conveyors as $key => $value) {
-        if ($location_string == " ")
-            $location_string .= $value['locationId'];
-        else
-            $location_string .= ',' . $value['locationId'];
-    }
-    $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
-    $conveyors_location;
-    if (!($result = pg_query($connection, $sql))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
-    }
-    while ($row = pg_fetch_array($result)) {
-        $conveyors_location[] = $row;
-    }
-}
+
     $query = 'select * from "tbl_invLocation" order by "locationId"';
     if (!($result = pg_query($connection, $query))) {
-    print("Failed invQuery: " . pg_last_error($connection));
-    exit;
-}
+        print("Failed invQuery: " . pg_last_error($connection));
+        exit;
+    }
     while ($row = pg_fetch_array($result)) {
-    $data_loc[] = $row;
-}
+        $data_loc[] = $row;
+    }
     pg_free_result($result);
     $locArr = array();
     if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
-    $sql = 'select "locationId" from "tbl_invStorage" where unit = \'' . $_GET['unitId'] . '\' LIMIT 1';
-    if (!($result = pg_query($connection, $sql))) {
-        print("Failed invQuery: " . pg_last_error($connection));
-        exit;
+        $sql = 'select "locationId" from "tbl_invStorage" where unit = \'' . $_GET['unitId'] . '\' LIMIT 1';
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $row = pg_fetch_array($result);
+        $this_location[] = $row;
+        pg_free_result($row);
+        $locArr[0] = $this_location[0]['locationId'];
+    } else {
+        if ($data_style['locationIds'] != "") {
+            $locArr = explode(",", $data_style['locationIds']);
+        }
     }
-    $row = pg_fetch_array($result);
-    $this_location[] = $row;
-    pg_free_result($row);
-    $locArr[0] = $this_location[0]['locationId'];
-} else {
-    if ($data_style['locationIds'] != "") {
-        $locArr = explode(",", $data_style['locationIds']);
-    }
-}
     $sql = '';
     $sql = 'SELECT * FROM "tbl_invLocation" WHERE "locationId"=' . $locArr[0];
     if (!($resultClient = pg_query($connection, $sql))) {
