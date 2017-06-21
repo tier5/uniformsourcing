@@ -67,3 +67,5 @@ Location V1.0 Stable Released
 	Edit/Delete warehouse/containers/conveyors
 Inventory V2.9.6
 	Fix Update Delete issue
+Inventory V2.9.7
+	Fix Box Number error
