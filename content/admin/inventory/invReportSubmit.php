@@ -142,8 +142,8 @@ if (isset($_POST['type']) && $_POST['type'] == "e") {
                     $query .= " \"styleId\"='" . $data_style['styleId'] . "'";
                     $query .= " and \"styleNumber\"='" . $data_style['styleNumber'] . "'";
                     $query .= " and \"scaleId\"='" . $data_style['scaleNameId'] . "'";
-                    $query .= " and \"mainSize\"='" . $new_type_data[$key] . "'";
-                    $query .= " and \"rowSize\"='" . $new_size_data[$key] . "'";
+                    $query .= " and \"sizeScaleId\"='" .$new_type_data_id[$key] . "'";
+                    $query .= " and \"opt1ScaleId\"='" .$new_size_data_id[$key] . "'";
                     $query .= " and \"isStorage\"='1'";
 
                     if (isset($_POST['location_id']))
@@ -181,7 +181,7 @@ if (isset($_POST['type']) && $_POST['type'] == "e") {
                     $query .= ", \"locationId\" ";
                     $query .= ", \"quantity\" ";
                     $query .= ", \"newQty\" ";
-                    if ($mainSize) $query .= ", \"sizeScaleId\" ";
+                    if ($new_type_data_id[$key] != '' ) $query .= ", \"sizeScaleId\" ";
                     $query .= ", \"colorId\" ";
                     if ($opt1 != 0) $query .= ", \"opt1ScaleId\" ";
                     //if($k < count($data_opt2Size))$query .=", \"opt2ScaleId\" ";
@@ -203,7 +203,7 @@ if (isset($_POST['type']) && $_POST['type'] == "e") {
                     $query .= " ,'" . $_POST['location_id'] . "' ";
                     $query .= " ,0 ";
                     $query .= " ,'" . $new_qty_data[$key] . "' ";
-                    if ($mainSize) $query .= ", '" . $mainSize . "' ";
+                    if ($new_type_data_id[$key] != '') $query .= ", '" . $new_type_data_id[$key] . "' ";
                     $query .= ", '$colorId' ";
                     if ($opt1 != 0) $query .= ", '" . $opt1 . "' ";
                     //if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2SizeId']."' ";

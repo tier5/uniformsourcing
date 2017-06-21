@@ -1695,14 +1695,18 @@
                                                             $element .= '<input class="clicked"  id="input_' . $key1 . '_' . $key2 . '" type="text" value="' . $data_set[$key1][$key2] . '" name="new_qty_data[]"></span>';
                                                             $element .= '<p class="tooltext">'.$dataTooltip[$key1][$key2].'</p>';
                                                             $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                            $element .= '<input type="hidden" value="' . $key1 . '" name="new_type_data_id[]">';
                                                             $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
+                                                            $element .= '<input type="hidden" value="' . $key2 . '" name="new_size_data_id[]">';
                                                             $element .= '<input type="hidden" id="_' . $key1 . '_' . $key2 . '" value="0" name="is_change[]">';
                                                             $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new[]" value="'.$data_invNew[$key1][$key2].'">';
                                                         } else {
                                                             $element .= '<span><input class="clicked"  id="input_' . $key1 . '_' . $key2 . '" type="text" value="0" name="new_qty_data[]"></span>';
                                                             $element .= '<p class="tooltext">'.$dataTooltip[$key1][$key2].'</p>';
                                                             $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                            $element .= '<input type="hidden" value="' . $key1 . '" name="new_type_data_id[]">';
                                                             $element .= '<input type="hidden" value="' . $val2 . '" name="new_size_data[]">';
+                                                            $element .= '<input type="hidden" value="' . $key2 . '" name="new_size_data_id[]">';
                                                             $element .= '<input id="_' . $key1 . '_' . $key2 . '" type="hidden" value="0" name="is_change[]">';
                                                             $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new[]" value="0">';
                                                         }
@@ -1721,6 +1725,7 @@
                                                         $element .= '<input class="clicked" id="input_' . $key1 . '_' . 0 . '" type="text" value="' . $data_set[$key1][0] . '" name="new_qty_data[]"></span>';
                                                         $element .= '<p class="tooltext">'.$dataTooltip[$key1][0].'</p>';
                                                         $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                        $element .= '<input type="hidden" value="' . $key1 . '" name="new_type_data_id[]">';
                                                         $element .= '<input type="hidden" value="NULL" name="new_size_data[]">';
                                                         $element .= '<input type="hidden" id="_' . $key1 . '_' . 0 . '" value="0" name="is_change[]">';
                                                         $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new[]" value="'.$data_invNew[$key1][0].'">';
@@ -1728,6 +1733,7 @@
                                                         $element .= '<span><input class="clicked" id="input_' . $key1 . '_' . 0 . '" type="text" value="0" name="new_qty_data[]"></span>';
                                                         $element .= '<p class="tooltext">'.$dataTooltip[$key1][0].'</p>';
                                                         $element .= '<input type="hidden" value="' . $val1 . '" name="new_type_data[]">';
+                                                        $element .= '<input type="hidden" value="' . $key1 . '" name="new_type_data_id[]">';
                                                         $element .= '<input type="hidden" value="NULL" name="new_size_data[]">';
                                                         $element .= '<input type="hidden" id="_' . $key1 . '_' . 0 . '" value="0" name="is_change[]">';
                                                         $element .= '<input type="hidden" id="data_inv_new" name="data_inv_new[]" value="'.$data_invNew[$key1][0].'">';
