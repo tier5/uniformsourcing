@@ -125,7 +125,6 @@ if (isset($_POST['type']) && $_POST['type'] == "e") {
             $locArr = explode(",", $data_style['locationIds']);
         }
         /*$optNew = Opt1Size($data_opt1Size,$new_size_data[1]);*/
-        /*print_r($optNew);die();*/
         foreach ($new_qty_data as $key => $value){
             if($value < 0){
                 $return_arr[0]['name'] = "Negative value not accepted";

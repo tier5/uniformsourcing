@@ -12,7 +12,24 @@ while ($row = pg_fetch_array($resultProduct)) {
 if(count($data_storage) > 0){
     $count = 0;
     foreach ($data_storage as $key => $val){
-        $count = $count+$val['wareHouseQty'];
+        $sql = '';
+        $sql = "SELECT MAX(\"storageId\") FROM \"tbl_invStorage\" WHERE \"styleId\"='".$val['styleId']."' and \"colorId\"='".$val['colorId']."'";
+        if(isset($val['sizeScaleId'])){
+            $sql .= " and \"sizeScaleId\"='".$val['sizeScaleId']."'";
+        }
+        if(isset($val[''])){
+            $sql .= " and \"opt1ScaleId\"='".$val['opt1ScaleId']."'";
+        }
+        $sql .= " and unit='".$_POST['unitId']."'";
+        if (!($resultProduct = pg_query($connection, $sql))) {
+            print("Failed invQuery: " . pg_last_error($connection));
+            exit;
+        }
+        $row = pg_fetch_array($resultProduct);
+        $new_data = $row;
+        if($val['storageId'] == $new_data['max']){
+            $count = $count+$val['wareHouseQty'];
+        }
     }
     if($count == 0){
         for ($i=0;$i<count($data_storage);$i++){
