@@ -296,7 +296,7 @@
             else
                 $location_string .= ',' . $value['locationId'];
         }
-        if($location_string == " ") {
+        if($location_string != " ") {
             $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
             $warehouse_info;
             if (!($result = pg_query($connection, $sql))) {
@@ -323,7 +323,7 @@
             else
                 $location_string .= ',' . $value['locationId'];
         }
-        if($location_string == " ") {
+        if($location_string != " ") {
             $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
             $containers_location;
             if (!($result = pg_query($connection, $sql))) {
@@ -350,7 +350,7 @@
             else
                 $location_string .= ',' . $value['locationId'];
         }
-        if($location_string == " ") {
+        if($location_string != " ") {
             $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
             $conveyors_location;
             if (!($result = pg_query($connection, $sql))) {
