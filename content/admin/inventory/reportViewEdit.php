@@ -946,7 +946,9 @@
                                                                     foreach ($opt1SizeIdHash as $key21 => $val21) {
                                                                         $element1 .= '<span><input class="clicked_new" id="input_' . $key11 . '_' . $key21 . '" type="text" value="0" name="new_qty_data[]"></span>';
                                                                         $element1 .= '<input type="hidden" value="' . $val11 . '" name="new_type_data[]">';
+                                                                        $element1 .= '<input type="hidden" value="' . $key11 . '" name="new_type_key_data[]">';
                                                                         $element1 .= '<input type="hidden" value="' . $val21 . '" name="new_size_data[]">';
+                                                                        $element1 .= '<input type="hidden" value="' . $key21 . '" name="new_size_key_data[]">';
                                                                         if($count == 0){
                                                                             $element1 .= '<input id="h_' . $key11 . '_' . $key21 . '" type="hidden" value="1" name="is_change_new[]">';
                                                                         } else {
@@ -957,7 +959,9 @@
                                                                 } else {
                                                                     $element1 .= '<span><input class="clicked_new" id="input_' . $key11 . '_' . 0 . '" type="text" value="0" name="new_qty_data[]"></span>';
                                                                     $element1 .= '<input type="hidden" value="' . $val11 . '" name="new_type_data[]">';
+                                                                    $element1 .= '<input type="hidden" value="' . $key11 . '" name="new_type_key_data[]">';
                                                                     $element1 .= '<input type="hidden" value="NULL" name="new_size_data[]">';
+                                                                    $element1 .= '<input type="hidden" value="NULL" name="new_size_key_data[]">';
                                                                     $element1 .= '<input id="h_' . $key11 . '_' . 0 . '" type="hidden" value="1" name="is_change_new[]">';
                                                                 }
 

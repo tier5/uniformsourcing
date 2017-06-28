@@ -156,9 +156,9 @@ if(count($id) > 0){
             $query .=", \"locationId\" ";
             $query .=", \"newQty\" ";
             $query .=", \"quantity\" ";
-            if($mainSize)$query .=", \"sizeScaleId\" ";
+            if($new_type_key_data[$key])$query .=", \"sizeScaleId\" ";
             $query .=", \"colorId\" ";
-            if($opt1) $query .=", \"opt1ScaleId\" ";
+            if($new_size_key_data[$key]) $query .=", \"opt1ScaleId\" ";
             //if($k < count($data_opt2Size))$query .=", \"opt2ScaleId\" ";
             $query .=", \"notes\" ";
             $query .=", \"mainSize\" ";
@@ -178,9 +178,9 @@ if(count($id) > 0){
             $query .=" ,'".$rowLoc[0]."' ";
             $query .=" ,0 ";
             $query .=" ,'".$new_qty_data[$key]."' ";
-            if($mainSize) $query .=", '".$mainSize."' ";
+            if($new_type_key_data[$key]) $query .=", '".$new_type_key_data[$key]."' ";
             $query .=", '$colorId' ";
-            if($opt1) $query .=", '".$opt1."' ";
+            if($new_size_key_data[$key]) $query .=", '".$new_size_key_data[$key]."' ";
             //if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2SizeId']."' ";
             $query .=" ,'$notes' ";
             $query .=", '".$new_type_data[$key]."' ";
@@ -213,8 +213,8 @@ if(count($id) > 0){
             $query .= " ,\"styleId\" ";
             $query .= " ,\"colorId\" ";
             $query .= " ,\"locationId\" ";
-            if($mainSize)$query .=", \"sizeScaleId\" ";
-            if($opt1) $query .=", \"opt1ScaleId\" ";
+            if($new_type_key_data[$key])$query .=", \"sizeScaleId\" ";
+            if($new_size_key_data[$key]) $query .=", \"opt1ScaleId\" ";
             if ($room != "") $query .= " ,\"room\" ";
             if ($_POST['row'] != "") $query .= " ,\"row\" ";
             if ($rack != "") $query .= " ,\"rack\" ";
@@ -232,8 +232,8 @@ if(count($id) > 0){
             $query .= " ,'" . $styleId . "' ";
             $query .= " ,'" . $colorId . "' ";
             $query .= " ,'" . $rowLoc[0] . "' ";
-            if($mainSize) $query .=", '".$mainSize."' ";
-            if($opt1) $query .=", '".$opt1."' ";
+            if($new_type_key_data[$key]) $query .=", '".$new_type_key_data[$key]."' ";
+            if($new_size_key_data[$key]) $query .=", '".$new_size_key_data[$key]."' ";
             if ($room != "") $query .= " ,'" . $room . "' ";
             if ($_POST['row'] != "") $query .= " ,'" . $_POST['row'] . "' ";
             if ($rack != "") $query .= " ,'" . $rack . "' ";
