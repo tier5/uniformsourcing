@@ -296,15 +296,16 @@
             else
                 $location_string .= ',' . $value['locationId'];
         }
-
-        $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
-        $warehouse_info;
-        if (!($result = pg_query($connection, $sql))) {
-            print("Failed invQuery: " . pg_last_error($connection));
-            exit;
-        }
-        while ($row = pg_fetch_array($result)) {
-            $warehouse_info[] = $row;
+        if($location_string == " ") {
+            $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
+            $warehouse_info;
+            if (!($result = pg_query($connection, $sql))) {
+                print("Failed invQuery: " . pg_last_error($connection));
+                exit;
+            }
+            while ($row = pg_fetch_array($result)) {
+                $warehouse_info[] = $row;
+            }
         }
         $sql = 'select distinct container , "locationId" from "locationDetails" where container != \'null\'';
         $containers;
@@ -322,14 +323,16 @@
             else
                 $location_string .= ',' . $value['locationId'];
         }
-        $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
-        $containers_location;
-        if (!($result = pg_query($connection, $sql))) {
-            print("Failed invQuery: " . pg_last_error($connection));
-            exit;
-        }
-        while ($row = pg_fetch_array($result)) {
-            $containers_location[] = $row;
+        if($location_string == " ") {
+            $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
+            $containers_location;
+            if (!($result = pg_query($connection, $sql))) {
+                print("Failed invQuery: " . pg_last_error($connection));
+                exit;
+            }
+            while ($row = pg_fetch_array($result)) {
+                $containers_location[] = $row;
+            }
         }
         $sql = 'select distinct conveyor , "locationId" from "locationDetails" where conveyor != \'null\'';
         $conveyors;
@@ -347,14 +350,16 @@
             else
                 $location_string .= ',' . $value['locationId'];
         }
-        $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
-        $conveyors_location;
-        if (!($result = pg_query($connection, $sql))) {
-            print("Failed invQuery: " . pg_last_error($connection));
-            exit;
-        }
-        while ($row = pg_fetch_array($result)) {
-            $conveyors_location[] = $row;
+        if($location_string == " ") {
+            $sql = 'select name,"locationId" from "tbl_invLocation" where "locationId" in (' . $location_string . ') order by "locationId"';
+            $conveyors_location;
+            if (!($result = pg_query($connection, $sql))) {
+                print("Failed invQuery: " . pg_last_error($connection));
+                exit;
+            }
+            while ($row = pg_fetch_array($result)) {
+                $conveyors_location[] = $row;
+            }
         }
     }
 
