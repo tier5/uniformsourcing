@@ -47,13 +47,23 @@ if($storageData != ''){
                 print("Failed invQuery: " . pg_last_error($connection));
                 exit;
             }
+            
             pg_free_result($resultoldinv);
-
+            
+            $sql = '';
+            $sql = "SELECT \"invId\" FROM \"tbl_invStorage\" WHERE \"styleId\"='".$styleId."' LIMIT 1";
+            if (!($invno = pg_query($connection, $sql))) {
+                print("Failed invQuery: " . pg_last_error($connection));
+                exit;
+            }
+            $inventory_id = pg_fetch_array($invno);
+            pg_free_result($invno);
+            
             $sql1 = '';
             $sql1 = "INSERT INTO \"audit_logs\" (";
             $sql1 .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
             $sql1 .= " \"log\") VALUES (";
-            $sql1 .= " '" . $styleId . "' ";
+            $sql1 .= " '" . $inventory_id['invId'] . "' ";
             $sql1 .= ", '". $_SESSION['employeeID'] ."'";
             $sql1 .= ", '". date('U') ."'";
             $sql1 .= ", 'Change box Identifier from: ".$unit." to: ".$finalLocationIdentifier."'";

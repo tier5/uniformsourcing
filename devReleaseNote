@@ -83,3 +83,5 @@ Bulk Location V1.2 Stable Released
 	Fix bug for group by command
 Bulk location V1.3 Stable Releases
 	Remove Pagination
+Bulk location V1.4 Stable Releases
+	Fixed style no issue in audit log
