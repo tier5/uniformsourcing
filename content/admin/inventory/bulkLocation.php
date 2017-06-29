@@ -9,7 +9,7 @@ if(!($result_cnt=pg_query($connection,$sql))){
     exit;
 }
 $items= pg_num_rows($result_cnt);
-$limit = 20;
+$limit = $items;
 /*if(isset($_GET['limit']) && $_GET['limit'] != ''){
     $limit = $_GET['limit'];
 }*/
