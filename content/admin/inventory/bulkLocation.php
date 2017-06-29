@@ -3,13 +3,13 @@
     require('../../header.php');
     include('../../pagination.class.php');
 $sql = '';
-$sql='select DISTINCT storage.unit,storage."storageId", st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" left join "tbl_invStorage" as storage on storage."styleId"=st."styleId" where st."isActive"=1 and storage.merged=\'0\' and storage."styleId"='.$_GET['styleId'].' and storage.unit is not null ORDER BY storage."storageId"';
+$sql='select DISTINCT storage.unit, st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" left join "tbl_invStorage" as storage on storage."styleId"=st."styleId" where st."isActive"=1 and storage.merged=\'0\' and storage."styleId"='.$_GET['styleId'].' and storage.unit is not null';
 if(!($result_cnt=pg_query($connection,$sql))){
     print("Failed query1: " . pg_last_error($connection));
     exit;
 }
 $items= pg_num_rows($result_cnt);
-$limit = 15;
+$limit = 20;
 /*if(isset($_GET['limit']) && $_GET['limit'] != ''){
     $limit = $_GET['limit'];
 }*/

@@ -79,3 +79,5 @@ Bulk Location V1.0 Stable Released
 Bulk Location V1.1 Stable Released
 	Add Audit Log for bulk update location
 	Make Pagination in bulk update location
+Bulk Location V1.2 Stable Released 
+	Fix bug for group by command
