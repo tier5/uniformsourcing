@@ -48,6 +48,20 @@ if($storageData != ''){
                 exit;
             }
             pg_free_result($resultoldinv);
+
+            $sql1 = '';
+            $sql1 = "INSERT INTO \"audit_logs\" (";
+            $sql1 .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+            $sql1 .= " \"log\") VALUES (";
+            $sql1 .= " '" . $styleId . "' ";
+            $sql1 .= ", '". $_SESSION['employeeID'] ."'";
+            $sql1 .= ", '". date('U') ."'";
+            $sql1 .= ", 'Change box Identifier from: ".$unit." to: ".$finalLocationIdentifier."'";
+            $sql1 .= ")";
+            if(!($audit = pg_query($connection,$sql1))){
+                $return_arr['error'] = pg_last_error($connection);
+            }
+            pg_free_result($audit);
         }
         echo 1;
         return;

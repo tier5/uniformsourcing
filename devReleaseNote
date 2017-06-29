@@ -76,3 +76,6 @@ Inventory V3.0 Stable Released
 Bulk Location V1.0 Stable Released
 	Add Bulk Location Update
 
+Bulk Location V1.1 Stable Released
+	Add Audit Log for bulk update location
+	Make Pagination in bulk update location

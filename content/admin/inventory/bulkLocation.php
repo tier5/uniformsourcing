@@ -1,14 +1,49 @@
 <?php
     require('Application.php');
     require('../../header.php');
+    include('../../pagination.class.php');
 $sql = '';
-$sql='select DISTINCT storage.unit, st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" left join "tbl_invStorage" as storage on storage."styleId"=st."styleId" where st."isActive"=1 and storage.merged=\'0\' and storage."styleId"='.$_GET['styleId'].' and storage.unit is not null';
+$sql='select DISTINCT storage.unit,storage."storageId", st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" left join "tbl_invStorage" as storage on storage."styleId"=st."styleId" where st."isActive"=1 and storage.merged=\'0\' and storage."styleId"='.$_GET['styleId'].' and storage.unit is not null ORDER BY storage."storageId"';
 if(!($result_cnt=pg_query($connection,$sql))){
     print("Failed query1: " . pg_last_error($connection));
     exit;
 }
-while($row_cnt = pg_fetch_array($result_cnt)) {
-    $data[]=$row_cnt;
+$items= pg_num_rows($result_cnt);
+$limit = 15;
+/*if(isset($_GET['limit']) && $_GET['limit'] != ''){
+    $limit = $_GET['limit'];
+}*/
+if($items > 0) {
+    $p = new pagination;
+    $p->items($items);
+    $p->limit($limit); // Limit entries per page
+    //$uri=strstr($_SERVER['REQUEST_URI'], '&paging', true);
+    //die($_SERVER['REQUEST_URI']);
+    $uri= substr($_SERVER['REQUEST_URI'], 0,strpos($_SERVER['REQUEST_URI'], '&paging'));
+    if(!$uri) {
+        $uri=$_SERVER['REQUEST_URI'];
+    }
+    $p->target($uri);
+    $p->currentPage($_GET[$p->paging]); // Gets and validates the current page
+    $p->calculate(); // Calculates what to show
+    $p->parameterName('paging');
+    $p->adjacents(1); //No. of page away from the current page
+
+    if(!isset($_GET['paging'])) {
+        $p->page = 1;
+    } else {
+        $p->page = $_GET['paging'];
+    }
+    //Query for limit paging
+    $limit = "LIMIT " . $p->limit." OFFSET ".($p->page - 1) * $p->limit;
+}
+$sql = $sql. " ". $limit;
+if(!($result=pg_query($connection,$sql))){
+    print("Failed queryd: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result)){
+    $data[]=$row;
 }
 pg_free_result($result_cnt);
 $sql = '';
@@ -117,7 +152,23 @@ pg_free_result($locationQuery);
                                     <td><?php echo $value['garmentName'] ?></td>
                                 </tr>
                                 <?php
-                            }
+                            } ?>
+                            <tr>
+                                <td colspan="6">
+                                    <?php echo $p->show(); ?>
+                                </td>
+                                <!--<td colspan="2">
+                                   <strong>Limit Per Page</strong>
+                                    <select id="limit">
+                                        <option value="10">10</option>
+                                        <option value="20" <?php /*echo (isset($_GET['limit']) && $_GET['limit'] == 20)?'selected':''; */?>>20</option>
+                                        <option value="50" <?php /*echo (isset($_GET['limit']) && $_GET['limit'] == 50)?'selected':''; */?>>50</option>
+                                        <option value="100" <?php /*echo (isset($_GET['limit']) && $_GET['limit'] == 100)?'selected':''; */?>>100</option>
+                                        <option value="<?php /*echo $items; */?>" <?php /*echo (isset($_GET['limit']) && $_GET['limit'] == $items)?'selected':''; */?>>All</option>
+                                    </select>
+                                </td>-->
+                            </tr>
+                            <?php
                         }else{
                             ?>
                             <tr>
@@ -281,8 +332,23 @@ pg_free_result($locationQuery);
                     }
                 });
             });
+            $('#limit').change(function () {
+                var limit = $(this).val();
+                var url = '<?php echo $_SERVER['REQUEST_URI']; ?>';
+                //var newUrl = replaceUrlParam(url,'paging',1);
+                var finalUrl = replaceUrlParam(url,'limit',limit);
+                window.location.replace(finalUrl);
+            });
         });
-
+        /*function replaceUrlParam(url, paramName, paramValue){
+            if(paramValue == null)
+                paramValue = '';
+            var pattern = new RegExp('\\b('+paramName+'=).*?(&|$)')
+            if(url.search(pattern)>=0){
+                return url.replace(pattern,'$1' + paramValue + '$2');
+            }
+            return url + (url.indexOf('?')>0 ? '&' : '?') + paramName + '=' + paramValue;
+        };*/
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
     <script>
