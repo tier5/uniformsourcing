@@ -141,7 +141,7 @@ pg_free_result($locationQuery);
                     <tr>
                         <th><input id="select_all" type="checkbox"></th>
                         <th>Location</th>
-                        <th>Identifier</th>
+                        <th>Storage Identifier</th>
                         <th>Box</th>
                         <th>Style Number</th>
                         <th>Gender</th>
