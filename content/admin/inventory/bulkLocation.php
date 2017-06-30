@@ -2,50 +2,57 @@
     require('Application.php');
     require('../../header.php');
     include('../../pagination.class.php');
-$sql = '';
-$sql='select DISTINCT storage.unit, st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" left join "tbl_invStorage" as storage on storage."styleId"=st."styleId" where st."isActive"=1 and storage.merged=\'0\' and storage."styleId"='.$_GET['styleId'].' and storage.unit is not null';
-if(!($result_cnt=pg_query($connection,$sql))){
-    print("Failed query1: " . pg_last_error($connection));
-    exit;
-}
-$items= pg_num_rows($result_cnt);
-$limit = $items;
-/*if(isset($_GET['limit']) && $_GET['limit'] != ''){
-    $limit = $_GET['limit'];
-}*/
-if($items > 0) {
-    $p = new pagination;
-    $p->items($items);
-    $p->limit($limit); // Limit entries per page
-    //$uri=strstr($_SERVER['REQUEST_URI'], '&paging', true);
-    //die($_SERVER['REQUEST_URI']);
-    $uri= substr($_SERVER['REQUEST_URI'], 0,strpos($_SERVER['REQUEST_URI'], '&paging'));
-    if(!$uri) {
-        $uri=$_SERVER['REQUEST_URI'];
-    }
-    $p->target($uri);
-    $p->currentPage($_GET[$p->paging]); // Gets and validates the current page
-    $p->calculate(); // Calculates what to show
-    $p->parameterName('paging');
-    $p->adjacents(1); //No. of page away from the current page
-
-    if(!isset($_GET['paging'])) {
-        $p->page = 1;
-    } else {
-        $p->page = $_GET['paging'];
-    }
-    //Query for limit paging
-    $limit = "LIMIT " . $p->limit." OFFSET ".($p->page - 1) * $p->limit;
-}
-$sql = $sql. " ". $limit;
-if(!($result=pg_query($connection,$sql))){
+$query = '';
+$query = 'select min(storage."storageId") "storageId" from "tbl_invStorage" storage where storage."styleId" = '.$_GET['styleId'].' and storage.merged = \'0\' and storage.unit is not null group by storage.unit order by "storageId"';
+if(!($result=pg_query($connection,$query))){
     print("Failed queryd: " . pg_last_error($connection));
     exit;
 }
 while($row = pg_fetch_array($result)){
     $data[]=$row;
 }
-pg_free_result($result_cnt);
+pg_free_result($result);
+$boxList = [];
+foreach ($data as $key => $value){
+    $sql = '';
+    $sql = 'SELECT * FROM "tbl_invStorage" WHERE "storageId"='.$value['storageId'];
+    if(!($result=pg_query($connection,$sql))){
+        print("Failed queryd: " . pg_last_error($connection));
+        exit;
+    }
+    $resultStorage = pg_fetch_array($result);
+    pg_free_result($result);
+    $boxList[$key]['unit'] = $resultStorage['unit'];
+    $sql = '';
+    $sql = 'SELECT * FROM "tbl_invLocation" WHERE "locationId"='.$resultStorage['locationId'];
+    if(!($result=pg_query($connection,$sql))){
+        print("Failed queryd: " . pg_last_error($connection));
+        exit;
+    }
+    $resultLocation = pg_fetch_array($result);
+    pg_free_result($result);
+    $boxList[$key]['location'] = $resultLocation['name'];
+    $boxList[$key]['locationIdentifier'] = $resultLocation['identifier'];
+    $boxDetails = explode('_',$resultStorage['unit']);
+    if(count($boxDetails) > 1){
+        $boxList[$key]['box'] = $boxDetails[2];
+        $boxList[$key]['storageIdentifier'] = $boxDetails[1];
+    } else {
+        $boxList[$key]['box'] = $boxDetails[0];
+        $boxList[$key]['storageIdentifier'] = null;
+    }
+    $sql = '';
+    $sql = 'SELECT st.*,g.* FROM "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" WHERE st."styleId"='.$resultStorage['styleId'];
+    if(!($result=pg_query($connection,$sql))){
+        print("Failed queryd: " . pg_last_error($connection));
+        exit;
+    }
+    $resultStyle = pg_fetch_array($result);
+    pg_free_result($result);
+    $boxList[$key]['garmentName'] = $resultStyle['garmentName'];
+    $boxList[$key]['sex'] = $resultStyle['sex'];
+    $boxList[$key]['styleName'] = $resultStyle['styleNumber'];
+}
 $sql = '';
 $sql = 'SELECT * From "tbl_invLocation"';
 if(!($locationQuery=pg_query($connection,$sql))){
@@ -133,42 +140,28 @@ pg_free_result($locationQuery);
                 <table width="50%" border="0" cellspacing="1" cellpadding="1">
                     <tr>
                         <th><input id="select_all" type="checkbox"></th>
+                        <th>Location</th>
+                        <th>Identifier</th>
                         <th>Box</th>
                         <th>Style Number</th>
-                        <th>Size Scale</th>
                         <th>Gender</th>
                         <th>Garment</th>
                     </tr>
                     <?php
-                        if(count($data) > 0) {
-                            foreach ($data as $key => $value) {
+                        if(count($boxList) > 0) {
+                            foreach ($boxList as $key => $value) {
                                 ?>
                                 <tr>
                                     <td><input type="checkbox" class="checkbox" value="<?php echo $value['unit'] ?>" name="checkboxlist"></td>
-                                    <td><?php echo $value['unit'] ?></td>
-                                    <td><?php echo $value['styleNumber'] ?></td>
-                                    <td><?php echo $value['scaleName'] ?></td>
+                                    <td><?php echo $value['location'] ?></td>
+                                    <td><?php echo $value['storageIdentifier'] ?></td>
+                                    <td><?php echo $value['box'] ?></td>
+                                    <td><?php echo $value['styleName'] ?></td>
                                     <td><?php echo $value['sex'] ?></td>
                                     <td><?php echo $value['garmentName'] ?></td>
                                 </tr>
                                 <?php
-                            } ?>
-                            <tr>
-                                <td colspan="6">
-                                    <?php echo $p->show(); ?>
-                                </td>
-                                <!--<td colspan="2">
-                                   <strong>Limit Per Page</strong>
-                                    <select id="limit">
-                                        <option value="10">10</option>
-                                        <option value="20" <?php /*echo (isset($_GET['limit']) && $_GET['limit'] == 20)?'selected':''; */?>>20</option>
-                                        <option value="50" <?php /*echo (isset($_GET['limit']) && $_GET['limit'] == 50)?'selected':''; */?>>50</option>
-                                        <option value="100" <?php /*echo (isset($_GET['limit']) && $_GET['limit'] == 100)?'selected':''; */?>>100</option>
-                                        <option value="<?php /*echo $items; */?>" <?php /*echo (isset($_GET['limit']) && $_GET['limit'] == $items)?'selected':''; */?>>All</option>
-                                    </select>
-                                </td>-->
-                            </tr>
-                            <?php
+                            } 
                         }else{
                             ?>
                             <tr>
