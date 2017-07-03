@@ -90,3 +90,6 @@ Bulk location V1.5 Stable Releases
 	short box on id
 Bulk location V1.6 Stable Releases
 	chane identifier name	
+Bulk location V1.7 Stable Releases
+	Fix Bulk Update issue for content error
+	Fix Purchase Order issue

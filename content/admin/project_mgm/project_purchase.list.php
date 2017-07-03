@@ -335,7 +335,7 @@ if($_SESSION['search_uri']!="")
 {		
 	$_SESSION['page_type'] = $type;
 }
-$sql='select Distinct(prj.projectname),ship.carrier_id,track_nos.tracking_no, prj.is_billed, prj.bill_date, prch.createddate,note.*,prch.createdDate as date,c.client,prj.pid,prj.order_placeon,prj.status,emp.firstname,emp.lastname ,prch.purchaseorder,prch.pt_invoice,tbl_carriers.weblink,
+$sql='select Distinct(prj.projectname),ship.carrier_id,track_nos.tracking_no, prj.is_billed, prj.bill_date, prj.updateddate, prch.createddate,note.*,prch.createdDate as date,c.client,prj.pid,prj.order_placeon,prj.status,emp.firstname,emp.lastname,prch.purchaseorder,prch.pt_invoice,tbl_carriers.weblink,
 prc.prjquote,prch.purchaseduedate,prc.prjcost,ship.tracking_number ,prc.prj_completioncost ,pro.prdtntrgtdelvry from tbl_newproject as prj inner join tbl_prjpurchase as prch on
  prch.pid = prj.pid ';
  if($emp_join == "") 
@@ -346,7 +346,6 @@ prc.prjquote,prch.purchaseduedate,prc.prjcost,ship.tracking_number ,prc.prj_comp
  /*.' left join tbl_prjorder_track_no as track_nos on track_nos.shipping_id=(select ship.shipping_id from tbl_prjorder_shipping '
 .' where shipping_id=ship.shipping_id and track_nos.track_id=(select max(track_id) from tbl_prjorder_track_no where shipping_id=ship.shipping_id)) '*/
 .' left join "clientDB" c on prj.client=c."ID" left join tbl_mgt_notes note on note.notesid=( select notesid from tbl_mgt_notes where  pid=prj.pid order by notesid desc limit 1) left join tbl_prmilestone as pro on pro.pid = prj.pid  left join "employeeDB" as emp on emp."employeeID"= prj.project_manager ' .$emp_join.' where prj.status =1'.$search_sql.$emp_sql.' and prch.purchaseorder <> \'\' '.$search_sql.' order by prch.createddate desc ';
-//echo $sql;
 if(!($resultp=pg_query($connection,$sql))){
 	print("Failed queryd: " . pg_last_error($connection));
 	exit;
@@ -382,6 +381,7 @@ if(!($resultp=pg_query($connection,$sql))){
 while($rowd = pg_fetch_array($resultp)){
 	$datalist[]=$rowd;
 }
+
 echo '<script type="text/javascript" src="'.$mydirectory.'/js/tablesort.js"></script>';
 ?>	
 	<center><blockquote><font face="arial">
@@ -589,8 +589,8 @@ if(count($datalist))
     }
     echo '<td class="grid001B">'.$datalist[$i]['prdtntrgtdelvry'].'</td>';
 	echo '<td class="grid001B">';
-	if($datalist[$i]['createdDate']!="")
-	echo date('m/d/Y',$datalist[$i]['createdDate']);
+	if($datalist[$i]['updateddate']!="")
+	echo date('m/d/Y',$datalist[$i]['updateddate']);
 	echo '</td>';
 		if($is_session !=1)
 		{

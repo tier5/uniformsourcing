@@ -136,9 +136,6 @@
         if (isset($_GET['unitId']) && $_GET['unitId'] != '0') {
             $search .= " and st.\"unit\"='" . $_GET['unitId'] . "'";
         }
-        if(isset($_GET['location']) && $_GET['location'] != '0'){
-            $search .= " and sti.unit LIKE '".$_GET['location']."%'";
-        }
     }
     $sql = 'select "styleId","sex","garmentId","barcode", "styleNumber", "scaleNameId", price, "locationIds", "clientId" from "tbl_invStyle" where "styleId"=' . $styleId;
     if (!($result = pg_query($connection, $sql))) {
@@ -491,15 +488,13 @@
     $d_i = 0;
     $d_j = 0;
     foreach ($data_inv as $key => $val) {
-        if (isset($locHash[$val['locationId']])
-            && isset($opt1SizeIdHash[$val['opt1ScaleId']])
+        if (isset($opt1SizeIdHash[$val['opt1ScaleId']])
             && isset($data_mainSizeIdHash[$val['sizeScaleId']])
         ) {
             $data_set[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['quantity'];
             $data_invNew[$val['sizeScaleId']][$val['opt1ScaleId']] = $val['inventoryId'];
             $data_set_price[$val['sizeScaleId']] = isset($val['price']) ? $val['price'] : null;
-        }else if (isset($locHash[$val['locationId']])
-            && !isset($opt1SizeIdHash[$val['opt1ScaleId']])
+        }else if (!isset($opt1SizeIdHash[$val['opt1ScaleId']])
             && isset($data_mainSizeIdHash[$val['sizeScaleId']])
         ) {
             $data_set[$val['sizeScaleId']][0] = $val['quantity'];
