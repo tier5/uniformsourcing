@@ -669,6 +669,10 @@ if(count($datalist))
 			<a href="reportViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">
 			<img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0">
 			</a>
+
+            <a href="newInventory/inventoryViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">
+			<img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0">
+			</a>
 		</td>
 <?php 
 		echo '<td class="grid001"><a href="styleAdd.php?ID='.$datalist[$i]['styleId'].'&type=e"><img src="'.$mydirectory.'/images/styleedit.png" border="0"></a></td>';

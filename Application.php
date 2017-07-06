@@ -1075,4 +1075,10 @@ if($column_exists['exists'] === 'f')
 //     identifier character varying(10)
 // );
 
+function dd($item)
+{
+    echo '<pre>';
+    print_r($item);
+    die();
+}
 ?>
