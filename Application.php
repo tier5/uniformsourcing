@@ -1067,6 +1067,93 @@ if($column_exists['exists'] === 'f')
     pg_free_result($result);
 
 }
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_invUnit')";
+
+$tbl_invUnit;
+
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $tbl_invUnit=$row;
+}
+pg_free_result($row);
+if($tbl_invUnit['exists'] === 'f')
+{
+    $sql = 'CREATE TABLE public."tbl_invUnit"('.
+			      ' id SERIAL PRIMARY KEY, '.
+                 ' "styleId" INT references "tbl_invStyle"("styleId"),'.
+                 ' "colorId" INT references "tbl_invColor"("colorId"),'.
+                 ' row varchar(50),rack varchar(50),shelf varchar(50),'.
+                 ' "storageId" INT references "locationDetails"(id),'.
+                 ' box varchar(100) unique ,'.
+                    'type varchar(50)'.
+			' ) WITH ( OIDS=FALSE );'.
+			' ALTER TABLE public."tbl_invUnit" OWNER TO globaluniformuser';
+    if(!($result=pg_query($connection,$sql)))
+    {
+
+        print_r('Application.php -- error in insert tbl_invUnit');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+        //print('successfully built the table
+    }
+
+    pg_free_result($result);
+
+}
+
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_invQuantity')";
+
+$tbl_invQty;
+
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $tbl_invQty=$row;
+}
+pg_free_result($row);
+if($tbl_invQty['exists'] === 'f')
+{
+    $sql = 'CREATE TABLE public."tbl_invQuantity"
+			(
+			      id SERIAL PRIMARY KEY, 
+                 "boxId" int references "tbl_invUnit"(id),
+                 "mainSizeId" bigint,
+                 "optSizeId" bigInt,
+                 "qty" bigint
+			)
+			WITH (
+			  OIDS=FALSE
+			);
+			ALTER TABLE public."tbl_invQuantity"
+			  OWNER TO globaluniformuser';
+    if(!($result=pg_query($connection,$sql)))
+    {
+
+        print_r('Application.php -- error in insert tbl_invQuentity');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+        //print('successfully built the table
+    }
+
+    pg_free_result($result);
+
+}
+
 
 // CREATE TABLE "tbl_invLocation" (
 //     "locationId" bigint DEFAULT nextval(('tbl_invLocation_locationId_seq'::text)::regclass) NOT NULL,
