@@ -1090,6 +1090,10 @@ if($tbl_invUnit['exists'] === 'f')
                  ' row varchar(50),rack varchar(50),shelf varchar(50),'.
                  ' "storageId" INT references "locationDetails"(id),'.
                  ' box varchar(100) unique ,'.
+                  ' "createdBy" bigint references "employeeDB"("employeeID"), '.
+                    ' "createdAt" timestamp, '.
+                    ' "updatedBy" bigint references "employeeDB"("employeeID"), '.
+                    ' "updatedAt" timestamp, '.
                     'type varchar(50)'.
 			' ) WITH ( OIDS=FALSE );'.
 			' ALTER TABLE public."tbl_invUnit" OWNER TO globaluniformuser';

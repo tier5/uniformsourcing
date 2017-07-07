@@ -23,11 +23,13 @@ if(!$oldUnit){
     if($type == 'warehouse'){
         $sql .= " row, rack, shelf, ";
     }
+    $sql .= " \"createdAt\",\"createdBy\",\"updatedAt\",\"updatedBy\",";
     $sql .= " \"storageId\",box ) VALUES ( ";
     $sql .= "'".$styleId."','".$colorId."','".$type."',";
     if($type == 'warehouse'){
         $sql .= " '".$row."','".$rack."','".$shelf."',";
     }
+    $sql .= "'".date('Y-m-d G:i:s')."','".$_SESSION['employeeID']."','".date('Y-m-d G:i:s')."','".$_SESSION['employeeID']."', ";
     $sql .= "'".$locationId."','".$box."'";
     $sql .= ") RETURNING *";
     if(!($result=pg_query($connection,$sql))){
@@ -40,6 +42,16 @@ if(!$oldUnit){
     }
     $unit = pg_fetch_array($result);
     pg_free_result($result);
+    foreach ($qty as $q){
+        if($q < 0){
+            echo json_encode([
+                'message' => 'Negative values not allowed',
+                'success' => false,
+                'code' => 400
+            ]);
+            return;
+        }
+    }
     foreach ($is_change_new as $key => $change){
         if($change == '1'){
             $sql = "";
@@ -60,6 +72,7 @@ if(!$oldUnit){
     echo json_encode([
         'message' => 'Box Successfully Added',
         'success' => true,
+        'data' => $unit,
         'code' => 200
     ]);
     return;

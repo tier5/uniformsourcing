@@ -1,12 +1,12 @@
 <?php
 require('Application.php');
 require('../../../header.php');
-if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
+if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) {
     //Select all data for Style
     $sql = '';
-    $sql = "SELECT * FROM \"tbl_invStyle\" WHERE \"styleId\" = '".$_GET['styleId']."'";
-    if (!($resultStyle = pg_query($connection,$sql))){
-        echo '<h1> Failed style Query: </h1><h2>'. pg_last_error($connection).'</h2>';
+    $sql = "SELECT * FROM \"tbl_invStyle\" WHERE \"styleId\" = '" . $_GET['styleId'] . "'";
+    if (!($resultStyle = pg_query($connection, $sql))) {
+        echo '<h1> Failed style Query: </h1><h2>' . pg_last_error($connection) . '</h2>';
         exit;
     }
     $dataStyle = pg_fetch_array($resultStyle);
@@ -15,7 +15,7 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
     $query = '';
     $query = 'Select * from "tbl_invColor" where "styleId"=' . $dataStyle['styleId'];
     if (!($resultColor = pg_query($connection, $query))) {
-        print("<h1>Failed Color Query: </h1><h2>" . pg_last_error($connection)).'</h2>';
+        print("<h1>Failed Color Query: </h1><h2>" . pg_last_error($connection)) . '</h2>';
         exit;
     }
     while ($row = pg_fetch_array($resultColor)) {
@@ -24,18 +24,18 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
     pg_free_result($resultColor);
     //Fetch All Information for the style
     $sql = '';
-    $sql = 'SELECT style.*,garment.*,client.* FROM "tbl_invStyle" style '.
-        ' LEFT JOIN "tbl_garment" garment on garment."garmentID" = style."garmentId" '.
-        ' LEFT JOIN "clientDB" client on client."ID" = style."clientId" '.
-        ' WHERE style."styleId"='.$_GET['styleId'];
-    if (!($resultInfo = pg_query($connection,$sql))){
-        echo '<h1> Failed Info Query: </h1><h2>'. pg_last_error($connection).'</h2>';
+    $sql = 'SELECT style.*,garment.*,client.* FROM "tbl_invStyle" style ' .
+        ' LEFT JOIN "tbl_garment" garment on garment."garmentID" = style."garmentId" ' .
+        ' LEFT JOIN "clientDB" client on client."ID" = style."clientId" ' .
+        ' WHERE style."styleId"=' . $_GET['styleId'];
+    if (!($resultInfo = pg_query($connection, $sql))) {
+        echo '<h1> Failed Info Query: </h1><h2>' . pg_last_error($connection) . '</h2>';
         exit;
     }
     $dataInfo = pg_fetch_array($resultInfo);
     pg_free_result($resultInfo);
     //Fetch Size Scale Data
-    if($dataStyle['scaleNameId'] != ''){
+    if ($dataStyle['scaleNameId'] != '') {
         //Fetch Main size
         $query2 = 'Select "sizeScaleId" as "mainSizeId", "scaleSize" from "tbl_invScaleSize" where "scaleId"=' . $dataStyle['scaleNameId'] . ' and "scaleSize" IS NOT NULL  and "scaleSize" <>\'\'  order by "mainOrder","sizeScaleId"';
         if (!($result2 = pg_query($connection, $query2))) {
@@ -63,8 +63,8 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
             }
         }
         $dataMainSizeId = array();
-        foreach ($dataMainSize as $key => $val){
-            if (isset($val['mainSizeId'])){
+        foreach ($dataMainSize as $key => $val) {
+            if (isset($val['mainSizeId'])) {
                 $dataMainSizeId[(int)$val['mainSizeId']] = $val['scaleSize'];
             }
         }
@@ -74,8 +74,8 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
     }
     //Fetch All Location
     $sql = '';
-    $sql = 'SELECT details.*,location.* FROM "locationDetails" details '.
-        'INNER JOIN "tbl_invLocation" location on location."locationId" = CAST(details."locationId" as INT)'.
+    $sql = 'SELECT details.*,location.* FROM "locationDetails" details ' .
+        'INNER JOIN "tbl_invLocation" location on location."locationId" = CAST(details."locationId" as INT)' .
         ' ORDER BY details."locationId" DESC';
     if (!($result = pg_query($connection, $sql))) {
         print("Failed location fetch Query: " . pg_last_error($connection));
@@ -87,15 +87,15 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
     pg_free_result($result);
     //Create actual array from the all storage
     $allLocation = [];
-    if(count($allStorage) > 0){
-        foreach ($allStorage as $key=>$value){
+    if (count($allStorage) > 0) {
+        foreach ($allStorage as $key => $value) {
             $allLocation[$key]['storageId'] = $value['id'];
             $allLocation[$key]['locationId'] = $value['locationId'];
             $allLocation[$key]['locationIdentifier'] = $value['identifier'];
-            if($value['warehouse'] != ''){
+            if ($value['warehouse'] != '') {
                 $allLocation[$key]['storage'] = $value['warehouse'];
                 $allLocation[$key]['type'] = 'warehouse';
-            } elseif ($value['container'] != ''){
+            } elseif ($value['container'] != '') {
                 $allLocation[$key]['storage'] = $value['container'];
                 $allLocation[$key]['type'] = 'container';
             } else {
@@ -104,11 +104,16 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
             }
         }
     }
+    //Fetch all information for the unit
     $sql = '';
-    $sql = 'SELECT unit.*,details.*,location.* FROM "tbl_invUnit" unit'.
-        ' INNER JOIN "locationDetails" details on details.id= unit."storageId" '.
-        ' INNER JOIN "tbl_invLocation" location on location."locationId"= CAST(details."locationId" as bigint)'.
-        ' where "styleId"='.$_GET['styleId'];
+    $sql = 'SELECT unit.*,details.*,location.* FROM "tbl_invUnit" unit' .
+        ' INNER JOIN "locationDetails" details on details.id= unit."storageId" ' .
+        ' INNER JOIN "tbl_invLocation" location on location."locationId"= CAST(details."locationId" as bigint)' .
+        ' where unit."styleId"=' . $_GET['styleId'];
+    if (isset($_GET['colorId']) && $_GET['colorId'] != 0) {
+        $sql .= ' and unit."colorId"=' . $_GET['colorId'];
+    }
+    $sql .= ' ORDER BY unit.id';
     if (!($result = pg_query($connection, $sql))) {
         print("Failed location fetch Query: " . pg_last_error($connection));
         exit;
@@ -117,36 +122,165 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
         $allUnit[] = $row2;
     }
     pg_free_result($result);
-   dd($allUnit);
+    //Fetch Latest updated records for a Style
+    $sql = '';
+    $sql = 'SELECT * FROM "tbl_invUnit" WHERE "styleId"=' . $_GET['styleId'] . ' order by "updatedAt" desc limit 1';
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed location fetch Query: " . pg_last_error($connection));
+        exit;
+    }
+    $emp = pg_fetch_array($result);
+    pg_free_result($result);
+    //Get Location for a Unit
+    if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+        $sql = '';
+        $sql = 'SELECT * FROM "tbl_invUnit" unit' .
+            ' LEFT JOIN "locationDetails" details on details.id = unit."storageId"' .
+            ' LEFT JOIN "tbl_invLocation" location on location."locationId" = CAST(details."locationId" as bigint)' .
+            ' WHERE unit.id=' . $_GET['boxId'];
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed location fetch Query: " . pg_last_error($connection));
+            exit;
+        }
+        $location = pg_fetch_array($result);
+        pg_free_result($result);
+        $locationName = $location['name'];
+        $storageType = $location['type'];
+        $boxName = $location['identifier'].'_'.$location[$storageType].'_'.$location['box'];
+        $rowName = $location['row'];
+        $rackName = $locationName['rack'];
+        $shelfName = $locationName['shelf'];
+    } else {
+        $locationName = 'All Location';
+        $boxName = 'All Box';
+        $storageType = 'allBox';
+        $rowName = 'All Row';
+        $rackName = 'All Rack';
+        $shelfName = 'All Shelf';
+    }
+    //Get all Quantity For A unit
+    $sql = '';
+    $sql = 'SELECT unit.*,quantity.* FROM "tbl_invUnit" unit ';
+    $sql .= ' LEFT JOIN "tbl_invQuantity" quantity on unit.id = quantity."boxId" ';
+    $sql .= ' WHERE unit."styleId"=' . $_GET['styleId'];
+    if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+        $sql .= ' and unit.id=' . $_GET['boxId'];
+    }
+    if (isset($_GET['colorId']) && $_GET['colorId'] != 0) {
+        $sql .= ' and unit."colorId"=' . $_GET['colorId'];
+    }
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed location fetch Query: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row2 = pg_fetch_array($result)) {
+        $data[] = $row2;
+    }
+    pg_free_result($result);
+    $dataQuantity = [];
+    foreach ($data as $key => $value) {
+        $total = 0;
+        if(isset($dataQuantity[$value['mainSizeId']][$value['optSizeId']])){
+            $total = $dataQuantity[$value['mainSizeId']][$value['optSizeId']] + $value['qty'];
+            $dataQuantity[$value['mainSizeId']][$value['optSizeId']] = $total;
+        } else {
+            $dataQuantity[$value['mainSizeId']][$value['optSizeId']] = $value['qty'];
+        }
+    }
 } else {
     echo '<h1>Please select a Style to view the Report</h1>';
     exit();
 }
 ?>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<style>
+    .inputQty {
+        background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+        border: medium none;
+        display: block;
+        padding: 0;
+        text-align: center;
+        width: 100%;
+    }
+</style>
 <div class="container">
     <div class="page-header">
-        <h1 class="text-center">Report View / Edit (<small> <?php echo $dataStyle['styleNumber'] ?></small>)</h1>
+        <h1 class="text-center">Report View / Edit (
+            <small> <?php echo $dataStyle['styleNumber'] ?></small>
+            )
+        </h1>
     </div>
     <div class="container">
         <div class="row">
             <div class="col-md-4 pull-left">
                 <div class="form-group">
-                    <label for="color" class="col-md-2 control-label"> Color:    </label>
+                    <label for="color" class="col-md-2 control-label"> Color: </label>
                     <div class="col-md-10">
                         <select class="form-control" name="color" id="color">
                             <?php
-                            foreach ($dataColor as $color){
-                                echo '<option value="'.$color['colorId'].'">'.$color['name'].'</option>';
+                            foreach ($dataColor as $color) {
+                                echo '<option value="' . $color['colorId'] . '" data-image="' . $color['image'] . '"';
+                                if (isset($_GET['colorId']) && $_GET['colorId'] == $color['colorId']) {
+                                    echo ' selected="selected" ';
+                                }
+                                echo '>' . $color['name'] . '</option>';
                             }
                             ?>
                         </select>
                     </div>
                 </div>
             </div>
-            <div class="col-md-2 pull-right">
-                <button class="btn btn-lg btn-success" data-toggle="modal" data-target="#addInventory">Add Inventory</button>
+            <div class="col-md-4">
+                <label for="allBoxSelect" class="col-md-2 control-label">Box#:</label>
+                <div class="col-md-10">
+                    <select class="form-control" name="allBox" id="allBoxSelect">
+                        <option value="0">------- All Box -------</option>
+                        <?php
+                        foreach ($allUnit as $unit) {
+                            echo '<option value="' . $unit[0] . '" ';
+                            if (isset($_GET['boxId']) && $_GET['boxId'] == $unit[0]) {
+                                echo ' selected="selected" ';
+                            }
+                            echo '>' . $unit['identifier'] . '_' . $unit[$unit['type']] . '_' . $unit['box'] . '</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
             </div>
+            <?php
+            if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+                ?>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-info btn-info btn-lg" id="mainInventory">
+                        Main Inventory
+                    </button>
+                </div>
+                <?php
+            }
+            ?>
+            <div class="col-md-2 pull-right">
+                <?php
+                if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+                    ?>
+                    <button class="btn btn-lg btn-success">
+                        Print
+                    </button>
+                    <?php
+                } else {
+                    ?>
+                    <button class="btn btn-lg btn-success" data-toggle="modal" data-target="#addInventory">Add
+                        Inventory
+                    </button>
+                    <?php
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="center-block">
+            <span id="errorMessage"></span>
         </div>
     </div>
     <div style="margin-top:15px"></div>
@@ -154,17 +288,146 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
         <div class="panel-heading ">
             <div class="panel-heading ">
                 <div class="row">
-                    <div class="col-md-3 pull-left">
-                        Style:  <strong><?php echo $dataInfo['styleNumber']; ?></strong>
+                    <div class="col-md-10 pull-left">
+                        <div class="row">
+                            <div class="col-md-3 pull-left">
+                                Style:
+                                <strong>
+                                    <?php echo $dataInfo['styleNumber']; ?>
+                                </strong>
+                            </div>
+                            <div class="col-md-3">
+                                Garment Type:
+                                <strong>
+                                    <?php echo $dataInfo['garmentName']; ?>
+                                </strong>
+                            </div>
+                            <div class="col-md-3">
+                                Client:
+                                <strong>
+                                    <?php echo $dataInfo['client']; ?>
+                                </strong>
+                            </div>
+                            <div class="col-md-3 pull-right">
+                                Gender:
+                                <strong>
+                                    <?php echo $dataInfo['sex'] ?>
+                                </strong>
+                            </div>
+                        </div>
+                        <div style="margin-top:20px;"></div>
+                        <div class="row">
+                            <div class="col-md-3 pull-left">
+                                Color:
+                                <strong>
+                                    <span id="colorName"></span>
+                                </strong>
+                            </div>
+                            <div class="col-md-3">
+                                Employee:
+                                <strong>
+                                    <?php
+                                    if ($emp != null) {
+                                        echo $emp['updatedBy'];
+                                    } else {
+                                        echo 'N/A';
+                                    }
+                                    ?>
+                                </strong>
+                            </div>
+                            <div class="col-md-3">
+                                Date Entered:
+                                <strong>
+                                    <?php
+                                    if ($emp != null) {
+                                        echo date("F j, Y, g:i a", strtotime($emp['updatedAt']));
+                                    } else {
+                                        echo 'N/A';
+                                    }
+                                    ?>
+                                </strong>
+                            </div>
+                            <div class="col-md-3 pull-right">
+                                Location:
+                                <strong>
+                                    <?php
+                                    echo $locationName;
+                                    ?>
+                                </strong>
+                            </div>
+                        </div>
+                        <div style="margin-top:20px;"></div>
+                        <div class="row">
+                            <div class="col-md-3 pull-left">
+                                Box#:
+                                <strong>
+                                    <?php
+                                    echo $boxName;
+                                    ?>
+                                </strong>
+                            </div>
+                            <?php
+                            if(isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+                                ?>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-warning btn-md">
+                                        Merge
+                                    </button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-danger btn-md">
+                                        Delete
+                                    </button>
+                                </div>
+                                <?php
+                            }
+                            ?>
+                        </div>
+                        <div style="margin-top:20px;"></div>
+                        <div class="row">
+                            <?php
+                            if($storageType == 'warehouse' || $storageType == 'allBox'){
+                                ?>
+                                <div class="col-md-3">
+                                    Row:
+                                    <strong>
+                                        <?php
+                                        echo $rowName;
+                                        ?>
+                                    </strong>
+                                </div>
+                                <div class="col-md-3">
+                                    Rack:
+                                    <strong>
+                                        <?php
+                                        echo $rackName;
+                                        ?>
+                                    </strong>
+                                </div>
+                                <div class="col-md-3">
+                                    Shelf:
+                                    <strong>
+                                        <?php
+                                        echo $shelfName;
+                                        ?>
+                                    </strong>
+                                </div>
+                                <?php
+                                if(isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+                                    ?>
+                                    <div class="col-md-3 pull-right">
+                                        <button type="button" class="btn btn-info btn-md">
+                                            Update
+                                        </button>
+                                    </div>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        Garment Type:  <strong><?php echo $dataInfo['garmentName']; ?></strong>
-                    </div>
-                    <div class="col-md-3">
-                        Gender: <strong><?php echo $dataInfo['sex'] ?></strong>
-                    </div>
-                    <div class="col-md-3 pull-right">
-                        Client: <strong><?php echo $dataInfo['client']; ?></strong>
+                    <div class="col-md-2 pull-right">
+                        <span id="mainImage"></span>
                     </div>
                 </div>
             </div>
@@ -175,19 +438,20 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
                     <?php
                     $element = '';
                     $element .= '<tr><th>#</th>';
-                    foreach ($dataMainSizeId as $key => $value){;
-                        $element .= '<th class="text-center">'.$value.'</th>';
+                    foreach ($dataMainSizeId as $key => $value) {
+                        ;
+                        $element .= '<th class="text-center">' . $value . '</th>';
                     }
                     $element .= '</tr>';
-                    if(count($dataOptSizeId) > 0){
-                        foreach ($dataOptSizeId as $key1=>$value1){
+                    if (count($dataOptSizeId) > 0) {
+                        foreach ($dataOptSizeId as $key1 => $value1) {
                             $element .= '<tr>';
-                            $element .= '<td class="text-left">'.$value1.'</td>';
-                            foreach ($dataMainSizeId as $key2 => $value2){;
-                                if (isset($data_set[$key2][$key1]) && $data_set[$key2][$key1] >0) {
-                                    $element .= '<td class="text-center">' . $data_set[$key2][$key1] . '</td>';
+                            $element .= '<td class="text-left">' . $value1 . '</td>';
+                            foreach ($dataMainSizeId as $key2 => $value2) {
+                                if (isset($dataQuantity[$key2][$key1]) && $dataQuantity[$key2][$key1] > 0) {
+                                    $element .= '<td class="text-center"><input type="text" class="inputQty" id="click" name="qty" value="' . $dataQuantity[$key2][$key1] . '" width="80%"></td>';
                                 } else {
-                                    $element .= '<td>0</td>';
+                                    $element .= '<td class="text-center"><input type="text" class="inputQty" id="click" name="qty" value="0" width="80%">';
                                 }
                             }
                             $element .= '</tr>';
@@ -195,11 +459,11 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
                     } else {
                         $element .= '<tr>';
                         $element .= '<td class="text-left">Qty</td>';
-                        foreach ($dataMainSizeId as $key2 => $value2){
-                            if (isset($data_set[$key2][0]) && $data_set[$key2][0] > 0) {
-                                $element .= '<td class="text-center">' . $data_set[$key2][0] . '</td>';
+                        foreach ($dataMainSizeId as $key2 => $value2) {
+                            if (isset($dataQuantity[$key2][0]) && $dataQuantity[$key2][0] > 0) {
+                                $element .= '<td class="text-center"><input type="text" class="inputQty" id="click" name="qty" value="' . $dataQuantity[$key2][0] . '" width="80%">';
                             } else {
-                                $element .= '<td>0</td>';
+                                $element .= '<td class="text-center"><input type="text" class="inputQty" id="click" name="qty" value="0" width="80%">';
                             }
                         }
                         $element .= '</tr>';
@@ -209,15 +473,21 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
                 </table>
             </div>
         </div>
-        <div class="panel-footer">
-            <button class="center-block">
-                <img src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg" alt="Update Inventory"/>
-            </button>
-        </div>
+        <?php
+        if(isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+            ?>
+            <div class="panel-footer">
+                <button class="center-block">
+                    <img src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg" alt="Update Inventory"/>
+                </button>
+            </div>
+            <?php
+        }
+        ?>
     </div>
 </div>
 <!-- Modal -->
-<div class="modal fade" id="addInventory" role="dialog"  data-backdrop="static" data-keyboard="false">
+<div class="modal fade" id="addInventory" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -231,10 +501,10 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
                             <div class="col-md-10">
                                 <div class="row">
                                     <div class="col-md-3 pull-left">
-                                        Style:  <strong><?php echo $dataInfo['styleNumber']; ?></strong>
+                                        Style: <strong><?php echo $dataInfo['styleNumber']; ?></strong>
                                     </div>
                                     <div class="col-md-3">
-                                        Garment Type:  <strong><?php echo $dataInfo['garmentName']; ?></strong>
+                                        Garment Type: <strong><?php echo $dataInfo['garmentName']; ?></strong>
                                     </div>
                                     <div class="col-md-3">
                                         Gender: <strong><?php echo $dataInfo['sex'] ?></strong>
@@ -253,8 +523,8 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
                                             <select class="form-control" name="color" id="newColor">
                                                 <option value="" data-image="0">--------SELECT--------</option>
                                                 <?php
-                                                foreach ($dataColor as $color){
-                                                    echo '<option value="'.$color['colorId'].'" data-image="'.trim($color['image']).'">'.$color['name'].'</option>';
+                                                foreach ($dataColor as $color) {
+                                                    echo '<option value="' . $color['colorId'] . '" data-image="' . trim($color['image']) . '">' . $color['name'] . '</option>';
                                                 }
                                                 ?>
                                             </select>
@@ -269,7 +539,7 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
                                                 <option value="">--------SELECT--------</option>
                                                 <?php
                                                 foreach ($allLocation as $arrallValue) {
-                                                    echo '<option value="'.$arrallValue['storageId'].'" data-type="'.$arrallValue['type'].'">'.$arrallValue['locationIdentifier'].'_'.$arrallValue['storage'].'</option>';
+                                                    echo '<option value="' . $arrallValue['storageId'] . '" data-type="' . $arrallValue['type'] . '">' . $arrallValue['locationIdentifier'] . '_' . $arrallValue['storage'] . '</option>';
                                                 }
                                                 ?>
                                             </select>
@@ -328,19 +598,21 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
                                     $count = 0;
                                     $element = '';
                                     $element .= '<tr><th>#</th>';
-                                    foreach ($dataMainSizeId as $key => $value){;
-                                        $element .= '<th class="text-center">'.$value.'</th>';
+                                    foreach ($dataMainSizeId as $key => $value) {
+                                        ;
+                                        $element .= '<th class="text-center">' . $value . '</th>';
                                     }
                                     $element .= '</tr>';
-                                    if(count($dataOptSizeId) > 0){
-                                        foreach ($dataOptSizeId as $key1=>$value1){
+                                    if (count($dataOptSizeId) > 0) {
+                                        foreach ($dataOptSizeId as $key1 => $value1) {
                                             $element .= '<tr>';
-                                            $element .= '<td class="text-left">'.$value1.'</td>';
-                                            foreach ($dataMainSizeId as $key2 => $value2){;
-                                                $element .= '<td><input type="text" name="qty[]" id="input_'.$key2.'_'.$key1.'" class="clickNew" value="0"/>';
-                                                $element .= '<input type="hidden" name="mainSizeId[]" value="'.$key2.'" />';
-                                                $element .= '<input type="hidden" name="optSizeId[]" value="'.$key1.'" />';
-                                                $element .= '<input type="hidden" name="is_change_new[]" id="new_'.$key2.'_'.$key1.'" value="0" /></td>';
+                                            $element .= '<td class="text-left">' . $value1 . '</td>';
+                                            foreach ($dataMainSizeId as $key2 => $value2) {
+                                                ;
+                                                $element .= '<td><input type="text" class="inputQty" name="qty[]" id="input_' . $key2 . '_' . $key1 . '" class="clickNew" value="0"/>';
+                                                $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
+                                                $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
+                                                $element .= '<input type="hidden" name="is_change_new[]" id="new_' . $key2 . '_' . $key1 . '" value="0" /></td>';
                                                 $count++;
                                             }
                                             $element .= '</tr>';
@@ -348,11 +620,11 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
                                     } else {
                                         $element .= '<tr>';
                                         $element .= '<td class="text-left">Qty</td>';
-                                        foreach ($dataMainSizeId as $key2 => $value2){
-                                            $element .= '<td><input type="text" name="qty[]" id="input_'.$key2.'_'.$key1.'" class="clickNew" value="0"/>';
-                                            $element .= '<input type="hidden" name="mainSizeId[]" value="'.$key2.'" />';
+                                        foreach ($dataMainSizeId as $key2 => $value2) {
+                                            $element .= '<td><input type="text" class="inputQty" name="qty[]" id="input_' . $key2 . '_' . $key1 . '" class="clickNew" value="0"/>';
+                                            $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                             $element .= '<input type="hidden" name="optSizeId[]" value="null" />';
-                                            $element .= '<input type="hidden" name="is_change_new[]" id="new_'.$key2.'_0" value="0" /></td>';
+                                            $element .= '<input type="hidden" name="is_change_new[]" id="new_' . $key2 . '_0" value="0" /></td>';
                                             $count++;
                                         }
                                         $element .= '</tr>';
@@ -380,7 +652,9 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
 
 <?php require('../../../trailer.php'); ?>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
 
 <!--Add new Inventory Scripts -->
 <script>
@@ -388,10 +662,10 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
         $('#newLocation').change(function () {
             $('#newError').hide();
             var type = $(this).find(':selected').data('type');
-            if(type == 'warehouse'){
+            if (type == 'warehouse') {
                 $('#boxDiv').show();
                 $('#warehouseDiv').show();
-            } else if(type == 'container' || type == 'conveyor') {
+            } else if (type == 'container' || type == 'conveyor') {
                 $('#boxDiv').show();
                 $('#warehouseDiv').hide();
             } else {
@@ -402,8 +676,8 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
         $('#newColor').change(function () {
             $('#newError').hide();
             var image = $(this).find(':selected').data('image');
-            if(image != '0'){
-                $('#imageSpan').html('<img src="<?php echo $upload_dir_image ?>'+image+'" alt="image" width="100" height="100" border="1">');
+            if (image != '0') {
+                $('#imageSpan').html('<img src="<?php echo $upload_dir_image ?>' + image + '" alt="image" width="100" height="100" border="1">');
                 $('#imageSpan').show();
             } else {
                 $('#imageSpan').hide();
@@ -419,29 +693,29 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
             $('#new' + change).val(1);
         });
         /*
-        *Submit Add Inventory Form
-        *
-        *For adding New Box
+         *Submit Add Inventory Form
+         *
+         *For adding New Box
          */
         $('.addNewInventoryButton').click(function () {
             $('#newError').hide();
             var datastring = $('#addNewInventory').serialize();
             var color = $('#newColor').val();
-            if(color == ''){
+            if (color == '') {
                 $('#newError').html('<h3 style="color: red">Please Select a Color</h3>');
                 $('#newError').show();
                 return false;
             }
-            datastring += '&colorId='+color;
+            datastring += '&colorId=' + color;
             var location = $('#newLocation').val();
-            if(location == ''){
+            if (location == '') {
                 $('#newError').html('<h3 style="color: red">Please Select a Location</h3>');
                 $('#newError').show();
                 return false;
             }
-            datastring += '&locationId='+location;
+            datastring += '&locationId=' + location;
             var box = $('#newBox').val();
-            if(box == ''){
+            if (box == '') {
                 $('#newError').html('<h3 style="color: red">Please Enter box number</h3>');
                 $('#newError').show();
                 return false;
@@ -452,33 +726,73 @@ if(isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0){
                 $('#newError').show();
                 return false;
             }
-            datastring += '&box='+box;
+            datastring += '&box=' + box;
             var type = $('#newLocation').find(':selected').data('type');
-            datastring += '&type='+type;
-            if(type == 'warehouse'){
+            datastring += '&type=' + type;
+            if (type == 'warehouse') {
                 var row = $('#newRow').val();
-                datastring += '&row='+row;
+                datastring += '&row=' + row;
                 var rack = $('#newRack').val();
-                datastring += '&rack='+rack;
+                datastring += '&rack=' + rack;
                 var shelf = $('#newShelf').val();
-                datastring += '&shelf='+shelf;
+                datastring += '&shelf=' + shelf;
             }
             var style = "<?php echo $_GET['styleId']; ?>";
-            datastring += '&styleId='+style;
+            datastring += '&styleId=' + style;
             $.ajax({
                 url: "addNewInventory.php",
                 type: "POST",
                 data: datastring,
                 success: function (data) {
-                    var dataPase = jQuery.parseJSON(data);
-                    if(dataPase.success){
-
+                    var dataPase = $.parseJSON(data);
+                    if (dataPase.success) {
+                        var dataString2 = 'styleId=' + dataPase.data.styleId + '&colorId=' + dataPase.data.colorId + '&boxId=' + dataPase.data.id;
+                        window.location.replace('inventoryViewEdit.php?' + dataString2);
                     } else {
-                        $('#newError').html('<h3 style="color: red;">'+dataPase.message+'</h3>');
+                        $('#newError').html('<h3 style="color: red;">' + dataPase.message + '</h3>');
                         $('#newError').show();
                     }
                 }
             });
         });
     });
+</script>
+<!-- Change Box Event -->
+<script>
+    $(document).ready(function () {
+        var image = $('#color').find(':selected').data('image');
+        $('#mainImage').html('<img src="<?php echo $upload_dir_image ?>' + image + '" alt="image" width="150" height="170" border="2">');
+        $('#colorName').html($('#color').find(':selected').text());
+    });
+    $('#allBoxSelect').change(function () {
+        changeUrl();
+    });
+    $('#color').change(function () {
+        changeUrl();
+    });
+    $('#mainInventory').on('click', function () {
+        var styleId = "<?php echo $_GET['styleId'];?>"
+        var colorId = $('#color').val();
+            window.location.replace('inventoryViewEdit.php?styleId=' + styleId + '&colorId=' + colorId);
+    });
+    function changeUrl() {
+        var color = $('#color').val();
+        var box = $('#allBoxSelect').val();
+        var style = "<?php echo $_GET['styleId']; ?>";
+        var dataString = 'styleId=' + style + '&colorId=' + color + '&boxId=' + box;
+        $.ajax
+        ({
+            type: "POST",
+            url: "confirmBoxColor.php",
+            data: dataString,
+            success: function (data) {
+                var dataParse = $.parseJSON(data);
+                if (dataParse.success) {
+                    $(location).attr('href', 'inventoryViewEdit.php?' + dataString);
+                } else {
+                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
+                }
+            }
+        });
+    };
 </script>
