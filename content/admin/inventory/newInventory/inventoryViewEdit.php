@@ -124,7 +124,10 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     pg_free_result($result);
     //Fetch Latest updated records for a Style
     $sql = '';
-    $sql = 'SELECT * FROM "tbl_invUnit" WHERE "styleId"=' . $_GET['styleId'] . ' order by "updatedAt" desc limit 1';
+    $sql = 'SELECT * FROM "tbl_invUnit" unit'.
+        ' LEFT JOIN "employeeDB" emp ON emp."employeeID"=unit."updatedBy"  '.
+        ' WHERE "styleId"=' . $_GET['styleId'] .
+        ' order by "updatedAt" desc limit 1';
     if (!($result = pg_query($connection, $sql))) {
         print("Failed location fetch Query: " . pg_last_error($connection));
         exit;
@@ -148,8 +151,8 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         $storageType = $location['type'];
         $boxName = $location['identifier'].'_'.$location[$storageType].'_'.$location['box'];
         $rowName = $location['row'];
-        $rackName = $locationName['rack'];
-        $shelfName = $locationName['shelf'];
+        $rackName = $location['rack'];
+        $shelfName = $location['shelf'];
     } else {
         $locationName = 'All Location';
         $boxName = 'All Box';
@@ -186,6 +189,21 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         } else {
             $dataQuantity[$value['mainSizeId']][$value['optSizeId']] = $value['qty'];
         }
+    }
+    if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+        $sql = '';
+        $sql = 'SELECT unit.id as number,unit.box,unit.type,details.*,location.identifier FROM "tbl_invUnit" unit '.
+            ' LEFT JOIN "locationDetails" details ON details.id=unit."storageId" '.
+            'LEFT JOIN "tbl_invLocation" location ON location."locationId"= CAST(details."locationId" as INT) '.
+            'WHERE unit."styleId"='.$_GET['styleId'].' and unit.id <>'.$_GET['boxId'].'  and merged=0';
+        if (!($result = pg_query($connection, $sql))) {
+            print("Failed location fetch Query: " . pg_last_error($connection));
+            exit;
+        }
+        while ($row2 = pg_fetch_array($result)) {
+            $mergedLocation[] = $row2;
+        }
+        pg_free_result($result);
     }
 } else {
     echo '<h1>Please select a Style to view the Report</h1>';
@@ -263,7 +281,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                 <?php
                 if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
                     ?>
-                    <button class="btn btn-lg btn-success">
+                    <button class="btn btn-lg btn-success" data-box="<?php echo $_GET['boxId']; ?>" id="print">
                         Print
                     </button>
                     <?php
@@ -328,7 +346,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                 <strong>
                                     <?php
                                     if ($emp != null) {
-                                        echo $emp['updatedBy'];
+                                        echo $emp['username'];
                                     } else {
                                         echo 'N/A';
                                     }
@@ -369,13 +387,24 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                             <?php
                             if(isset($_GET['boxId']) && $_GET['boxId'] != 0) {
                                 ?>
+                                <div class="col-md-4" id="mergeDiv" style="display: none;">
+                                   <label for="mergedLocation">Select a Box to Merge</label>
+                                   <select name="merge" id="mergedLocation" class="form-control">
+                                       <option value="0">Select a Box</option>
+                                       <?php
+                                       for ($i = 0; $i < count($mergedLocation); $i++) {
+                                           echo '<option value="' . $mergedLocation[$i]['number'] . '">' . $mergedLocation[$i]['identifier'].'_'.$mergedLocation[$i][$mergedLocation[$i]['type']].'_'.$mergedLocation[$i]['box'] . '</option>';
+                                       }
+                                       ?>
+                                   </select>
+                                </div>
                                 <div class="col-md-3">
-                                    <button type="button" class="btn btn-warning btn-md">
+                                    <button type="button" id="merge" class="btn btn-warning btn-md">
                                         Merge
                                     </button>
                                 </div>
                                 <div class="col-md-3">
-                                    <button type="button" class="btn btn-danger btn-md">
+                                    <button type="button" id="deleteBox" class="btn btn-danger btn-md">
                                         Delete
                                     </button>
                                 </div>
@@ -386,41 +415,69 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                         <div style="margin-top:20px;"></div>
                         <div class="row">
                             <?php
-                            if($storageType == 'warehouse' || $storageType == 'allBox'){
-                                ?>
-                                <div class="col-md-3">
-                                    Row:
-                                    <strong>
-                                        <?php
-                                        echo $rowName;
-                                        ?>
-                                    </strong>
-                                </div>
-                                <div class="col-md-3">
-                                    Rack:
-                                    <strong>
-                                        <?php
-                                        echo $rackName;
-                                        ?>
-                                    </strong>
-                                </div>
-                                <div class="col-md-3">
-                                    Shelf:
-                                    <strong>
-                                        <?php
-                                        echo $shelfName;
-                                        ?>
-                                    </strong>
-                                </div>
-                                <?php
-                                if(isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+                            if(isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+                                if ($storageType == 'warehouse' || $storageType == 'allBox') {
                                     ?>
-                                    <div class="col-md-3 pull-right">
-                                        <button type="button" class="btn btn-info btn-md">
-                                            Update
-                                        </button>
+                                    <div class="col-md-3">
+                                        Row:
+                                        <strong>
+                                            <input type="text" id="updateRow" value="<?php echo $rowName; ?>">
+                                        </strong>
+                                    </div>
+                                    <div class="col-md-3">
+                                        Rack:
+                                        <strong>
+                                            <input type="text" id="updateRack" value="<?php echo $rackName; ?>">
+                                        </strong>
+                                    </div>
+                                    <div class="col-md-3">
+                                        Shelf:
+                                        <strong>
+                                            <input type="text" id="updateShelf" value="<?php echo $shelfName; ?>">
+                                        </strong>
                                     </div>
                                     <?php
+                                    if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+                                        ?>
+                                        <div class="col-md-3 pull-right">
+                                            <button type="button" id="updateRowRackShelf" class="btn btn-info btn-md">
+                                                Update
+                                            </button>
+                                        </div>
+                                        <?php
+                                    }
+                                }
+                            } else {
+                                if ($storageType == 'warehouse' || $storageType == 'allBox') {
+                                    ?>
+                                    <div class="col-md-3">
+                                        Row:
+                                        <strong>
+                                            <?php echo $rowName; ?>
+                                        </strong>
+                                    </div>
+                                    <div class="col-md-3">
+                                        Rack:
+                                        <strong>
+                                            <?php echo $rackName; ?>
+                                        </strong>
+                                    </div>
+                                    <div class="col-md-3">
+                                        Shelf:
+                                        <strong>
+                                            <?php echo $shelfName; ?>
+                                        </strong>
+                                    </div>
+                                    <?php
+                                    if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+                                        ?>
+                                        <div class="col-md-3 pull-right">
+                                            <button type="button" id="updateRowRackShelf" class="btn btn-info btn-md">
+                                                Update
+                                            </button>
+                                        </div>
+                                        <?php
+                                    }
                                 }
                             }
                             ?>
@@ -434,50 +491,64 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         </div>
         <div class="panel-body">
             <div class="table-responsive">
-                <table class="table table-bordered text-center">
-                    <?php
-                    $element = '';
-                    $element .= '<tr><th>#</th>';
-                    foreach ($dataMainSizeId as $key => $value) {
-                        ;
-                        $element .= '<th class="text-center">' . $value . '</th>';
-                    }
-                    $element .= '</tr>';
-                    if (count($dataOptSizeId) > 0) {
-                        foreach ($dataOptSizeId as $key1 => $value1) {
+                <form id="tableUpdate">
+                    <table class="table table-bordered text-center">
+                        <?php
+                        $element = '';
+                        $element .= '<tr><th>#</th>';
+                        foreach ($dataMainSizeId as $key => $value) {
+                            ;
+                            $element .= '<th class="text-center">' . $value . '</th>';
+                        }
+                        $element .= '</tr>';
+                        if (count($dataOptSizeId) > 0) {
+                            foreach ($dataOptSizeId as $key1 => $value1) {
+                                $element .= '<tr>';
+                                $element .= '<td class="text-left">' . $value1 . '</td>';
+                                foreach ($dataMainSizeId as $key2 => $value2) {
+                                    if (isset($dataQuantity[$key2][$key1]) && $dataQuantity[$key2][$key1] > 0) {
+                                        $element .= '<td class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="' . $dataQuantity[$key2][$key1] . '"></td>';
+                                        $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
+                                        $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
+                                        $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . $key1 . '" value="0" /></td>';
+                                    } else {
+                                        $element .= '<td class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="0" width="80%">';
+                                        $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
+                                        $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
+                                        $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . $key1 . '" value="0" /></td>';
+                                    }
+                                }
+                                $element .= '</tr>';
+                            }
+                        } else {
                             $element .= '<tr>';
-                            $element .= '<td class="text-left">' . $value1 . '</td>';
+                            $element .= '<td class="text-left">Qty</td>';
                             foreach ($dataMainSizeId as $key2 => $value2) {
-                                if (isset($dataQuantity[$key2][$key1]) && $dataQuantity[$key2][$key1] > 0) {
-                                    $element .= '<td class="text-center"><input type="text" class="inputQty" id="click" name="qty" value="' . $dataQuantity[$key2][$key1] . '" width="80%"></td>';
+                                if (isset($dataQuantity[$key2][0]) && $dataQuantity[$key2][0] > 0) {
+                                    $element .= '<td class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="' . $dataQuantity[$key2][0] . '">';
+                                    $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
+                                    $element .= '<input type="hidden" name="optSizeId[]" value="' . 0 . '" />';
+                                    $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . 0 . '" value="0" /></td>';
                                 } else {
-                                    $element .= '<td class="text-center"><input type="text" class="inputQty" id="click" name="qty" value="0" width="80%">';
+                                    $element .= '<td class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="0" width="80%">';
+                                    $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
+                                    $element .= '<input type="hidden" name="optSizeId[]" value="' . 0 . '" />';
+                                    $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . 0 . '" value="0" /></td>';
                                 }
                             }
                             $element .= '</tr>';
                         }
-                    } else {
-                        $element .= '<tr>';
-                        $element .= '<td class="text-left">Qty</td>';
-                        foreach ($dataMainSizeId as $key2 => $value2) {
-                            if (isset($dataQuantity[$key2][0]) && $dataQuantity[$key2][0] > 0) {
-                                $element .= '<td class="text-center"><input type="text" class="inputQty" id="click" name="qty" value="' . $dataQuantity[$key2][0] . '" width="80%">';
-                            } else {
-                                $element .= '<td class="text-center"><input type="text" class="inputQty" id="click" name="qty" value="0" width="80%">';
-                            }
-                        }
-                        $element .= '</tr>';
-                    }
-                    echo $element;
-                    ?>
-                </table>
+                        echo $element;
+                        ?>
+                    </table>
+                </form>
             </div>
         </div>
         <?php
         if(isset($_GET['boxId']) && $_GET['boxId'] != 0) {
             ?>
             <div class="panel-footer">
-                <button class="center-block">
+                <button class="center-block" id="UpdateInventoryButton">
                     <img src="<?php echo $mydirectory; ?>/images/updtInvbutton.jpg" alt="Update Inventory"/>
                 </button>
             </div>
@@ -609,7 +680,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                             $element .= '<td class="text-left">' . $value1 . '</td>';
                                             foreach ($dataMainSizeId as $key2 => $value2) {
                                                 ;
-                                                $element .= '<td><input type="text" class="inputQty" name="qty[]" id="input_' . $key2 . '_' . $key1 . '" class="clickNew" value="0"/>';
+                                                $element .= '<td><input type="text" class="inputQty clickNew" name="qty[]" id="input_' . $key2 . '_' . $key1 . '" value="0"/>';
                                                 $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                                 $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
                                                 $element .= '<input type="hidden" name="is_change_new[]" id="new_' . $key2 . '_' . $key1 . '" value="0" /></td>';
@@ -621,7 +692,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                         $element .= '<tr>';
                                         $element .= '<td class="text-left">Qty</td>';
                                         foreach ($dataMainSizeId as $key2 => $value2) {
-                                            $element .= '<td><input type="text" class="inputQty" name="qty[]" id="input_' . $key2 . '_' . $key1 . '" class="clickNew" value="0"/>';
+                                            $element .= '<td><input type="text" class="inputQty clickNew" name="qty[]" id="input_' . $key2 . '_' . $key1 . '" value="0"/>';
                                             $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                             $element .= '<input type="hidden" name="optSizeId[]" value="null" />';
                                             $element .= '<input type="hidden" name="is_change_new[]" id="new_' . $key2 . '_0" value="0" /></td>';
@@ -655,7 +726,6 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-
 <!--Add new Inventory Scripts -->
 <script>
     $(document).ready(function () {
@@ -763,17 +833,9 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         var image = $('#color').find(':selected').data('image');
         $('#mainImage').html('<img src="<?php echo $upload_dir_image ?>' + image + '" alt="image" width="150" height="170" border="2">');
         $('#colorName').html($('#color').find(':selected').text());
-    });
-    $('#allBoxSelect').change(function () {
-        changeUrl();
-    });
-    $('#color').change(function () {
-        changeUrl();
-    });
-    $('#mainInventory').on('click', function () {
-        var styleId = "<?php echo $_GET['styleId'];?>"
-        var colorId = $('#color').val();
-            window.location.replace('inventoryViewEdit.php?styleId=' + styleId + '&colorId=' + colorId);
+        setTimeout(function(){
+            $('#errorMessage').hide();
+        }, 15000);
     });
     function changeUrl() {
         var color = $('#color').val();
@@ -795,4 +857,157 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             }
         });
     };
+    $('#allBoxSelect').change(function () {
+        changeUrl();
+    });
+    $('#color').change(function () {
+        var color = $('#color').val();
+        var style = "<?php echo $_GET['styleId']; ?>";
+        var dataString = 'styleId=' + style + '&colorId=' + color;
+        $(location).attr('href', 'inventoryViewEdit.php?' + dataString);
+    });
+    $('#mainInventory').on('click', function () {
+        var styleId = "<?php echo $_GET['styleId'];?>";
+        var colorId = $('#color').val();
+        window.location.replace('inventoryViewEdit.php?styleId=' + styleId + '&colorId=' + colorId);
+    });
+    $('#updateRowRackShelf').on('click',function () {
+        var row = $('#updateRow').val();
+        var rack = $('#updateRack').val();
+        var shelf = $('#updateShelf').val();
+        var boxId = "<?php echo $_GET['boxId'] ?>";
+        if(boxId == '' || boxId == undefined){
+            $('#errorMessage').html('<h2 style="color: red;">Error !! please Select a Box..</h2>');
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url: "updateRowRackShelf.php",
+            data: {
+                row: row,
+                rack: rack,
+                shelf: shelf,
+                boxId: boxId
+            },
+            success: function (data) {
+                var dataParse = $.parseJSON(data);
+                if(dataParse.success){
+                    $('#updateRow').val(row);
+                    $('#updateRack').val(rack);
+                    $('#updateShelf').val(shelf);
+                    $('#errorMessage').html('<h2 style="color: blue;">' + dataParse.message + '</h2>');
+                } else {
+                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
+                }
+            }
+        });
+    });
+    $('#deleteBox').on('click',function () {
+        var boxId = "<?php echo $_GET['boxId'] ?>";
+        if(boxId == '' || boxId == undefined){
+            $('#errorMessage').html('<h2 style="color: red;">Error !! please Select a Box..</h2>');
+            return false;
+        }
+        var color = $('#color').val();
+        var style = "<?php echo $_GET['styleId']; ?>";
+        var dataString = 'styleId=' + style + '&colorId=' + color + '&boxId=' + boxId;
+        $.ajax({
+            type: "POST",
+            url: "deleteUnit.php",
+            data: dataString,
+            success: function (data) {
+                var dataParse = $.parseJSON(data);
+                if (dataParse.success) {
+                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
+                    setTimeout(function(){
+                        $(location).attr('href', 'inventoryViewEdit.php?styleId='+style+'&colorId='+color);
+                    }, 10000);
+                } else {
+                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
+                }
+            }
+        });
+
+    });
+    $('.click').keyup(function () {
+        var id = this.id;
+        var change = id.slice(11);
+        $('#update' + change).val(1);
+    });
+    $('#UpdateInventoryButton').on('click',function () {
+        var dataString = $('#tableUpdate').serialize();
+        var style = "<?php echo $_GET['styleId']; ?>";
+        dataString += '&styleId=' + style;
+        var color = $('#color').val();
+        if (color == '') {
+            $('#errorMessage').html('<h3 style="color: red">Please Select a Color</h3>');
+            return false;
+        }
+        var boxId = "<?php echo $_GET['boxId'] ?>";
+        if(boxId == '' || boxId == undefined){
+            $('#errorMessage').html('<h2 style="color: red;">Error !! please Select a Box..</h2>');
+            return false;
+        }
+        dataString += '&boxId='+boxId;
+        dataString += '&colorId=' + color;
+        $.ajax({
+            type: "POST",
+            url: "updateInventory.php",
+            data:dataString,
+            success: function (data) {
+                var dataParse = $.parseJSON(data);
+                if (dataParse.success) {
+                    $('#errorMessage').html('<h2 style="color: green;">' + dataParse.message + '</h2>');
+                    setTimeout(function(){
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
+                }
+            }
+        });
+    });
+    $('#print').on('click',function () {
+        var boxId = $(this).data('box');
+        var styleId = "<?php echo $_GET['styleId']; ?>";
+        var color = $('#color').val();
+        window.open(
+            "print.php" + '?styleId=' + styleId + '&colorId=' + color + '&boxId=' + boxId ,
+            '_blank' // <- This is what makes it open in a new window.
+        );
+        redirectWindow.location;
+    });
+    $('#merge').on('click',function () {
+        $('#mergeDiv').show();
+        $('#merge').hide();
+    });
+    $('#mergedLocation').change(function () {
+        var targetBox = $(this).val();
+        if(targetBox == '0'){
+            return false;
+        }
+        var currentBox = "<?php echo $_GET['boxId']; ?>";
+        $.ajax({
+            url: "mergeBox.php",
+            type: "POST",
+            data:{
+                currentBox: currentBox,
+                targetBox: targetBox
+            },
+            success: function (data) {
+                var dataParse = $.parseJSON(data);
+                if(dataParse.success){
+                    $('#errorMessage').html('<h2 style="color: blue;">' + dataParse.message + '</h2>');
+                    $('#errorMessage').show();
+                    $('#mergeDiv').hide();
+                    $('#merge').show();
+                } else {
+                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
+                    $('#errorMessage').show();
+                    $('#mergeDiv').hide();
+                    $('#merge').show();
+                }
+            }
+        });
+    });
 </script>

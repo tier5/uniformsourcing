@@ -1094,7 +1094,8 @@ if($tbl_invUnit['exists'] === 'f')
                     ' "createdAt" timestamp, '.
                     ' "updatedBy" bigint references "employeeDB"("employeeID"), '.
                     ' "updatedAt" timestamp, '.
-                    'type varchar(50)'.
+                    'type varchar(50) ,'.
+                    'merged INT default(0)'.
 			' ) WITH ( OIDS=FALSE );'.
 			' ALTER TABLE public."tbl_invUnit" OWNER TO globaluniformuser';
     if(!($result=pg_query($connection,$sql)))
