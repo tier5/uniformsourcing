@@ -178,9 +178,9 @@ if(count($id) > 0){
             $query .=" ,'".$rowLoc[0]."' ";
             $query .=" ,0 ";
             $query .=" ,'".$new_qty_data[$key]."' ";
-            if($new_type_key_data[$key]) $query .=", '".$new_type_key_data[$key]."' ";
+            if($new_type_key_data[$key]) $query .=", ".$new_type_key_data[$key]." ";
             $query .=", '$colorId' ";
-            if($new_size_key_data[$key]) $query .=", '".$new_size_key_data[$key]."' ";
+            if($new_size_key_data[$key]) $query .=", ".$new_size_key_data[$key]." ";
             //if($k < count($data_opt2Size))$query .=", '".$data_opt2Size[$k]['opt2SizeId']."' ";
             $query .=" ,'$notes' ";
             $query .=", '".$new_type_data[$key]."' ";
@@ -192,7 +192,6 @@ if(count($id) > 0){
             $query .=" ,'".date('U')."' ";
             $query .=" ,'".date('U')."' ";
             $query .=" ) returning \"inventoryId\" ";
-
             if(!($result=pg_query($connection,$query))){
                 $return_arr['error'] = pg_last_error($connection);
                 echo json_encode($return_arr);
@@ -232,8 +231,8 @@ if(count($id) > 0){
             $query .= " ,'" . $styleId . "' ";
             $query .= " ,'" . $colorId . "' ";
             $query .= " ,'" . $rowLoc[0] . "' ";
-            if($new_type_key_data[$key]) $query .=", '".$new_type_key_data[$key]."' ";
-            if($new_size_key_data[$key]) $query .=", '".$new_size_key_data[$key]."' ";
+            if($new_type_key_data[$key]) $query .=", ".$new_type_key_data[$key]." ";
+            if($new_size_key_data[$key]) $query .=", ".$new_size_key_data[$key]." ";
             if ($room != "") $query .= " ,'" . $room . "' ";
             if ($_POST['row'] != "") $query .= " ,'" . $_POST['row'] . "' ";
             if ($rack != "") $query .= " ,'" . $rack . "' ";
