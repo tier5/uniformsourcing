@@ -27,9 +27,98 @@ if(!($result=pg_query($connection,$sql))){
 $target = pg_fetch_array($result);
 pg_free_result($result);
 if($target != '' && $current != ''){
-    /*
-     * Code for Merge 2 Box
-     */
+    $sql = '';
+    $sql = 'SELECT * FROM "tbl_invQuantity" WHERE "boxId"='.$current['id'];
+    if(!($result=pg_query($connection,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($connection),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    while($row = pg_fetch_array($result)){
+        $currentQuantity[] = $row;
+    }
+    pg_free_result($result);
+    foreach ($currentQuantity as $value){
+        $sql = '';
+        $sql = 'SELECT * FROM "tbl_invQuantity" WHERE "boxId"='.$target['id'].'and "mainSizeId"='.$value['mainSizeId'].' and "optSizeId"='.$value['optSizeId'];
+        if(!($result=pg_query($connection,$sql))){
+            echo json_encode([
+                'message' => pg_last_error($connection),
+                'success' => false,
+                'code' => 500
+            ]);
+            return;
+        }
+        $targetQuantity = pg_fetch_array($result);
+        pg_free_result($result);
+        if($targetQuantity != ''){
+            $quantity = $targetQuantity['qty'] + $value['qty'];
+            $sql = '';
+            $sql = 'UPDATE "tbl_invQuantity" SET ';
+            $sql .= ' qty='.$quantity;
+            $sql .= ' WHERE id='.$targetQuantity['id'];
+        } else {
+            $sql = '';
+            $sql = 'INSERT INTO "tbl_invQuantity" ( ';
+            $sql .= '"boxId","mainSizeId","optSizeId","qty" ) VALUES (';
+            $sql .= " '".$target['id']."','".$value['mainSizeId']."','".$value['optSizeId']."','".$value['qty']."' ) ";
+        }
+        if(!($result=pg_query($connection,$sql))){
+            echo json_encode([
+                'message' => pg_last_error($connection),
+                'success' => false,
+                'code' => 500
+            ]);
+            return;
+        }
+        pg_free_result($result);
+        $sql = '';
+        $sql = 'UPDATE "tbl_invQuantity" SET ';
+        $sql .= ' qty=0';
+        $sql .= ' WHERE id='.$value['id'];
+        if(!($result=pg_query($connection,$sql))){
+            echo json_encode([
+                'message' => pg_last_error($connection),
+                'success' => false,
+                'code' => 500
+            ]);
+            return;
+        }
+        pg_free_result($result);
+    }
+    $sql = '';
+    $sql = 'UPDATE "tbl_invUnit" SET merged=1 WHERE id='.$current['id'];
+    if(!($result=pg_query($connection,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($connection),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    pg_free_result($result);
+    $sql = '';
+    $sql = 'SELECT * FROM "tbl_invUnit" WHERE id='.$target['id'];
+    if(!($result=pg_query($connection,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($connection),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    $data = pg_fetch_array($result);
+    pg_free_result($result);
+    echo json_encode([
+        'message' => 'Box Merged Successfully',
+        'success' => true,
+        'info' => $data,
+        'code' => 200
+    ]);
+    return;
 } else {
     echo json_encode([
         'message' => 'Box Not Found',
