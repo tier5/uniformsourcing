@@ -40,6 +40,8 @@ if($unit != ''){
                 ]);
                 return;
             }
+            $mainSizeName = getSizeName($mainSize,"mainSize",$connection);
+            $optSizeName = (getSizeName($optSize,"opt1size",$connection) == NULL)?"qty":getSizeName($optSize,"opt1size",$connection);
             $quantity = pg_fetch_array($result);
             if($quantity != null){
                 if($qty[$key] != $quantity['qty']){
@@ -48,6 +50,24 @@ if($unit != ''){
                     $sql .= ' qty='.$qty[$key];
                     $sql .= ' WHERE id='.$quantity['id'];
                     $count++;
+                    $sql1 = '';
+                    $sql1 = "INSERT INTO \"audit_logs\" (";
+                    $sql1 .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+                    $sql1 .= " \"log\") VALUES (";
+                    $sql1 .= " '" . $styleId . "' ";
+                    $sql1 .= ", '". $_SESSION['employeeID'] ."'";
+                    $sql1 .= ", '". date('U') ."'";
+                    $sql1 .= ", 'Update Quantity From ".$quantity['qty']." To ".$qty[$key]." for Scale ".$mainSizeName." - ".$optSizeName." in box: ".$unit['box']." '";
+                    $sql1 .= ")";
+                    if(!($audit = pg_query($connection,$sql1))){
+                        echo json_encode([
+                            'message' => pg_last_error($connection),
+                            'success' => false,
+                            'code' => 500
+                        ]);
+                        return;
+                    }
+                    pg_free_result($audit);
                 }
             } else {
                 $sql = '';
@@ -55,6 +75,24 @@ if($unit != ''){
                 $sql .= '"boxId","mainSizeId","optSizeId","qty" ) VALUES (';
                 $sql .= " '".$unit['id']."','".$mainSize."','".$optSize."','".$qty[$key]."' ) ";
                 $count++;
+                $sql1 = '';
+                $sql1 = "INSERT INTO \"audit_logs\" (";
+                $sql1 .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+                $sql1 .= " \"log\") VALUES (";
+                $sql1 .= " '" . $styleId . "' ";
+                $sql1 .= ", '". $_SESSION['employeeID'] ."'";
+                $sql1 .= ", '". date('U') ."'";
+                $sql1 .= ", 'Update Quantity From 0 To ".$qty[$key]." for Scale ".$mainSizeName." - ".$optSizeName." in box: ".$unit['box']." '";
+                $sql1 .= ")";
+                if(!($audit = pg_query($connection,$sql1))){
+                    echo json_encode([
+                        'message' => pg_last_error($connection),
+                        'success' => false,
+                        'code' => 500
+                    ]);
+                    return;
+                }
+                pg_free_result($audit);
             }
             if(!($result=pg_query($connection,$sql))){
                 echo json_encode([

@@ -42,6 +42,26 @@ if(!$oldUnit){
     }
     $unit = pg_fetch_array($result);
     pg_free_result($result);
+
+    $sql = '';
+    $sql = "INSERT INTO \"audit_logs\" (";
+    $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+    $sql .= " \"log\") VALUES (";
+    $sql .= " '" . $styleId . "' ";
+    $sql .= ", '". $_SESSION['employeeID'] ."'";
+    $sql .= ", '". date('U') ."'";
+    $sql .= ", 'created new box:  ".$box."'";
+    $sql .= ")";
+    if(!($audit = pg_query($connection,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($connection),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    pg_free_result($audit);
+
     foreach ($qty as $q){
         if($q < 0){
             echo json_encode([
@@ -67,6 +87,26 @@ if(!$oldUnit){
                 return;
             }
             pg_free_result($result);
+            $mainSize = getSizeName($mainSizeId[$key],"mainSize",$connection);
+            $optSize = (getSizeName($optSizeId[$key],"opt1size",$connection) == NULL)?"qty":getSizeName($optSizeId[$key],"opt1size",$connection);
+            $sql = '';
+            $sql = "INSERT INTO \"audit_logs\" (";
+            $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+            $sql .= " \"log\") VALUES (";
+            $sql .= " '" . $styleId . "' ";
+            $sql .= ", '". $_SESSION['employeeID'] ."'";
+            $sql .= ", '". date('U') ."'";
+            $sql .= ", 'Added ".$qty[$key]." for Scale ".$mainSize." - ".$optSize." in box: ".$box." '";
+            $sql .= ")";
+            if(!($audit = pg_query($connection,$sql))){
+                echo json_encode([
+                    'message' => pg_last_error($connection),
+                    'success' => false,
+                    'code' => 500
+                ]);
+                return;
+            }
+            pg_free_result($audit);
         }
     }
     echo json_encode([

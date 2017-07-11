@@ -1173,4 +1173,23 @@ function dd($item)
     print_r($item);
     die();
 }
+function getSizeName($size,$scale,$conn){
+    $sql = '';
+    $sql = 'SELECT * FROM "tbl_invScaleSize" WHERE "sizeScaleId"='.$size;
+    if(!($result=pg_query($conn,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($conn),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    $sizeData= pg_fetch_array($result);
+    pg_free_result($result);
+    if($scale == 'mainSize'){
+        return $sizeData['scaleSize'];
+    } else {
+        return $sizeData['opt1Size'];
+    }
+}
 ?>

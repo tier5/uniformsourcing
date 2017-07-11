@@ -112,6 +112,24 @@ if($target != '' && $current != ''){
     }
     $data = pg_fetch_array($result);
     pg_free_result($result);
+    $sql = '';
+    $sql = "INSERT INTO \"audit_logs\" (";
+    $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+    $sql .= " \"log\") VALUES (";
+    $sql .= " '" . $current['styleId'] . "' ";
+    $sql .= ", '". $_SESSION['employeeID'] ."'";
+    $sql .= ", '". date('U') ."'";
+    $sql .= ", 'Merge box:  ".$current['box']." to ".$target['box']." '";
+    $sql .= ")";
+    if(!($audit = pg_query($connection,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($connection),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    pg_free_result($audit);
     echo json_encode([
         'message' => 'Box Merged Successfully',
         'success' => true,

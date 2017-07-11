@@ -65,6 +65,24 @@ if($unit != ''){
             ]);
             return;
         }
+        $sql = '';
+        $sql = "INSERT INTO \"audit_logs\" (";
+        $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+        $sql .= " \"log\") VALUES (";
+        $sql .= " '" . $styleId . "' ";
+        $sql .= ", '". $_SESSION['employeeID'] ."'";
+        $sql .= ", '". date('U') ."'";
+        $sql .= ", 'Delete box:  ".$unit['box']."'";
+        $sql .= ")";
+        if(!($audit = pg_query($connection,$sql))){
+            echo json_encode([
+                'message' => pg_last_error($connection),
+                'success' => false,
+                'code' => 500
+            ]);
+            return;
+        }
+        pg_free_result($audit);
         echo json_encode([
             'message' => 'Unit Deleted Successfully',
             'success' => true,

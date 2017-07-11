@@ -113,6 +113,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     if (isset($_GET['colorId']) && $_GET['colorId'] != 0) {
         $sql .= ' and unit."colorId"=' . $_GET['colorId'];
     }
+    $sql .= ' and unit.merged=0';
     $sql .= ' ORDER BY unit.id';
     if (!($result = pg_query($connection, $sql))) {
         print("Failed location fetch Query: " . pg_last_error($connection));
@@ -163,8 +164,10 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     }
     //Get all Quantity For A unit
     $sql = '';
-    $sql = 'SELECT unit.*,quantity.* FROM "tbl_invUnit" unit ';
+    $sql = 'SELECT unit.*,quantity.*,details.*,location.identifier FROM "tbl_invUnit" unit ';
     $sql .= ' LEFT JOIN "tbl_invQuantity" quantity on unit.id = quantity."boxId" ';
+    $sql .= ' LEFT JOIN "locationDetails" details on unit."storageId" = details.id';
+    $sql .= ' LEFT JOIN "tbl_invLocation" location on location."locationId"= CAST(details."locationId" as INT)';
     $sql .= ' WHERE unit."styleId"=' . $_GET['styleId'];
     if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
         $sql .= ' and unit.id=' . $_GET['boxId'];
@@ -181,13 +184,22 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     }
     pg_free_result($result);
     $dataQuantity = [];
+    $dataToolTip = [];
     foreach ($data as $key => $value) {
         $total = 0;
         if (isset($dataQuantity[$value['mainSizeId']][$value['optSizeId']])) {
             $total = $dataQuantity[$value['mainSizeId']][$value['optSizeId']] + $value['qty'];
             $dataQuantity[$value['mainSizeId']][$value['optSizeId']] = $total;
+            if($value['qty'] > 0){
+                $link = $dataToolTip[$value['mainSizeId']][$value['optSizeId']].'<br/>'.'<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].' : '.$value['qty'].'</a>';
+                $dataToolTip[$value['mainSizeId']][$value['optSizeId']] = $link;
+            }
         } else {
             $dataQuantity[$value['mainSizeId']][$value['optSizeId']] = $value['qty'];
+            if($value['qty'] > 0){
+                $link = '<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].' : '.$value['qty'].'</a>';
+                $dataToolTip[$value['mainSizeId']][$value['optSizeId']] = $link ;
+            }
         }
     }
     if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
@@ -220,6 +232,25 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         padding: 0;
         text-align: center;
         width: 100%;
+    }
+</style>
+<style>
+    .tooltext {
+        /*visibility: hidden;*/
+        display: none;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+    }
+    .tool:hover .tooltext {
+        visibility: visible;
     }
 </style>
 <div class="container">
@@ -520,7 +551,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                 $element .= '<td class="text-left">' . $value1 . '</td>';
                                 foreach ($dataMainSizeId as $key2 => $value2) {
                                     if (isset($dataQuantity[$key2][$key1]) && $dataQuantity[$key2][$key1] > 0) {
-                                        $element .= '<td class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="' . $dataQuantity[$key2][$key1] . '"></td>';
+                                        $element .= '<td class="text-center tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="' . $dataQuantity[$key2][$key1] . '"> <p class="tooltext">'.$dataToolTip[$key2][$key1].'</p></td>';
                                         $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                         $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
                                         $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . $key1 . '" value="0" /></td>';
@@ -538,7 +569,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                             $element .= '<td class="text-left">Qty</td>';
                             foreach ($dataMainSizeId as $key2 => $value2) {
                                 if (isset($dataQuantity[$key2][0]) && $dataQuantity[$key2][0] > 0) {
-                                    $element .= '<td class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="' . $dataQuantity[$key2][0] . '">';
+                                    $element .= '<td class="text-center tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="' . $dataQuantity[$key2][0] . '"> <p class="tooltext">'.$dataToolTip[$key2][0].'</p>';
                                     $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                     $element .= '<input type="hidden" name="optSizeId[]" value="' . 0 . '" />';
                                     $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . 0 . '" value="0" /></td>';
@@ -849,6 +880,25 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         setTimeout(function () {
             $('#errorMessage').hide();
         }, 15000);
+        <?php if(!isset($_REQUEST['boxId']) || $_REQUEST['boxId'] == 0): ?>
+        $('.tool').bind({
+            mouseenter: function(){
+                $(this).children('.tooltext').show();
+            },
+            mouseleave : function(){
+                $('.tooltext').hide();
+
+            }
+        });
+        $('.tooltext').bind({
+            mouseenter: function(){
+                $(this).show();
+            },
+            mouseleave : function(){
+                $('.tooltext').hide();
+            }
+        });
+        <?php endif; ?>
     });
     function changeUrl() {
         var color = $('#color').val();

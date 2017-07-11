@@ -32,6 +32,24 @@ if($unit != ''){
             ]);
             return;
         }
+        $sql = '';
+        $sql = "INSERT INTO \"audit_logs\" (";
+        $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+        $sql .= " \"log\") VALUES (";
+        $sql .= " '" . $unit['styleId'] . "' ";
+        $sql .= ", '". $_SESSION['employeeID'] ."'";
+        $sql .= ", '". date('U') ."'";
+        $sql .= ", 'Update box:  ".$unit['box']." for Row:".$unit['row']." to ".$row.", Rack:".$unit['rack']." to ".$rack." and Shelf:".$unit['shelf']." to ".$shelf."'";
+        $sql .= ")";
+        if(!($audit = pg_query($connection,$sql))){
+            echo json_encode([
+                'message' => pg_last_error($connection),
+                'success' => false,
+                'code' => 500
+            ]);
+            return;
+        }
+        pg_free_result($audit);
         echo json_encode([
             'message' => 'Unit Updated Successfully',
             'success' => true,
