@@ -18,7 +18,7 @@ pg_free_result($result);
 if(!$oldUnit){
     //Insert into unit table
     $sql = "";
-    $sql = "INSERT INTO \"tbl_invUnit\" ( ".
+    $sql = "INSERT INTO \"tbl_invUnit\" ( ";
     $sql .=" \"styleId\",\"colorId\",type ,";
     if($type == 'warehouse'){
         $sql .= " row, rack, shelf, ";
@@ -75,7 +75,7 @@ if(!$oldUnit){
     foreach ($is_change_new as $key => $change){
         if($change == '1'){
             $sql = "";
-            $sql = "INSERT INTO \"tbl_invQuantity\" ( ".
+            $sql = "INSERT INTO \"tbl_invQuantity\" ( ";
             $sql .= " \"boxId\",\"mainSizeId\",\"optSizeId\",\"qty\" ) VALUES (";
             $sql .= "'".$unit['id']."','".$mainSizeId[$key]."','".$optSizeId[$key]."','".$qty[$key]."' )";
             if(!($result=pg_query($connection,$sql))){
