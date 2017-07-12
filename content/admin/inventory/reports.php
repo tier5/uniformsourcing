@@ -179,9 +179,11 @@ while($row_cnt8 = pg_fetch_array($result_cnt8)){
 }
 pg_free_result($result_cnt8);
 
+$sql = '';
+$sql = 'SELECT box FROM "tbl_invUnit" order by box asc';
 
 //$sql='select  distinct box from "tbl_invStorage" order by box asc';
-$sql='select distinct unit from "tbl_invStorage" order by unit asc';
+//$sql='select distinct unit from "tbl_invStorage" order by unit asc';
 	if(!($result_cnt9=pg_query($connection,$sql))){
 		print("Failed InvData: " . pg_last_error($connection));
 		exit;
@@ -190,7 +192,6 @@ $sql='select distinct unit from "tbl_invStorage" order by unit asc';
 		$data_storage[]=$row_cnt9;
 	}
 pg_free_result($result_cnt9);
-
 
 $sql = 'select "name","containerId" from "tbl_container" ';
 $sql='select  distinct box from "tbl_invStorage" order by box asc';
@@ -278,22 +279,28 @@ if(isset($_REQUEST['notes']) && $_REQUEST['notes']!="") {
 if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']!="") {
 	//echo $_REQUEST['box_num'];
 	//exit();
-	$search_sql .=' and storage."unit" LIKE \'%' .$_REQUEST['box_num'].'%\' ';
+    $search_sql .= ' and unit.box LIKE \'%'.$_REQUEST['box_num'].'%\' ';
+
+	//$search_sql .=' and storage."unit" LIKE \'%' .$_REQUEST['box_num'].'%\' ';
 	if($search_uri)  {
 		 $search_uri.="&box_num=".$_REQUEST['box_num'];
 	} else {
 		$search_uri.="?box_num=".$_REQUEST['box_num'];
 	}
 }
+//$sql='select DISTINCT st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" '.
+  //      ' left join "tbl_invStorage" as storage  on storage."styleId"=st."styleId" where st."isActive"=1'.$search_sql.' order by st."styleId" desc';
+
+
 $sql='select DISTINCT st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" '.
-        ' left join "tbl_invStorage" as storage  on storage."styleId"=st."styleId" where st."isActive"=1'.$search_sql.' order by st."styleId" desc';
+    ' left join "tbl_invUnit" as unit  on unit."styleId"=st."styleId" where st."isActive"=1'.$search_sql.' order by st."styleId" desc';
 
 
-        /* if($search_sql != '')
-         {
-         	echo $search_sql;
-         	exit();
-         }*/
+/* if($search_sql != '')
+ {
+     echo $search_sql;
+     exit();
+ }*/
         
 
 if(!($result=pg_query($connection,$sql))){
@@ -582,10 +589,10 @@ $(document).ready(function()
                    <?php 
                   for($i=0; $i < count($data_storage); $i++)
                   {
-                    if($data_storage[$i]['unit']!="")  
-                    echo '<option value="'.$data_storage[$i]['unit'].'"';
-                    if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']==$data_storage[$i]['unit']) echo ' selected="selected" '; 
-                    echo '>'.$data_storage[$i]['unit'].'</option>';
+                    if($data_storage[$i]['box']!="")
+                    echo '<option value="'.$data_storage[$i]['box'].'"';
+                    if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']==$data_storage[$i]['box']) echo ' selected="selected" ';
+                    echo '>'.$data_storage[$i]['box'].'</option>';
                   }
                   ?>
                                         </select></td>
@@ -667,6 +674,10 @@ if(count($datalist))
 		<td class="grid001"><?php logCheckvival($datalist[$i]['styleId'],$connection); ?></td>
 		<td class="grid001">
 			<a href="reportViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">
+			<img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0">
+			</a>
+
+            <a href="newInventory/inventoryViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">
 			<img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0">
 			</a>
 		</td>

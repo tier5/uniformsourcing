@@ -3,7 +3,7 @@ include('../../pagination.class.php');
 require('../../header.php');
 $sql = '';
 $sql = 'Select * from "audit_logs" as log';
-$sql .= ' LEFT JOIN "tbl_inventory" as inv ON CAST(log."inventory_id" as VARCHAR(50))=CAST(inv."inventoryId" as VARCHAR(50))';
+$sql .= ' LEFT JOIN "tbl_invStyle" as inv ON CAST(log."inventory_id" as VARCHAR(50))=CAST(inv."styleId" as VARCHAR(50))';
 $sql .= ' LEFT JOIN "employeeDB" as emp ON CAST(log."employee_id" as VARCHAR(50))=CAST(emp."employeeID" as VARCHAR(50)) order by log."updated_time" desc';
 if (!($resultProduct = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
@@ -65,11 +65,7 @@ pg_free_result($resultProduct);
                                     <tr>
                                         <td align="center"><strong><?php echo $logs[$i]['firstname'].' '.$logs[$i]['lastname'];?></strong></td>
                                         <td align="center"><strong><?php echo date("d-M-Y h:i:sa", $logs[$i]['updated_time']);?></strong></td>
-                                        <td align="center"><strong><?php echo $logs[$i]['log'].'</strong>';
-                                                if ($log[$i]['inventory_id'] != 'null' && $logs[$i]['mainSize'] != null && $logs[$i]['rowSize'] != null && $string[0] == 'E' || $string[0] == 'e'){
-                                                    echo " for main size: <strong>". $logs[$i]['mainSize']."</strong> row size: <strong>".$logs[$i]['rowSize']."</strong>";
-                                                }
-                                                ?></strong></td>
+                                        <td align="center"><strong><?php echo $logs[$i]['log'].'</strong>';?></td>
                                         <td align="center"><strong><?php if($log[$i]['inventory_id'] != 'null') echo $logs[$i]['styleNumber'];?></strong></td>
                                     </tr>
                             <?php    }

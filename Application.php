@@ -1067,6 +1067,98 @@ if($column_exists['exists'] === 'f')
     pg_free_result($result);
 
 }
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_invUnit')";
+
+$tbl_invUnit;
+
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $tbl_invUnit=$row;
+}
+pg_free_result($row);
+if($tbl_invUnit['exists'] === 'f')
+{
+    $sql = 'CREATE TABLE public."tbl_invUnit"('.
+			      ' id SERIAL PRIMARY KEY, '.
+                 ' "styleId" INT references "tbl_invStyle"("styleId"),'.
+                 ' "colorId" INT ,'.
+                 ' row varchar(50),rack varchar(50),shelf varchar(50),'.
+                 ' "storageId" INT references "locationDetails"(id),'.
+                 ' box varchar(100) unique ,'.
+                  ' "createdBy" bigint references "employeeDB"("employeeID"), '.
+                    ' "createdAt" timestamp, '.
+                    ' "updatedBy" bigint references "employeeDB"("employeeID"), '.
+                    ' "updatedAt" timestamp, '.
+                    'type varchar(50) ,'.
+                    'merged INT default(0)'.
+			' ) WITH ( OIDS=FALSE );'.
+			' ALTER TABLE public."tbl_invUnit" OWNER TO globaluniformuser';
+    if(!($result=pg_query($connection,$sql)))
+    {
+
+        print_r('Application.php -- error in insert tbl_invUnit');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+        //print('successfully built the table
+    }
+
+    pg_free_result($result);
+
+}
+
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_invQuantity')";
+
+$tbl_invQty;
+
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $tbl_invQty=$row;
+}
+pg_free_result($row);
+if($tbl_invQty['exists'] === 'f')
+{
+    $sql = 'CREATE TABLE public."tbl_invQuantity"
+			(
+			      id SERIAL PRIMARY KEY, 
+                 "boxId" int references "tbl_invUnit"(id),
+                 "mainSizeId" bigint,
+                 "optSizeId" bigInt,
+                 "qty" bigint
+			)
+			WITH (
+			  OIDS=FALSE
+			);
+			ALTER TABLE public."tbl_invQuantity"
+			  OWNER TO globaluniformuser';
+    if(!($result=pg_query($connection,$sql)))
+    {
+
+        print_r('Application.php -- error in insert tbl_invQuentity');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+        //print('successfully built the table
+    }
+
+    pg_free_result($result);
+
+}
+
 
 // CREATE TABLE "tbl_invLocation" (
 //     "locationId" bigint DEFAULT nextval(('tbl_invLocation_locationId_seq'::text)::regclass) NOT NULL,
@@ -1075,4 +1167,29 @@ if($column_exists['exists'] === 'f')
 //     identifier character varying(10)
 // );
 
+function dd($item)
+{
+    echo '<pre>';
+    print_r($item);
+    die();
+}
+function getSizeName($size,$scale,$conn){
+    $sql = '';
+    $sql = 'SELECT * FROM "tbl_invScaleSize" WHERE "sizeScaleId"='.$size;
+    if(!($result=pg_query($conn,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($conn),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    $sizeData= pg_fetch_array($result);
+    pg_free_result($result);
+    if($scale == 'mainSize'){
+        return $sizeData['scaleSize'];
+    } else {
+        return $sizeData['opt1Size'];
+    }
+}
 ?>

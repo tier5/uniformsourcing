@@ -154,7 +154,7 @@
                 alert('Please Select A Style');
                 return false;
             }
-            window.location.replace('bulkLocation.php?styleId='+styleNumber);
+            window.location.replace('newInventory/bulkLocation.php?styleId='+styleNumber);
         });
     });
 </script>
