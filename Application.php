@@ -1086,7 +1086,7 @@ if($tbl_invUnit['exists'] === 'f')
     $sql = 'CREATE TABLE public."tbl_invUnit"('.
 			      ' id SERIAL PRIMARY KEY, '.
                  ' "styleId" INT references "tbl_invStyle"("styleId"),'.
-                 ' "colorId" INT references "tbl_invColor"("colorId"),'.
+                 ' "colorId" INT ,'.
                  ' row varchar(50),rack varchar(50),shelf varchar(50),'.
                  ' "storageId" INT references "locationDetails"(id),'.
                  ' box varchar(100) unique ,'.
