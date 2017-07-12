@@ -1030,7 +1030,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             success: function (data) {
                 var dataParse = $.parseJSON(data);
                 if (dataParse.success) {
-                    swal("Deleted!", dataParse.message, "success");
+                    swal("Updated!", dataParse.message, "success");
                     window.location.reload();
                 } else {
                     swal("Error", dataParse.message, "error");
