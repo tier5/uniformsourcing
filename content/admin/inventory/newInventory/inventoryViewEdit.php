@@ -292,7 +292,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                             if (isset($_GET['boxId']) && $_GET['boxId'] == $unit[0]) {
                                 echo ' selected="selected" ';
                             }
-                            echo '>' . $unit['identifier'] . '_' . $unit[$unit['type']] . '_' . $unit['box'] . '</option>';
+                            echo '>' . $unit['box'] . '</option>';
                         }
                         ?>
                     </select>

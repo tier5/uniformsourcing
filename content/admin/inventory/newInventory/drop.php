@@ -1,5 +1,5 @@
 <?php
-ini_set('max_execution_time', 30000000);
+/*ini_set('max_execution_time', 30000000);
 set_time_limit(0);
 ini_set('memory_limit', '2048M');
 require('Application.php');
@@ -16,7 +16,7 @@ if (!($resultProduct = pg_query($connection, $sql))) {
     print("Failed invQuery: " . pg_last_error($connection));
     exit;
 }
-pg_free_result($resultProduct);
+pg_free_result($resultProduct);*/
 echo "done";
 exit;
 ?>
