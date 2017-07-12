@@ -224,6 +224,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
 ?>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"
       integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.css" />
 <style>
     .inputQty {
         background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
@@ -770,6 +771,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.js"></script>
 <!--Add new Inventory Scripts -->
 <script>
     $(document).ready(function () {
@@ -966,31 +968,39 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         });
     });
     $('#deleteBox').on('click', function () {
-        var boxId = "<?php echo $_GET['boxId'] ?>";
-        if (boxId == '' || boxId == undefined) {
-            $('#errorMessage').html('<h2 style="color: red;">Error !! please Select a Box..</h2>');
-            return false;
-        }
-        var color = $('#color').val();
-        var style = "<?php echo $_GET['styleId']; ?>";
-        var dataString = 'styleId=' + style + '&colorId=' + color + '&boxId=' + boxId;
-        $.ajax({
-            type: "POST",
-            url: "deleteUnit.php",
-            data: dataString,
-            success: function (data) {
-                var dataParse = $.parseJSON(data);
-                if (dataParse.success) {
-                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
-                    setTimeout(function () {
-                        $(location).attr('href', 'inventoryViewEdit.php?styleId=' + style + '&colorId=' + color);
-                    }, 10000);
-                } else {
-                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
-                }
+        swal({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this Box!',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, keep it'
+        }).then(function() {
+            var boxId = "<?php echo $_GET['boxId'] ?>";
+            if (boxId == '' || boxId == undefined) {
+                $('#errorMessage').html('<h2 style="color: red;">Error !! please Select a Box..</h2>');
+                return false;
             }
+            var color = $('#color').val();
+            var style = "<?php echo $_GET['styleId']; ?>";
+            var dataString = 'styleId=' + style + '&colorId=' + color + '&boxId=' + boxId;
+            $.ajax({
+                type: "POST",
+                url: "deleteUnit.php",
+                data: dataString,
+                success: function (data) {
+                    var dataParse = $.parseJSON(data);
+                    if (dataParse.success) {
+                        swal("Deleted!", dataParse.message, "success");
+                        $(location).attr('href', 'inventoryViewEdit.php?styleId=' + style + '&colorId=' + color);
+                    } else {
+                        swal("Error", dataParse.message, "error");
+                    }
+                }
+            });
+        }, function(dismiss) {
+            console.log(dismiss);
         });
-
     });
     $('.click').keyup(function () {
         var id = this.id;
@@ -1020,12 +1030,10 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             success: function (data) {
                 var dataParse = $.parseJSON(data);
                 if (dataParse.success) {
-                    $('#errorMessage').html('<h2 style="color: green;">' + dataParse.message + '</h2>');
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 1000);
+                    swal("Deleted!", dataParse.message, "success");
+                    window.location.reload();
                 } else {
-                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
+                    swal("Error", dataParse.message, "error");
                 }
             }
         });
