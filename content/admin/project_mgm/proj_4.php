@@ -91,8 +91,15 @@ if(!($result=pg_query($connection,$sql))){
 	}
         pg_free_result($result);
 }
-
-
+$sql = '';
+$sql = 'SELECT * FROM "tbl_tax" WHERE status=1';
+if(!($result=pg_query($connection,$sql))){
+        print("Failed query1: " . pg_last_error($connection));
+        exit;
+}
+while($row = pg_fetch_array($result)){
+        $data_tax[]=$row;
+}
 $html = '<table width="90%" cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td>
@@ -122,7 +129,7 @@ $html .= '>Target Retail Price:</td>
 if($emp_type ==2){
 	$html .= 'disabled="disabled"';
 }
-$html .= 'value="'.$data_prj_style[0]['style'].'" onchange="javascript:calculateProjectCost(\'1\');" />
+$html .= 'value="'.$data_prj_style[0]['style'].'" onchange="javascript:purchaseOrderCalculation(1,1);" />
 </td>
 
 <td >
@@ -137,17 +144,17 @@ $html .= 'value="'.$data_prj_style[0]['vendor_style'].'" />
 if($emp_type ==2){
 	$html .= ' disabled="disabled"';
 }
-$html .= 'value="'.$data_prj_style[0]['garments'].'" onchange="javascript:isNumeric(this);calculateProjectCost(\'1\');  " />
+$html .= 'value="'.$data_prj_style[0]['garments'].'" onchange="javascript:isNumeric(this);purchaseOrderCalculation(1,1);  " />
 </td>
 <td>
-<input type="text" id="priceunit1" name="priceunit[]" value="'.$data_prj_style[0]['priceunit'].'"'.$style_price.'onchange="javascript:isNumeric(this);calculateProjectCost(\'1\');  "  />
+<input type="text" id="priceunit1" name="priceunit[]" value="'.$data_prj_style[0]['priceunit'].'"'.$style_price.'onchange="javascript:isNumeric(this);purchaseOrderCalculation(1,1);  "  />
 </td>
 <td>
 <input type="text" id="retailprice1" name="retailprice[]" value="'.$data_prj_style[0]['retailprice'].'" ';
 if($emp_type ==1 || $emp_type ==2){
 	$html .= 'style="visibility:hidden"';
 }
-$html .= 'onchange="javascript:isNumeric(this); calculateProjectCost(\'1\'); " />
+$html .= 'onchange="javascript:isNumeric(this);purchaseOrderCalculation(1,1); " />
 </td>
 <td>
 <input type="hidden" id="rowSum1" value="';
@@ -186,7 +193,7 @@ if($isEdit){
 		if($emp_type ==2){
 			$html .= 'disabled="disabled"';
 		}
-		$html .= 'type="text" value="'.htmlentities( $data_prj_style[$i]['style']).'" onchange="javascript:calculateProjectCost(\''.$j.'\');"  />
+		$html .= 'type="text" value="'.htmlentities( $data_prj_style[$i]['style']).'" onchange="javascript:purchaseOrderCalculation(\''.$j.'\',1);"  />
 		
 		</td>
 		<td>
@@ -202,17 +209,17 @@ if($isEdit){
 		if($emp_type ==2){
 			$html .= 'disabled="disabled"';
 		}
-		$html .= 'type="text" value="'.htmlentities( $data_prj_style[$i]['garments']).'" onchange="javascript:isNumeric(this);calculateProjectCost(\''.$j.'\');"  />
+		$html .= 'type="text" value="'.htmlentities( $data_prj_style[$i]['garments']).'" onchange="javascript:isNumeric(this);purchaseOrderCalculation(\''.$j.'\',1);"  />
 		</td>
 		<td>
-		<input id="priceunit'.$j.'" '.$style_price.'  name="priceunit[]" type="text" value="'.htmlentities( $data_prj_style[$i]['priceunit']).'" onchange="javascript:isNumeric(this);calculateProjectCost(\''.$j.'\');" />
+		<input id="priceunit'.$j.'" '.$style_price.'  name="priceunit[]" type="text" value="'.htmlentities( $data_prj_style[$i]['priceunit']).'" onchange="javascript:isNumeric(this);purchaseOrderCalculation(\''.$j.'\',1);" />
 		</td>
 		<td>
 		<input id="retailprice'.$j.'" name="retailprice[]"';
 		if($emp_type ==1 || $emp_type ==2){
 			$html .= 'style="visibility:hidden"';
 		}
-		$html .= 'type="text" value="'.htmlentities( $data_prj_style[$i]['retailprice']).'" onchange="javascript:isNumeric(this);calculateProjectCost(\''.$j.'\');" />
+		$html .= 'type="text" value="'.htmlentities( $data_prj_style[$i]['retailprice']).'" onchange="javascript:isNumeric(this);purchaseOrderCalculation(\''.$j.'\',1);" />
 		</td>
 		<td> 
 		<input type="hidden" id="rowSum'.$j.'"';
@@ -259,10 +266,10 @@ $html .= '</table>
 if(isset($data_prj_ship) && $data_prj_ship==1) 
    $html .=' style = "display:none;" ';
 
-$html .='>';
-/*<td align="right" width="50%" height="25">Shipping Cost:<strong>$</strong></td>
-<td width="1%">&nbsp;</td>*/
-$html .='<td align="left"><input type="hidden" name="shipping_cost" id="shipping_cost" value="'.$data_prjPricing['shipping_cost'].'" '.$style_price.' onchange="javascript:isNumeric(this);calculateProjectComCost();  "  /></td>
+$html .='>
+<td align="right" width="50%" height="25">Shipping Cost:<strong>$</strong></td>
+<td width="1%">&nbsp;</td>';
+$html .='<td align="left"><input type="text" name="shipping_cost" id="shipping_cost" value="'.$data_prjPricing['shipping_cost'].'" '.$style_price.' onchange="javascript:isNumeric(this);purchaseOrderCalculation(1,2);  "  /></td>
 </tr>
 <tr ';
 //echo "status ";//.$_POST['shipping_status'];
@@ -275,29 +282,43 @@ $html .= '>';
 $html .='<td align="left"><input type="hidden" name="pt_invoice" value="'.$data_prjPricing['pt_invoice'].'" onchange="javascript:isNumeric(this);" /></td>
 </tr>
 
-<tr '.$style_price.'>';
-	/*<td align="right" height="25">Taxes:<strong>$</strong></td>
-	<td>&nbsp;</td>*/
-$html .='<td align="left"><input type="hidden" name="taxes" id="taxes" value="'.$data_prjPricing['taxes'].'" '.$style_price.' onchange="javascript:isNumeric(this);calculateProjectComCost(); " /></td>
-</tr>
+<tr '.$style_price.'>
+	<td align="right" height="25">Taxes:<strong>$</strong></td>
+	<td>&nbsp;</td>';
+if(count($data_tax) > 0){
+    $html .= '<td align="left"><select name="taxes" id="taxes" '.$style_price.' onchange="javascript:isNumeric(this);purchaseOrderCalculation(1,2);; " >';
+    $html .= '<option value="0">Select a Tax</option>';
+    foreach($data_tax as $tax){
+        $html .= '<option value="'.$tax['tax_amount'].'" ';
+        if($tax['tax_amount'] == $data_prjPricing['taxes']){
+            $html .= 'selected="selected"';
+        }
+        $html .= ' >'.$tax['tax_name'].'</option>';
+    }
+    $html .= '</select></td>';
+} else {
+    $html .= '<td align="left">Please add a tax form Admin Panel</td>';
+}
+//$html .='<td align="left"><input type="hidden" name="taxes" id="taxes" value="'.$data_prjPricing['taxes'].'" '.$style_price.' onchange="javascript:isNumeric(this);calculateProjectComCost(); " /></td>
+//</tr>';
 
 
-
+$html .= '</tr>
 <tr '.$style_price.'>
 	<td align="right" height="25">Purchase Order Total:<strong>$</strong></td>
 	<td>&nbsp;</td>
 	<td align="left" height="25"><input type="text" name="projectQuote" id="projectQuote" '.$style_price.' value="'.$data_prjPricing['prjquote'].'" onchange="javascript:isNumeric(this);" /></td>
-</tr>
-<tr ';
+</tr>';
+/*<tr ';
 if($emp_type ==1 || $emp_type ==2){
 	$html .= 'style="visibility:hidden"';
 }
 $html .= '>
 	<td align="right" height="25">Project Cost:<strong>$</strong></td>
 	<td>&nbsp;</td>
-	<td align="left" height="25"> <input type="text" name="pcost" readonly="readonly" id="pcost"   value="'.$data_prjPricing['prjcost'].'" /></td>
-</tr>
-<tr';
+$html .= <td align="left" height="25"> <input type="hidden" name="pcost" readonly="readonly" id="pcost"   value="'.$data_prjPricing['prjcost'].'" /></td>
+</tr>*/
+$html .= '<tr';
 if($emp_type ==1 || $emp_type ==2){
 	$html .= ' style="visibility:hidden"';
 }
@@ -305,8 +326,8 @@ $html .= '>
 	<td align="right" height="25">Job Costing:</td>
 	<td>&nbsp;</td>
 	<td align="left" height="25"> <input type="button" value="Click for job costing"    onClick="javascript:popOpen(0,\'PEC\');"  /></td>
-</tr>
-<tr ';
+</tr>';
+/*<tr ';
 if($emp_type ==1 || $emp_type ==2){
 	$html .= 'style="visibility:hidden"';
 }
@@ -314,8 +335,8 @@ $html .= '>
 	<td align="right" height="25">Project Estimated Unit Cost:<strong>$</strong></td>
 	<td>&nbsp;</td>
 	<td align="left" height="25"><input type="text" name="pestimate" id="pestimate" readonly="readonly"  value="'.$data_prjPricing['prj_estimatecost'].'" /></td>
-</tr>
-<tr ';
+</tr>';*/
+$html .= '<tr ';
 if($emp_type ==1 || $emp_type ==2){
 	$html .= 'style="visibility:hidden"';
 }

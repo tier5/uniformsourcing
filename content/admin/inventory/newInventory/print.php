@@ -264,9 +264,9 @@ pg_free_result($result);
     <div class="container">
         <div class="row">
             <form id="inventoryFormNew">
-                <div class="col-md-11 right-sidebar">
+                <div class="col-md-12">
                     <div class="inventory-table">
-                        <div class="table-responsive">
+                        <div class="table-responsive1">
                             <table class="table my-table table-bordered text-center">
                                 <?php
                                 $element = '';
@@ -307,9 +307,13 @@ pg_free_result($result);
                     </div>
                 </div>
             </form>
+
+        </div>
+        <div class="row">
             <div class="col-md-12 align-right">
                 <button id="print_btn" onclick="print_me()" >Print</button>
             </div>
+
         </div>
     </div>
     <script type="text/javascript">

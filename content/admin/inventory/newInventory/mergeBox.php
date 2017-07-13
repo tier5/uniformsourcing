@@ -112,6 +112,24 @@ if($target != '' && $current != ''){
     }
     $data = pg_fetch_array($result);
     pg_free_result($result);
+
+
+    $sql = '';
+    $sql = 'INSERT INTO "tbl_invUpdateLog" ('.
+        ' "boxId","styleId","createdBy","createdAt",type ) VALUES ('.
+        "'".$current['box']."','".$current['styleId']."','".$_SESSION['employeeID']."','".date('Y-m-d G:i:s')."','Merge Box with ".$target['box']."' ) RETURNING *";
+    if(!($result=pg_query($connection,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($connection),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    $log = pg_fetch_array($result);
+    pg_free_result($result);
+
+
     $sql = '';
     $sql = "INSERT INTO \"audit_logs\" (";
     $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";

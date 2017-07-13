@@ -203,11 +203,16 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         }
     }
     if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
+        if(isset($_GET['colorId']) && $_GET['colorId'] != 0){
+            $colorId = $_GET['colorId'];
+        } else {
+            $colorId = $dataColor[0]['colorId'];
+        }
         $sql = '';
         $sql = 'SELECT unit.id as number,unit.box,unit.type,details.*,location.identifier FROM "tbl_invUnit" unit ' .
             ' LEFT JOIN "locationDetails" details ON details.id=unit."storageId" ' .
             'LEFT JOIN "tbl_invLocation" location ON location."locationId"= CAST(details."locationId" as INT) ' .
-            'WHERE unit."styleId"=' . $_GET['styleId'] . ' and unit.id <>' . $_GET['boxId'] . '  and merged=0';
+            'WHERE unit."styleId"=' . $_GET['styleId'] . ' and "colorId"='.$colorId.' and unit.id <>' . $_GET['boxId'] . '  and merged=0';
         if (!($result = pg_query($connection, $sql))) {
             print("Failed location fetch Query: " . pg_last_error($connection));
             exit;
@@ -217,6 +222,16 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         }
         pg_free_result($result);
     }
+    $sql = '';
+    $sql = 'SELECT * FROM "tbl_invLocation"';
+    if (!($result = pg_query($connection, $sql))) {
+        print("Failed location fetch Query: " . pg_last_error($connection));
+        exit;
+    }
+    while ($row2 = pg_fetch_array($result)) {
+        $locationChange[] = $row2;
+    }
+    pg_free_result($result);
 } else {
     echo '<h1>Please select a Style to view the Report</h1>';
     exit();
@@ -253,6 +268,11 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     .tool:hover .tooltext {
         visibility: visible;
     }
+    A:link {
+        color: #fff;
+        text-decoration: none;
+    }
+    a:focus, a:hover{color: #337ab7; text-decoration: underline;}
 </style>
 <div class="container">
     <div class="page-header">
@@ -442,15 +462,25 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                         }
                                         ?>
                                     </div>
-
-                                <div class="col-md-3">
-                                    <button type="button" id="merge" class="btn btn-warning btn-md">
-                                        Merge
-                                    </button>
-                                </div>
+                                <?php
+                                if(count($mergedLocation) > 0) {
+                                    ?>
+                                    <div class="col-md-3">
+                                        <button type="button" id="merge" class="btn btn-warning btn-md">
+                                            Merge
+                                        </button>
+                                    </div>
+                                    <?php
+                                }
+                                ?>
                                 <div class="col-md-3">
                                     <button type="button" id="deleteBox" class="btn btn-danger btn-md">
                                         Delete
+                                    </button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" data-toggle="modal" data-target="#locationUpdateModal" class="btn btn-info btn-md">
+                                        Update Location
                                     </button>
                                 </div>
                                 <?php
@@ -552,7 +582,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                 $element .= '<td class="text-left">' . $value1 . '</td>';
                                 foreach ($dataMainSizeId as $key2 => $value2) {
                                     if (isset($dataQuantity[$key2][$key1]) && $dataQuantity[$key2][$key1] > 0) {
-                                        $element .= '<td class="text-center tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="' . $dataQuantity[$key2][$key1] . '"> <p class="tooltext">'.$dataToolTip[$key2][$key1].'</p></td>';
+                                        $element .= '<td class="text-center"><span class="tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="' . $dataQuantity[$key2][$key1] . '"> <p class="tooltext">'.$dataToolTip[$key2][$key1].'</p></span>      ';
                                         $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                         $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
                                         $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . $key1 . '" value="0" /></td>';
@@ -570,7 +600,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                             $element .= '<td class="text-left">Qty</td>';
                             foreach ($dataMainSizeId as $key2 => $value2) {
                                 if (isset($dataQuantity[$key2][0]) && $dataQuantity[$key2][0] > 0) {
-                                    $element .= '<td class="text-center tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="' . $dataQuantity[$key2][0] . '"> <p class="tooltext">'.$dataToolTip[$key2][0].'</p>';
+                                    $element .= '<td class="text-center"><span class="tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="' . $dataQuantity[$key2][0] . '"> <p class="tooltext">'.$dataToolTip[$key2][0].'</p></span>';
                                     $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                     $element .= '<input type="hidden" name="optSizeId[]" value="' . 0 . '" />';
                                     $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . 0 . '" value="0" /></td>';
@@ -765,7 +795,70 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="locationUpdateModal" role="dialog">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update Location</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Select A location</label>
+                            </div>
+                            <div class="col-md-5">
+                                <select name="location" id="location" class="form-control">
+                                    <option value="">----Select A Location----</option>
+                                    <?php
+                                    foreach ($locationChange as $locationValue) {
+                                        ?>
+                                        <option
+                                                value="<?php echo $locationValue['locationId']; ?>"><?php echo $locationValue['name']; ?></option>
+                                        <?php
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="padding-bottom: 15px"></div>
+                        <div class="row">
+                            <div id="loader" style="line-height: 115px; text-align: center; display: none;">
+                                <img alt="activity indicator" src="../../../images/ajax-loader.gif">
+                            </div>
+                        </div>
+                        <div style="padding-bottom: 15px"></div>
+                        <div class="row" id="secondSelect" style="display: none;">
+                            <div class="col-md-4">
+                                <label>Select a Storage</label>
+                            </div>
+                            <div class="col-md-5">
+                                <select name="storage" id="storage" class="form-control">
+                                    <option value="">----Select A Storage----</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="padding-bottom: 15px"></div>
+                        <div class="row">
+                            <span class="col-md-10" id="error" style="display: none;color: red; font-size: medium;">This Location is Empty Please Add a Storage</span>
+                        </div>
+                        <div style="padding-bottom: 15px"></div>
+                        <div class="row">
+                            <button id="changeLocationSubmit" class="btn btn-md btn-success center-block">
+                                Change
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <?php require('../../../trailer.php'); ?>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
@@ -863,7 +956,15 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                     var dataPase = $.parseJSON(data);
                     if (dataPase.success) {
                         var dataString2 = 'styleId=' + dataPase.data.styleId + '&colorId=' + dataPase.data.colorId + '&boxId=' + dataPase.data.id;
-                        window.location.replace('inventoryViewEdit.php?' + dataString2);
+                        swal({
+                            title: "Added!",
+                            text: dataPase.message,
+                            type: "success"
+                        }).then( function(){
+                            window.location.replace('inventoryViewEdit.php?' + dataString2);
+                        },function (dismiss) {
+                            window.location.replace('inventoryViewEdit.php?' + dataString2);
+                        });
                     } else {
                         $('#newError').html('<h3 style="color: red;">' + dataPase.message + '</h3>');
                         $('#newError').show();
@@ -922,6 +1023,62 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             }
         });
     };
+    $('#location').change(function () {
+        var location = $(this).val();
+        jQuery.ajax({
+            type: "POST",
+            url: "bulkLocationIdentifierList.php",
+            data: {
+                id: location,
+            },
+            beforeSend: function(){ jQuery("#loader").show(); },
+            complete: function(){ jQuery("#loader").hide(); },
+            success: function(response){
+                if (response == 0){
+                    jQuery("#storage").html('');
+                    $('#changeLocationSubmit').attr('disabled','disabled');
+                    $('#error').show();
+                    jQuery("#secondSelect").hide();
+                } else {
+                    $('#error').hide();
+                    $('#changeLocationSubmit').removeAttr('disabled');
+                    jQuery("#storage").html(response);
+                    jQuery("#secondSelect").show();
+                }
+            }
+        });
+    });
+    $('#changeLocationSubmit').on('click',function () {
+         var storage = $('#storage').val();
+         var boxId = "<?php echo $_GET['boxId']; ?>";
+         $.ajax({
+             url: "changeLocation.php",
+             type: "POST",
+             data: {
+                 storage: storage,
+                 boxId: boxId
+             },
+             success:function (data) {
+                 if(data == 1){
+                     swal({
+                         title: "Success!",
+                         text: "Location Changed Successfully",
+                         type: "success"
+                     }).then( function(){
+                        window.location.reload();
+                     },function (dismiss) {
+                        window.location.reload();
+                     });
+                 } else {
+                     swal({
+                         title: "Error!",
+                         text: "Location not Changed ! Please Try After Some Time....",
+                         type: "error"
+                     });
+                 }
+             }
+         });
+    });
     $('#allBoxSelect').change(function () {
         changeUrl();
     });
@@ -991,8 +1148,15 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                 success: function (data) {
                     var dataParse = $.parseJSON(data);
                     if (dataParse.success) {
-                        swal("Deleted!", dataParse.message, "success");
-                        $(location).attr('href', 'inventoryViewEdit.php?styleId=' + style + '&colorId=' + color);
+                        swal({
+                            title: "Deleted!",
+                            text: dataParse.message,
+                            type: "success"
+                        }).then( function(){
+                            $(location).attr('href', 'inventoryViewEdit.php?styleId=' + style + '&colorId=' + color);
+                        },function (dismiss) {
+                            $(location).attr('href', 'inventoryViewEdit.php?styleId=' + style + '&colorId=' + color);
+                        });
                     } else {
                         swal("Error", dataParse.message, "error");
                     }
@@ -1030,8 +1194,15 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             success: function (data) {
                 var dataParse = $.parseJSON(data);
                 if (dataParse.success) {
-                    swal("Updated!", dataParse.message, "success");
-                    window.location.reload();
+                    swal({
+                        title: "Updated!",
+                        text: dataParse.message,
+                        type: "success"
+                    }).then( function(){
+                        window.location.reload();
+                    },function (dismiss) {
+                        window.location.reload();
+                    });
                 } else {
                     swal("Error", dataParse.message, "error");
                 }
@@ -1068,17 +1239,24 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             success: function (data) {
                 var dataParse = $.parseJSON(data);
                 if (dataParse.success) {
-                    $('#errorMessage').html('<h2 style="color: blue;">' + dataParse.message + '</h2>');
-                    $('#errorMessage').show();
                     var color = dataParse.info.colorId;
                     var style = dataParse.info.styleId;
                     var dataString = 'styleId=' + style + '&colorId=' + color + '&boxId=' + targetBox;
-                    $(location).attr('href', 'inventoryViewEdit.php?' + dataString);
+                    swal({
+                        title: "Merged!",
+                        text: dataParse.message,
+                        type: "success"
+                    }).then( function(){
+                        $(location).attr('href', 'inventoryViewEdit.php?' + dataString);
+                    },function (dismiss) {
+                        $(location).attr('href', 'inventoryViewEdit.php?' + dataString);
+                    });
                 } else {
-                    $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
-                    $('#errorMessage').show();
-                    $('#mergeDiv').hide();
-                    $('#merge').show();
+                    swal({
+                        title: "Error!",
+                        text: dataParse.message,
+                        type: "error"
+                    });
                 }
             }
         });

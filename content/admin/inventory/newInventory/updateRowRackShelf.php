@@ -32,6 +32,65 @@ if($unit != ''){
             ]);
             return;
         }
+
+
+        $sql = '';
+        $sql = 'INSERT INTO "tbl_invUpdateLog" ('.
+            ' "boxId","styleId","createdBy","createdAt",type ) VALUES ('.
+            "'".$unit['box']."','".$unit['styleId']."','".$_SESSION['employeeID']."','".date('Y-m-d G:i:s')."','Update Box' ) RETURNING *";
+        if(!($result=pg_query($connection,$sql))){
+            echo json_encode([
+                'message' => pg_last_error($connection),
+                'success' => false,
+                'code' => 500
+            ]);
+            return;
+        }
+        $log = pg_fetch_array($result);
+        pg_free_result($result);
+
+        $sql2 = '';
+        $sql2 = 'INSERT INTO "tbl_invUpdateLogQuantity" ('.
+            '"mainSize","optSize","logId","oldValue","newValue","log" ) VALUES ( '.
+            "'0','0','".$log['id']."','".$unit['row']."','".$row."','Update Row' )";
+        if(!($audit = pg_query($connection,$sql2))){
+            echo json_encode([
+                'message' => pg_last_error($connection),
+                'success' => false,
+                'code' => 500
+            ]);
+            return;
+        }
+        pg_free_result($audit);
+
+        $sql2 = '';
+        $sql2 = 'INSERT INTO "tbl_invUpdateLogQuantity" ('.
+            '"mainSize","optSize","logId","oldValue","newValue","log" ) VALUES ( '.
+            "'0','0','".$log['id']."','".$unit['rack']."','".$rack."','Update Rack' )";
+        if(!($audit = pg_query($connection,$sql2))){
+            echo json_encode([
+                'message' => pg_last_error($connection),
+                'success' => false,
+                'code' => 500
+            ]);
+            return;
+        }
+        pg_free_result($audit);
+
+        $sql2 = '';
+        $sql2 = 'INSERT INTO "tbl_invUpdateLogQuantity" ('.
+            '"mainSize","optSize","logId","oldValue","newValue","log" ) VALUES ( '.
+            "'0','0','".$log['id']."','".$unit['shelf']."','".$shelf."','Update Shelf' )";
+        if(!($audit = pg_query($connection,$sql2))){
+            echo json_encode([
+                'message' => pg_last_error($connection),
+                'success' => false,
+                'code' => 500
+            ]);
+            return;
+        }
+        pg_free_result($audit);
+
         $sql = '';
         $sql = "INSERT INTO \"audit_logs\" (";
         $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";

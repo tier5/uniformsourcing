@@ -1160,6 +1160,101 @@ if($tbl_invQty['exists'] === 'f')
 }
 
 
+
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_invUpdateLog')";
+
+$tbl_invQty;
+
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $tbl_invQty=$row;
+}
+pg_free_result($row);
+if($tbl_invQty['exists'] === 'f')
+{
+    $sql = 'CREATE TABLE public."tbl_invUpdateLog"
+			(
+			      id SERIAL PRIMARY KEY, 
+                 "boxId" VARCHAR ,
+                 "styleId" bigint,
+                 "createdBy" bigInt,
+                 "createdAt" TIMESTAMP ,
+                 type varchar(50)
+			)
+			WITH (
+			  OIDS=FALSE
+			);
+			ALTER TABLE public."tbl_invUpdateLog"
+			  OWNER TO globaluniformuser';
+    if(!($result=pg_query($connection,$sql)))
+    {
+
+        print_r('Application.php -- error in insert tbl_invUpdateLog');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+        //print('successfully built the table
+    }
+
+    pg_free_result($result);
+
+}
+
+$sql = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE  table_schema = 'public' AND table_name = 'tbl_invUpdateLogQuantity')";
+
+$tbl_invQty;
+
+if(!($result=pg_query($connection,$sql)))
+{
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit;
+}
+while($row = pg_fetch_array($result))
+{
+    $tbl_invQty=$row;
+}
+pg_free_result($row);
+if($tbl_invQty['exists'] === 'f')
+{
+    $sql = 'CREATE TABLE public."tbl_invUpdateLogQuantity"
+			(
+			      id SERIAL PRIMARY KEY, 
+                 "mainSize" bigint,
+                 "optSize" bigint,
+                 "logId" bigint,
+                 "oldValue" VARCHAR ,
+                 "newValue" VARCHAR ,
+                 "log" TEXT
+			)
+			WITH (
+			  OIDS=FALSE
+			);
+			ALTER TABLE public."tbl_invUpdateLogQuantity"
+			  OWNER TO globaluniformuser';
+    if(!($result=pg_query($connection,$sql)))
+    {
+
+        print_r('Application.php -- error in insert tbl_invUpdateLogQuantity');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+        //print('successfully built the table
+    }
+
+    pg_free_result($result);
+
+}
+
+
 // CREATE TABLE "tbl_invLocation" (
 //     "locationId" bigint DEFAULT nextval(('tbl_invLocation_locationId_seq'::text)::regclass) NOT NULL,
 //     name character varying(200),

@@ -517,14 +517,14 @@ if($is_session !=1)
 			<th class="sortable-numericB" style="width:150px;">Purchase Order</th>
             <th class="sortable-numericB" style="width:100px;">PT Invoice</th>
             <th class="sortable-numericB" style="width:100px;">PO Due Date</th>
-			<th class="sortable-numericB" style="width:100px;">Project Quote</th>
+			<th class="sortable-numericB" style="width:100px;">PO Total</th>
             <th class="sortable-numericB" style="width:100px;">Order Placed On</th>
 			<th class="sortable-numericB" style="width:200px;">Tracking Number</th>
-			<th class="sortable-numericB" style="width:100px;">Target Delivery</th>
+			<!--<th class="sortable-numericB" style="width:100px;">Target Delivery</th>-->
             <th class="sortable-numericB" style="width:100px;">Last Update</th>
-<?php 
-		if($is_session !=1)
-		 echo '<th class="sortable-numericB" style="width:200px;">Billed</th>';
+<?php
+		/*if($is_session !=1)
+		 echo '<th class="sortable-numericB" style="width:200px;">Billed</th>';*/
 ?>
 			
             <th class="sortable-numericB" style="width:50px;">Edit</th>
@@ -575,7 +575,7 @@ if(count($datalist))
  }
  else
  echo '<a href="javascript:void(0);" onclick="javascript:popupWindow(\''.$datalist[$i]['weblink'].$datalist[$i]['tracking_number'].'\');">'.$datalist[$i]['tracking_number'].'</a>';
- echo '</td>';  
+ echo '</td>';
 }              
                 
     else{            echo '<td class="grid001B">';
@@ -585,21 +585,21 @@ if(count($datalist))
  }
  else
  echo '<a href="javascript:void(0);" onclick="javascript:popupWindow(\''.$datalist[$i]['weblink'].$datalist[$i]['tracking_no'].'\');">'.$datalist[$i]['tracking_no'].'</a>';
- echo '</td>';   
+ echo '</td>';
     }
-    echo '<td class="grid001B">'.$datalist[$i]['prdtntrgtdelvry'].'</td>';
+    /*echo '<td class="grid001B">'.$datalist[$i]['prdtntrgtdelvry'].'</td>';*/
 	echo '<td class="grid001B">';
 	if($datalist[$i]['updateddate']!="")
 	echo date('m/d/Y',$datalist[$i]['updateddate']);
 	echo '</td>';
 		if($is_session !=1)
 		{
-			echo '<td class="grid001B" id="bill_'.$i.'" > <div style="cursor:pointer;cursor:hand;" onclick="javascript:editBilledinfo('.$datalist[$i]['pid'].', \'load\', '.$i.');" >';
+			/*echo '<td class="grid001B" id="bill_'.$i.'" > <div style="cursor:pointer;cursor:hand;" onclick="javascript:editBilledinfo('.$datalist[$i]['pid'].', \'load\', '.$i.');" >';
 			if($datalist[$i]['is_billed'] != '' && $datalist[$i]['is_billed'] > 0)
 				echo '&nbsp;Yes&nbsp;:&nbsp;'.date('m/d/Y',$datalist[$i]['bill_date']);
 			else 	
 				echo '&nbsp;No&nbsp;';
-			echo '</div></td>';
+			echo '</div></td>';*/
 		}
 		echo '<td class="grid001B"><a href="project_mgm.add.php?id='.$datalist[$i]['pid'].'&'.$paging.'"><img src="'.$mydirectory.'/images/edit.png" alt="edit" /></a></td>';
 		if($is_session !=1)

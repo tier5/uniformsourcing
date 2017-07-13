@@ -46,17 +46,16 @@ function logCheckvival($styleId,$connection)
     }
     pg_free_result($resultProduct);
     $sql = '';
-    $sql = "select * from \"tbl_log_updates\" where \"styleId\" =" . $styleId . " and \"present\" ='inventory' order by \"updatedDate\" desc LIMIT 1";
+    $sql = "select * from \"tbl_invUpdateLog\" where \"styleId\" =" . $styleId . " order by \"createdAt\" desc LIMIT 1";
     if (!($resultoldinv = pg_query($connection, $sql))) {
         print("Failed invQuery: " . pg_last_error($connection));
         exit;
     }
-    $rowoldinv = pg_fetch_row($resultoldinv);
+    $rowoldinv = pg_fetch_array($resultoldinv);
     $oldinv = $rowoldinv;
     pg_free_result($resultoldinv);
-
     if ($oldinv) {
-        $empsql = 'select * from "employeeDB" where "employeeID" =' . $oldinv['2'] . ' LIMIT 1';
+        $empsql = 'select * from "employeeDB" where "employeeID" =' . $oldinv['createdBy'] . ' LIMIT 1';
         if (!($resultemp = pg_query($connection, $empsql))) {
             print("Failed invQuery: " . pg_last_error($connection));
             exit;
@@ -67,7 +66,7 @@ function logCheckvival($styleId,$connection)
     pg_free_result($resultemp);
     $t = time();
     $datetime1 = date_create(date('Y-m-d',$t));
-    $datetime2 = date_create(date('Y-m-d',$oldinv['3']));
+    $datetime2 = date_create(date('Y-m-d',strtotime($oldinv['createdAt'])));
     $interval = date_diff($datetime1, $datetime2);
     $days = $interval->format('%a')+1;
     $colo = 'black';
@@ -79,10 +78,10 @@ function logCheckvival($styleId,$connection)
         }
         if($colo == 'black'){
             $updatedby="Not Updated within 3 Days !!!";
-            echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"><span class="tooltiptext">'.$updatedby.'</br><a href="checkLog.php?ID='.$styleId.'">check the log</a></span></div>';
+            echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"><span class="tooltiptext">'.$updatedby.'</br><a href="newInventory/checkLog.php?styleId='.$styleId.'">check the log</a></span></div>';
         } else {
             $updatedby=$oldemp['1']." ".$oldemp['2'];
-            echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"><span class="tooltiptext">'.$updatedby.'</br><a href="checkLog.php?ID='.$styleId.'">check the log</a></span></div>';
+            echo '<div class="tooltip" id="button" style="width:25px; height: 25px; border-radius:100%; background-color:'.$colo.';"><span class="tooltiptext">'.$updatedby.'</br><a href="newInventory/checkLog.php?styleId='.$styleId.'">check the log</a></span></div>';
         }
     } else {
         $updatedby="Not Updated Yet !!!";
@@ -92,9 +91,6 @@ function logCheckvival($styleId,$connection)
 }
 
 
-
-?>
-<?php 
 if(isset($_GET['close']))
 {
 	$sql='Update "tbl_invStyle" SET "isActive"=0 where "styleId"='.$_GET['close'];

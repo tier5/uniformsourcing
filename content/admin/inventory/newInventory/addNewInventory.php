@@ -44,6 +44,24 @@ if(!$oldUnit){
     pg_free_result($result);
 
     $sql = '';
+    $sql = 'INSERT INTO "tbl_invUpdateLog" ('.
+        ' "boxId","styleId","createdBy","createdAt",type ) VALUES ('.
+        "'".$unit['box']."','".$styleId."','".$_SESSION['employeeID']."','".date('Y-m-d G:i:s')."','Add Box' ) RETURNING *";
+    if(!($result=pg_query($connection,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($connection),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    $log = pg_fetch_array($result);
+    pg_free_result($result);
+
+
+
+
+    $sql = '';
     $sql = "INSERT INTO \"audit_logs\" (";
     $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
     $sql .= " \"log\") VALUES (";
@@ -87,6 +105,23 @@ if(!$oldUnit){
                 return;
             }
             pg_free_result($result);
+
+            $sql = '';
+            $sql = 'INSERT INTO "tbl_invUpdateLogQuantity" ('.
+                '"mainSize","optSize","logId","oldValue","newValue","log" ) VALUES ( '.
+                "'".$mainSizeId[$key]."','".$optSizeId[$key]."','".$log['id']."','0','".$qty[$key]."','Add Box' )";
+            if(!($audit = pg_query($connection,$sql))){
+                echo json_encode([
+                    'message' => pg_last_error($connection),
+                    'success' => false,
+                    'code' => 500
+                ]);
+                return;
+            }
+            pg_free_result($audit);
+
+
+
             $mainSize = getSizeName($mainSizeId[$key],"mainSize",$connection);
             $optSize = (getSizeName($optSizeId[$key],"opt1size",$connection) == NULL)?"qty":getSizeName($optSizeId[$key],"opt1size",$connection);
             $sql = '';
