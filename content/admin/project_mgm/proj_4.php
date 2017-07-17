@@ -267,7 +267,7 @@ if(isset($data_prj_ship) && $data_prj_ship==1)
    $html .=' style = "display:none;" ';
 
 $html .='>
-<td align="right" width="50%" height="25">Shipping Cost:<strong>$</strong></td>
+<td align="right" width="50%" height="25">Shipping Charges:<strong>$</strong></td>
 <td width="1%">&nbsp;</td>';
 $html .='<td align="left"><input type="text" name="shipping_cost" id="shipping_cost" value="'.$data_prjPricing['shipping_cost'].'" '.$style_price.' onchange="javascript:isNumeric(this);purchaseOrderCalculation(1,2);  "  /></td>
 </tr>
