@@ -92,10 +92,10 @@ while ($row = pg_fetch_array($resultProduct)) {
 pg_free_result($resultemp);
 			$empsql='select * from "employeeDB" where "employeeID" ='.$data_storage['createdBy'].' LIMIT 1';
 			if(!($resultemp=pg_query($connection,$empsql))){
-			
+
 			}
 			else{
-			
+
 			}
 			$rowemp = pg_fetch_row($resultemp);
 			$oldemp=$rowemp;

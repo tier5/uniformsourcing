@@ -520,7 +520,7 @@ for ($i = 0; $i < count($data2); $i++) {
                     <th class="sortableB" height="10">Client </th>
                     <th class="sortableB" height="10">Project Manager</th>
                     <th class="sortableB">Project Name</th>
-                    <th class="sortable-numericB">Project Estimated Unit Cost</th>
+                    <!--<th class="sortable-numericB">Project Estimated Unit Cost</th>-->
                     <th class="sortable-numericB">Project Estimated Profit</th>
                     <th class="sortable-numericB">Bid Number</th>
                     <th class="sortable-numericB">Tracking Number</th>
@@ -549,7 +549,7 @@ if ($is_session != 1) {
                             echo '<td class="grid001B">' . $datalist[$i]['firstname'] . $datalist[$i]['lastname'] . '</td>';
                             echo '<td class="grid001B">' . $datalist[$i]['projectname'] . '</td>';
                           
-                            echo '<td class="grid001B">$' . $datalist[$i]['prj_estimatecost'] . '</td>';
+                            //echo '<td class="grid001B">$' . $datalist[$i]['prj_estimatecost'] . '</td>';
                               echo '<td class="grid001B">$' . $datalist[$i]['prj_est_profit'] . '</td>';
                             echo '<td class="grid001B">' . $datalist[$i]['bid_number'] . '</td>';
  if ($datalist[$i]['tracking_number'] != '' && $datalist[$i]['tracking_number'] != 'Array')

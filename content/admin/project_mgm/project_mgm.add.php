@@ -297,11 +297,11 @@ if($emp_type != 2)
 <?php 
 }?>
 
-<li onClick="javascript:load_tab('13'); document.getElementById('message').innerHTML = '';"><a href="#" rel="proj_content13">Styles</a></li>
-<?php if($emp_type != 5): ?>
+<!--<li onClick="javascript:load_tab('13'); document.getElementById('message').innerHTML = '';"><a href="#" rel="proj_content13">Styles</a></li>
+<?php /*if($emp_type != 5): */?>
 <li onClick="javascript: load_div('12'); document.getElementById('message').innerHTML = '';"><a href="#" rel="proj_content12">Inventory</a></li>
-<?php
-endif;
+--><?php
+/*endif;*/
 if($emp_type != 1 && $emp_type != 2 && $emp_type != 5)
 {
 ?>
@@ -1188,20 +1188,20 @@ function multipleStyle(id,type)
 	element2.type = "text";	
 	element2.name = "garments[]";
 	element2.id = "garments"+rowCount;
-	element2.setAttribute('onchange','javascript:<?php if($emp_type != 1){ echo "calculateProjectCost('+rowCount+');"; } ?> isNumeric(this);');
+	element2.setAttribute('onchange','javascript:<?php if($emp_type != 1){ echo "purchaseOrderCalculation('+rowCount+',1);"; } ?> isNumeric(this);');
 	
 	<?php if($emp_type != 1){
 	echo 'var element3 = document.createElement("input");
 	element3.type = "text";	
 	element3.name = "priceunit[]";
 	element3.id = "priceunit"+rowCount;
-	element3.setAttribute(\'onchange\',\'javascript:calculateProjectCost(\'+rowCount+\'); isNumeric(this);\');
+	element3.setAttribute(\'onchange\',\'javascript:purchaseOrderCalculation(\'+rowCount+\',1); isNumeric(this);\');
 	
 	var element4 = document.createElement("input");
 	element4.type = "text";	
 	element4.name = "retailprice[]";
 	element4.id = "retailprice"+rowCount;
-	element4.setAttribute(\'onchange\',\'javascript:calculateProjectCost(\'+rowCount+\'); isNumeric(this);\'); '; }?>
+	element4.setAttribute(\'onchange\',\'javascript:purchaseOrderCalculation(\'+rowCount+\',1); isNumeric(this);\'); '; }?>
 	
 	var element5 =  document.createElement("input");
 	element5.type = "hidden";	
@@ -1257,7 +1257,7 @@ function calculateProjectCost(count)
 	
 	var shipping_cost = {value:'0'};
 	var tax_cost = {value:'0'};
-	if(document.getElementById('shipping_cost').value!="" )
+            if(document.getElementById('shipping_cost').value!="" )
 		shipping_cost = document.getElementById('shipping_cost');
 	if(document.getElementById('taxes').value!="")
 		tax_cost = document.getElementById('taxes');
@@ -1491,150 +1491,6 @@ function vendorFileUpload(index, type, width, height){
               return false;
           }
 
-
-
-/*function AddAnotherVendor(tableID,Id,name,isNameRequired,tbl_vendorid)
-{
-     var vendor_sel = document.getElementById('vendorID');
-       var val=vendor_sel.options[vendor_sel.selectedIndex].value;
-    if(val==0)
-        {
-            alert("Please select a vendor...");
-            return;
-        }
-        flag=0;
-       $('input[name="vendorid[]"]').each(function() {
-   if($(this).val()==val)
-       {
-       alert("You have selected a vendor which is already in list");
-flag=1;
-       }
-});
- if(flag==1) return;
-  if(val==0)
-        {
-            alert("Please select a vendor...");
-            return;
-        }
-  app_str='<table><tr class="vendor_row_'+val+'"><td>Vendor Name:<td>'
-  +'<td><input type="text" value="'+vendor_sel.options[vendor_sel.selectedIndex].text+'"/><input name = "vendorid[]" type="hidden" value="'+vendor_sel.options[vendor_sel.selectedIndex].value+'"/><td>'
-  +'<td><a class="alink" href="#" onClick="DeleteVendorRow('+val+',0,0);">Delete</a></td></tr>';
-
-//if($("#notification_select").val()==2)
-    
-app_str+='<tr  class="deposit_fields_head vendor_row_'+val+'"><td>Vendor PO#:</td><td>&nbsp;</td><td><input type="text" name="vendorPO[]"/></td></tr>'+
- '<tr  class="deposit_fields_head vendor_row_'+val+'"><td>Vendor PO#:</td><td>&nbsp;</td><td><input type="text" name="vendorPO[]"/></td></tr>'   
-+'<tr class="deposit_fields_head vendor_row_'+val+'"><td>Deposit Sent:</td><td>&nbsp;</td><td>Yes<input type="radio" id="deposit_sent_yes" name="deposit_sent'+val+'" onclick="javascript:showDepositSent($(this))">'
-+'No<input type="radio" id="deposit_sent_no" name="deposit_sent'+val+'" onclick="javascript:hideDepositSent($(this))"> <input type="hidden" name="deposit_sent1[]" id="deposit_sent1"/></td></tr>'
-+'<tr class="deposit_fields deposit_sent vendor_row_'+val+'" style="display:none;"><td>Date: </td><td>&nbsp;</td><td><input type="text"  name="deposit_sent_date[]" id="order_on_'+val+'" onclick="javascript:showDate(this);" /></td></tr>'
-+'<tr class="deposit_fields deposit_sent vendor_row_'+val+'" style="display:none;"><td>Confirmation Number: </td><td>&nbsp;</td><td><input type="text" name="confirm_num[]"/></tr>'
-+''
-  +'<tr ><td>&nbsp;</td></tr>';
-  
-     app_str+=' </table>';
-  $("#vendor_list").append(app_str);
-if($("#notification_select").val()!='2')
-{
-/*  $(".deposit_fields_head").hide(); 
-   $(".deposit_fields").children().children().attr("disabled","disabled");
-}
-}*/
-/*
-function AddAnotherVendor(tableID,Id,name,isNameRequired,tbl_vendorid) {
-	var vendor_sel = document.getElementById('vendorID');
-	var table = document.getElementById(tableID);
-	var rowCount = table.rows.length;
-	var row = table.insertRow(rowCount);
-	var row2 = table.insertRow(rowCount+1);
-	
-        var cell1 = row.insertCell(0);
-	cell1.width="100px";		
-	cell1.innerHTML = "Vendor Name:";	
-	var cell2 = row.insertCell(1);
-	cell2.width="2px";		
-	cell2.innerHTML = "&nbsp;";	
-	
-	var cell3 = row.insertCell(2);
-	var element1 = document.createElement("input");
-	element1.type = "text";	
-	element1.disabled="true";
-	element1.value = vendor_sel.options[vendor_sel.selectedIndex].text;
-	var element2 = document.createElement("input");
-	element2.type = "hidden";
-	if(isNameRequired == 1)
-	{
-		element2.name = "vendorid[]";
-	}
-	element2.id = "vendorinp"+rowCount;
-	element2.value = vendor_sel.options[vendor_sel.selectedIndex].value;
-	cell3.appendChild(element1);	
-	cell3.appendChild(element2);
-	
-	var cell4 = row.insertCell(3);
-	cell4.width="10px";		
-	cell4.innerHTML = "&nbsp;";	
-	<?php 
-	if($isEdit)
-	{
-	?>
-		if(Id >0)
-		{
-			element1.value = name;
-			element2.value = Id;
-			var cell5 = row.insertCell(4);
-		}
-		else
-			var cell5 = row.insertCell(4);
-	<?php 
-	}
-	else
-	{
-	?>
-	var cell5 = row.insertCell(4);
-	<?php 
-	}
-	 if($emp_type !=1)
-	 { 
-	?>
-	cell5.innerHTML="<a class=\"alink\" href=\"javascript:;\" onClick=\"DeleteCurrentRow(this<?php if($isEdit){?>,"+Id+"<?php } ?>,"+tbl_vendorid+");\">Delete</a>";
-	<?php
-	 }
-	?>
-                var cell1 = row2.insertCell(0);
-	cell1.width="100px";		
-	cell1.innerHTML = "Vendor PO#:";	
-	var cell2 = row2.insertCell(1);
-	cell2.width="2px";		
-	cell2.innerHTML = "&nbsp;";
-        var cell3 = row2.insertCell(2);
-	var element1 = document.createElement("input");
-	element1.type = "text";	
-        element1.name = "vendor PO";	
-	cell3.appendChild(element1);
-
-var row3 = table.insertRow(rowCount+2);
-var cell1 = row3.insertCell(0);
-	cell1.width="100px";		
-	cell1.innerHTML = "Deposit Sent:";	
-	var cell2 = row3.insertCell(1);
-	cell2.width="2px";		
-	cell2.innerHTML = "&nbsp;";
-        
-        var cell3 = row3.insertCell(2);
-	var element1 = document.createElement("input");
-	element1.type = "radio";	
-        element1.name = "vendorPO[]";	
-	
-         var cell3 = row3.insertCell(2);
-	var element2 = document.createElement("input");
-	element2.type = "radio";
-element2.onclick = "alert('ff')";	
-        element2.name = "vendorPO[]";
-cell3.appendChild(element1);	
-	cell3.appendChild(element2);
-	
-	vendor_sel.selectedIndex = 0;
-}*/
 function deleteElement(id,pid){
 	document.getElementById('processing').style.display= '';
 	var dataString = "id="+id+"&pid="+pid;
@@ -3147,6 +3003,64 @@ if(res<0 || $(".qty_order_"+i).val()=='') res=0;
 	}
 	}
    
+}
+function  purchaseOrderCalculation(count,type){
+    var shipping_cost = 0;
+    var tax_cost = 0;
+    if(document.getElementById('shipping_cost').value!="" )
+           shipping_cost = document.getElementById('shipping_cost').value;
+    if(document.getElementById('taxes').value!="")
+           tax_cost = document.getElementById('taxes').value;
+    if(type == 1){
+        var multiplyVal =0;
+        var multiply_target_val =0;
+        var total_sum = 0;
+        var total_garments = 0;
+        var estimated_cost = 0;	
+        var completion_cost = 0;
+        var hdn_unit_val =0;
+        var hdn_target_val = 0;
+	var garments = document.getElementById('garments'+count);
+	var priceunit = document.getElementById('priceunit'+count);
+	var retailprice = document.getElementById('retailprice'+count);
+        if(document.getElementById('style'+count))
+		isUnique(count);
+	if(garments.value >0 && priceunit.value >0)
+		multiplyVal =  parseFloat(garments.value) *  parseFloat(priceunit.value);
+	else 
+		multiplyVal = 0;
+	if(garments.value >0 && retailprice.value >0)
+		multiply_target_val =  parseFloat(garments.value) *  parseFloat(retailprice.value);
+	else 
+		multiply_target_val = 0;
+	document.getElementById('rowSum'+count).value = multiplyVal;
+	document.getElementById('row_sum_target'+count).value = multiply_target_val;
+	var total_count = document.getElementById('tbl_style').rows.length;
+        for(var i=1; i<total_count; i++)
+	{
+		if(!isNaN(document.getElementById('rowSum'+i).value))
+			total_sum += parseFloat(document.getElementById('rowSum'+i).value);
+		if(!isNaN(document.getElementById('rowSum'+i).value))
+			hdn_unit_val += parseFloat(document.getElementById('rowSum'+i).value);
+		if(!isNaN(document.getElementById('row_sum_target'+i).value))
+			hdn_target_val += parseFloat(document.getElementById('row_sum_target'+i).value);
+		if(!isNaN(document.getElementById('garments'+i).value))
+			total_garments += parseFloat(document.getElementById('garments'+i).value);
+	}
+	document.getElementById('hdn_unit_mulprice').value = hdn_unit_val;
+	document.getElementById('hdn_target_mulprice').value = hdn_target_val;
+	document.getElementById('hdn_garmenttotal').value = total_garments;
+    } else {
+        var hdn_unit_val = document.getElementById('hdn_unit_mulprice').value;
+        var hdn_target_val = document.getElementById('hdn_target_mulprice').value;
+        var total_garments = document.getElementById('hdn_garmenttotal').value;
+    }
+    var purchaseOrder = parseFloat(hdn_target_val) + parseFloat(tax_cost) + parseFloat(shipping_cost) ;
+    document.getElementById('projectQuote').value = purchaseOrder;
+    var completionCost = parseFloat(hdn_unit_val);
+    var profit = parseFloat(purchaseOrder) - parseFloat(completionCost);
+    document.getElementById('pcompcost').value = completionCost;
+    document.getElementById('pestprofit').value = profit;
 }
 </script> 
 <?php 

@@ -248,6 +248,15 @@ $tx='_closed';
 		}
 		$_SESSION['search_uri']= $search_uri;
 	}
+    if(isset($_REQUEST['invoice']) && $_REQUEST['invoice']!="") {
+        $search_sql .=' and pr.pt_invoice  LIKE \'%' .$_REQUEST['invoice'].'%\' ';
+        if($search_uri)  {
+            $search_uri.="&invoice=".$_REQUEST['invoice'];
+        } else {
+            $search_uri.="?invoice=".$_REQUEST['invoice'];
+        }
+        $_SESSION['search_uri']= $search_uri;
+    }
 	if(isset($_REQUEST['style']) && $_REQUEST['style']!="") {
 		$join_column = ',style.style';
 		$search_sql .=' and style.style  ILIKE \'%' .$_REQUEST['style'].'%\' ';
@@ -484,6 +493,14 @@ $tx='_closed';
                         <td class="grid001">&nbsp;</td>
                         <td class="grid001">Purchase Order:</td>
                         <td class="grid001"><input type="text" name="purchase" /></tr>
+                       <tr>
+                           <td class="grid001">&nbsp; </td>
+                           <td class="grid001">&nbsp;</td>
+                           <!--  -->
+                           <td class="grid001">&nbsp;</td>
+                           <td class="grid001">Purchase Invoice:</td>
+                           <td class="grid001"><input type="text" name="invoice" />
+                       </tr>
                       <tr>
                         <td class="grid001">Sample Number:</td>
                         <td class="grid001"><select name="sampleNmbr" id="sampleNmbr" style="width:200px;">

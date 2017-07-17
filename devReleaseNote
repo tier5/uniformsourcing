@@ -97,3 +97,15 @@ Inventory V3.1 Stable Releases
 	Fix Add Inventory issue for LCKR01 box
 Inventory Restructure V1.0 Stable Releases
 	restructure full inventory section
+Modify Pricing Section V1.0 Stable Releases
+	Add tax in pricing tab in project management section => Done.
+        Add shipping charges to pricing tab
+        Remove project cost from pricing tab
+        Develop purchase order calculation
+        Develop project completion cost calculation
+        Remove project estimated unit cost
+        Calculate project estimated profit.
+        Remove style and inventory tab.
+        Modify columns in spreadsheet.
+        Add search by invoice number
+        Add change location feature to inventory.
