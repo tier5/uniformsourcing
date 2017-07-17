@@ -3058,7 +3058,7 @@ function  purchaseOrderCalculation(count,type){
     var purchaseOrder = (parseFloat(hdn_target_val) + parseFloat(tax_cost) + parseFloat(shipping_cost)).toFixed(2);
     document.getElementById('projectQuote').value = purchaseOrder;
     var completionCost = parseFloat(hdn_unit_val);
-    var profit = parseFloat(purchaseOrder) - parseFloat(completionCost);
+    var profit = (parseFloat(purchaseOrder) - parseFloat(completionCost)).toFixed(2);
     document.getElementById('pcompcost').value = completionCost;
     document.getElementById('pestprofit').value = profit;
 }
