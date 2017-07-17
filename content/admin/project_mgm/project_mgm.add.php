@@ -3055,10 +3055,10 @@ function  purchaseOrderCalculation(count,type){
         var hdn_target_val = document.getElementById('hdn_target_mulprice').value;
         var total_garments = document.getElementById('hdn_garmenttotal').value;
     }
-    var purchaseOrder = (parseFloat(hdn_target_val) + parseFloat(tax_cost) + parseFloat(shipping_cost)).toFixed(2);
+    var purchaseOrder = (parseFloat(hdn_target_val) + parseFloat(tax_cost) + parseFloat(shipping_cost)).toFixed(4);
     document.getElementById('projectQuote').value = purchaseOrder;
     var completionCost = parseFloat(hdn_unit_val);
-    var profit = (parseFloat(purchaseOrder) - parseFloat(completionCost)).toFixed(2);
+    var profit = (parseFloat(purchaseOrder) - parseFloat(completionCost)).toFixed(4);
     document.getElementById('pcompcost').value = completionCost;
     document.getElementById('pestprofit').value = profit;
 }
