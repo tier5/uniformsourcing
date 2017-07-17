@@ -251,6 +251,9 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     }
 </style>
 <style>
+    table tr td{
+        position: relative;
+    }
     .tooltext {
         /*visibility: hidden;*/
         display: none;
@@ -264,6 +267,8 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         /* Position the tooltip */
         position: absolute;
         z-index: 1;
+        transform: translate(-50%,0);
+        left: 50%;
     }
     .tool:hover .tooltext {
         visibility: visible;
@@ -565,7 +570,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             </div>
         </div>
         <div class="panel-body">
-            <div class="table-responsive">
+            <div class="table">
                 <form id="tableUpdate">
                     <table class="table table-bordered text-center">
                         <?php
@@ -677,10 +682,10 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                         </div>
                                     </div>
                                     <div class="col-md-6 pull-right">
-                                        <div class="col-md-2" style="font-size: 15px;">
+                                        <div class="col-md-3" style="font-size: 15px;">
                                             Location:
                                         </div>
-                                        <div class="col-md-8">
+                                        <div class="col-md-9">
                                             <select class="form-control" name="location" id="newLocation">
                                                 <option value="">--------SELECT--------</option>
                                                 <?php
@@ -706,27 +711,33 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                 <div style="margin-top:20px;"></div>
                                 <div class="row" id="warehouseDiv" style="display: none;">
                                     <div class="col-md-4">
-                                        <div class="col-md-2">
+                                        <div class="col-md-4">
                                             Row:
                                         </div>
-                                        <div class="col-md-10">
-                                            <input type="text" id="newRow" class="form-control"/>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <input type="text" id="newRow" class="form-control"/>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="col-md-2">
+                                        <div class="col-md-4">
                                             Rack:
                                         </div>
-                                        <div class="col-md-10">
-                                            <input type="text" id="newRack" class="form-control"/>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <input type="text" id="newRack" class="form-control"/>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="col-md-2">
+                                        <div class="col-md-4">
                                             Shelf:
                                         </div>
-                                        <div class="col-md-10">
-                                            <input type="text" id="newShelf" class="form-control"/>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <input type="text" id="newShelf" class="form-control"/>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

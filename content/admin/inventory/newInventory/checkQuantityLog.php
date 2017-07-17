@@ -28,7 +28,7 @@ if(count($logs) == '0'){
     <div class="row">
         <div class="col-md-12">
             <div class="table-responsive">
-                <table class="table table-striped table-inverse">
+                <table class="table table-striped table-bordered">
                     <tr>
                         <th>#</th>
                         <th>Log Type</th>
