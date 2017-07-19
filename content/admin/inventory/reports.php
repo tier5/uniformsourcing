@@ -669,9 +669,9 @@ if(count($datalist))
 		?>
 		<td class="grid001"><?php logCheckvival($datalist[$i]['styleId'],$connection); ?></td>
 		<td class="grid001">
-			<a href="reportViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">
-			<img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0">
-			</a>
+			<!--<a href="reportViewEdit.php?styleId=<?php /*echo $datalist[$i]['styleId'];*/?>">
+			<img src="<?php /*echo $mydirectory;*/?>/images/reportviewEdit.png" border="0">
+			</a>-->
 
             <a href="newInventory/inventoryViewEdit.php?styleId=<?php echo $datalist[$i]['styleId'];?>">
 			<img src="<?php echo $mydirectory;?>/images/reportviewEdit.png" border="0">
