@@ -112,6 +112,8 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         ' where unit."styleId"=' . $_GET['styleId'];
     if (isset($_GET['colorId']) && $_GET['colorId'] != 0) {
         $sql .= ' and unit."colorId"=' . $_GET['colorId'];
+    } else {
+        $sql .= ' and unit."colorId"=' . $dataColor[0]['colorId'];
     }
     $sql .= ' and unit.merged=0';
     $sql .= ' ORDER BY unit.id';
