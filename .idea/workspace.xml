@@ -4,7 +4,6 @@
     <list default="true" id="90110a58-17ea-4b55-b4bc-25dcea688a79" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/content/admin/inventory/newInventory/inventoryViewEdit.php" afterPath="$PROJECT_DIR$/content/admin/inventory/newInventory/inventoryViewEdit.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/content/admin/inventory/newInventory/print.php" afterPath="$PROJECT_DIR$/content/admin/inventory/newInventory/print.php" />
     </list>
     <ignored path="uniformsourcing.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,59 +24,35 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="print.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/content/admin/inventory/newInventory/print.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="366">
-              <caret line="266" column="37" lean-forward="true" selection-start-line="266" selection-start-column="37" selection-end-line="266" selection-end-column="37" />
-              <folding>
-                <element signature="n#table#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-                <marker date="1499936589778" expanded="true" signature="1458:1707" ph="SELECT style... tbl_invStyle" />
-                <marker date="1499936589778" expanded="true" signature="2047:2257" ph="Select &quot;size... tbl_invScaleSize" />
-                <marker date="1499936589778" expanded="true" signature="2556:2762" ph="Select &quot;size... tbl_invScaleSize" />
-                <marker date="1499936589778" expanded="true" signature="3516:3621" ph="SELECT * FRO... tbl_invUnit" />
-                <marker date="1499936589778" expanded="true" signature="3968:4016" ph="SELECT unit.... tbl_invUnit" />
-                <marker date="1499936589778" expanded="true" signature="5100:5289" ph="SELECT * FRO... tbl_invUnit" />
-                <marker date="1499936589778" expanded="true" signature="5587:5843" ph="SELECT * FRO... tbl_invUnit" />
-                <marker date="1499936589778" expanded="true" signature="6558:6603" ph="SELECT * FRO... tbl_invColor" />
-                <marker date="1499936589778" expanded="true" signature="11647:11653" ph=" " />
-                <marker date="1499936589778" expanded="true" signature="12437:12443" ph=" " />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="inventoryViewEdit.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/content/admin/inventory/newInventory/inventoryViewEdit.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="559" column="302" lean-forward="false" selection-start-line="559" selection-start-column="302" selection-end-line="559" selection-end-column="302" />
+            <state relative-caret-position="475">
+              <caret line="1139" column="36" lean-forward="false" selection-start-line="1139" selection-start-column="36" selection-end-line="1139" selection-end-column="36" />
               <folding>
-                <marker date="1499937828010" expanded="true" signature="207:284" ph="SELECT * FRO... tbl_invStyle" />
-                <marker date="1499937828010" expanded="true" signature="587:632" ph="Select * fro... tbl_invColor" />
-                <marker date="1499937828010" expanded="true" signature="1017:1278" ph="SELECT style... tbl_invStyle" />
-                <marker date="1499937828010" expanded="true" signature="1659:1870" ph="Select &quot;size... tbl_invScaleSize" />
-                <marker date="1499937828010" expanded="true" signature="2209:2416" ph="Select &quot;size... tbl_invScaleSize" />
-                <marker date="1499937828010" expanded="true" signature="3299:3517" ph="SELECT detai... locationDetails" />
-                <marker date="1499937828010" expanded="true" signature="4735:5025" ph="SELECT unit.... tbl_invUnit" />
-                <marker date="1499937828010" expanded="true" signature="5571:5778" ph="SELECT * FRO... tbl_invUnit" />
-                <marker date="1499937828010" expanded="true" signature="6116:6384" ph="SELECT * FRO... tbl_invUnit" />
-                <marker date="1499937828010" expanded="true" signature="7229:7307" ph="SELECT unit.... tbl_invUnit" />
-                <marker date="1499937828010" expanded="true" signature="9461:9871" ph="SELECT unit.... tbl_invUnit" />
-                <marker date="1499937828010" expanded="true" signature="42468:42478" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="42774:42784" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="43074:43084" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="43325:43336" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="44664:44675" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="46502:46513" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="47541:47552" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="48194:48206" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="48323:48334" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="48931:48942" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="50379:50389" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="50606:50617" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="52385:52397" ph="..." />
-                <marker date="1499937828010" expanded="true" signature="52861:52872" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="207:284" ph="SELECT * FRO... tbl_invStyle" />
+                <marker date="1500467607477" expanded="true" signature="587:632" ph="Select * fro... tbl_invColor" />
+                <marker date="1500467607477" expanded="true" signature="1017:1278" ph="SELECT style... tbl_invStyle" />
+                <marker date="1500467607477" expanded="true" signature="1659:1870" ph="Select &quot;size... tbl_invScaleSize" />
+                <marker date="1500467607477" expanded="true" signature="2209:2416" ph="Select &quot;size... tbl_invScaleSize" />
+                <marker date="1500467607477" expanded="true" signature="3299:3517" ph="SELECT detai... locationDetails" />
+                <marker date="1500467607477" expanded="true" signature="4735:5025" ph="SELECT unit.... tbl_invUnit" />
+                <marker date="1500467607477" expanded="true" signature="5571:5778" ph="SELECT * FRO... tbl_invUnit" />
+                <marker date="1500467607477" expanded="true" signature="6116:6384" ph="SELECT * FRO... tbl_invUnit" />
+                <marker date="1500467607477" expanded="true" signature="7229:7307" ph="SELECT unit.... tbl_invUnit" />
+                <marker date="1500467607477" expanded="true" signature="9640:10077" ph="SELECT unit.... tbl_invUnit" />
+                <marker date="1500467607477" expanded="true" signature="10410:10441" ph="SELECT * FRO... tbl_invLocation" />
+                <marker date="1500467607477" expanded="true" signature="47443:47453" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="47749:47759" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="48049:48059" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="48300:48311" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="50028:50039" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="51866:51877" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="54967:54978" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="56007:56018" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="56615:56626" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="58408:58418" ph="..." />
+                <marker date="1500467607477" expanded="true" signature="58635:58646" ph="..." />
               </folding>
             </state>
           </provider>
@@ -93,6 +68,14 @@
       <find>$newAllLocation</find>
       <find>inventory-table</find>
       <find>tool</find>
+      <find>Project Estimated Unit Cost</find>
+      <find>tooltext</find>
+      <find>tableUpdate</find>
+      <find>tooltip</find>
+      <find>table-</find>
+      <find>Change Log</find>
+      <find>purchaseOrderCalculation</find>
+      <find>updateRowRack</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -128,6 +111,10 @@
         <option value="$PROJECT_DIR$/content/admin/inventory/newInventory/Application.php" />
         <option value="$PROJECT_DIR$/Application.php" />
         <option value="$PROJECT_DIR$/content/admin/inventory/newInventory/print.php" />
+        <option value="$PROJECT_DIR$/content/admin/inventory/newInventory/checkLog.php" />
+        <option value="$PROJECT_DIR$/content/admin/inventory/newInventory/checkQuantityLog.php" />
+        <option value="$PROJECT_DIR$/content/admin/project_mgm/proj_4.php" />
+        <option value="$PROJECT_DIR$/content/admin/project_mgm/project_mgm.add.php" />
         <option value="$PROJECT_DIR$/content/admin/inventory/newInventory/inventoryViewEdit.php" />
       </list>
     </option>
@@ -140,9 +127,10 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="y" value="-28" />
-    <option name="width" value="1024" />
-    <option name="height" value="796" />
+    <option name="x" value="64" />
+    <option name="y" value="-11" />
+    <option name="width" value="961" />
+    <option name="height" value="780" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -159,8 +147,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -260,7 +248,7 @@
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../sitdowns" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="js-jscs-nodeInterpreter" value="/usr/bin/node" />
   </component>
@@ -362,42 +350,57 @@
       <workItem from="1489487611712" duration="9140000" />
       <workItem from="1490083485797" duration="16136000" />
       <workItem from="1490106900346" duration="909000" />
+      <workItem from="1500467400332" duration="218000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="111087000" />
+    <option name="totallyTimeSpent" value="118973000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-28" width="1024" height="796" extended-state="6" />
+    <frame x="64" y="-11" width="961" height="780" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26789367" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32092005" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout>
+    <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24570273" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-    </layout>
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="processedProjectFiles" value="true" />
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -415,106 +418,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/content/admin/inventory/deleteInventory.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="3" column="45" lean-forward="false" selection-start-line="3" selection-start-column="45" selection-end-line="3" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/content/admin/inventory/reportViewEdit.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="n#logCheckOStyle#0;n#!!top" expanded="false" />
-            <element signature="n#logCheckNStyle#0;n#!!top" expanded="false" />
-            <marker date="1499080233722" expanded="true" signature="785:836" ph="SELECT * fro... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="1115:1213" ph="SELECT * fro... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="1547:1644" ph="SELECT * fro... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="1978:2074" ph="SELECT * fro... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="2486:2564" ph="select * fro... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="2966:3044" ph="select * fro... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="3456:3568" ph="select &quot;inve... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="3817:3862" ph="delete from " />
-            <marker date="1499080233722" expanded="true" signature="5349:5494" ph="select &quot;styl... tbl_invStyle" />
-            <marker date="1499080233722" expanded="true" signature="5808:5853" ph="Select * fro... tbl_invColor" />
-            <marker date="1499080233722" expanded="true" signature="6202:6251" ph="Select * fro... tbl_invScaleName" />
-            <marker date="1499080233722" expanded="true" signature="6567:6779" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="7094:7302" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="7617:7824" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="8136:8234" ph="select disti... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="9052:9155" ph="select &quot;inve... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="9594:9646" ph="update &quot;tbl_... " />
-            <marker date="1499080233722" expanded="true" signature="9958:10006" ph="Delete from " />
-            <marker date="1499080233722" expanded="true" signature="11455:11743" ph="select &quot;upda... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="12592:12683" ph="select disti... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="13301:13419" ph="select name,... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="13755:13846" ph="select disti... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="14446:14564" ph="select name,... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="14910:14999" ph="select disti... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="15596:15714" ph="select name,... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="16063:16116" ph="select * fro... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="16465:16555" ph="select &quot;loca... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="17036:17087" ph="SELECT * FRO... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="17621:17693" ph="select * fro... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="17993:18221" ph="select disti... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="18991:19024" ph="SELECT * fro... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="21820:21866" ph="select * fro... tbl_garment" />
-            <marker date="1499080233722" expanded="true" signature="22112:22148" ph="SELECT * FRO... clientDB" />
-            <marker date="1499080233722" expanded="true" signature="22752:22798" ph="SELECT * FRO... employeeDB" />
-            <marker date="1499080233722" expanded="true" signature="23117:23189" ph="SELECT type tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="23804:23850" ph="SELECT * FRO... employeeDB" />
-            <marker date="1499080233722" expanded="true" signature="24263:24321" ph="SELECT &quot;loca... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="24979:25010" ph="SELECT * FRO... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="25827:25904" ph="SELECT \&quot;loc... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="26135:26205" ph="SELECT * FRO... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="27309:27347" ph="SELECT * FRO... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="28755:28793" ph="SELECT * FRO... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="30024:30065" ph="select * fro... tbl_date_interval_setting" />
-            <marker date="1499080233722" expanded="true" signature="30529:30686" ph="select * fro... tbl_log_updates" />
-            <marker date="1499080233722" expanded="true" signature="30977:31052" ph="select * fro... employeeDB" />
-            <marker date="1499080233722" expanded="true" signature="31414:31606" ph="select str.&quot;... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="32178:32312" ph="select disti... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="79732:79746" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="80182:80263" ph="SELECT \&quot;loc... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="80666:80740" ph="SELECT * FRO... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="101198:101208" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="101485:101495" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="101795:101805" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="102494:102505" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="103020:103031" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="103402:103413" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="103664:103675" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="104499:104513" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="105404:105415" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="105991:106002" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/content/admin/inventory/invReportSubmit.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3474">
-          <caret line="193" column="60" lean-forward="false" selection-start-line="193" selection-start-column="49" selection-end-line="193" selection-end-column="60" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/content/inventory/storage.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="13" column="25" lean-forward="false" selection-start-line="13" selection-start-column="25" selection-end-line="13" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php_intranet_uniformsourcing.gz">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
@@ -651,7 +554,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="619">
           <caret line="104" column="34" lean-forward="false" selection-start-line="104" selection-start-column="34" selection-end-line="104" selection-end-column="34" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -709,15 +611,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="36">
           <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="13" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/content/admin/inventory/inventory.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="22" column="2" lean-forward="false" selection-start-line="22" selection-start-column="2" selection-end-line="22" selection-end-column="2" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -725,20 +618,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="410">
           <caret line="262" column="30" lean-forward="false" selection-start-line="262" selection-start-column="30" selection-end-line="262" selection-end-column="30" />
-          <folding>
-            <marker date="1499935334338" expanded="true" signature="608:645" ph="SELECT * FRO... tbl_inventory" />
-            <marker date="1499935334338" expanded="true" signature="1047:1418" ph="select &quot;inve... tbl_inventory" />
-            <marker date="1499935334338" expanded="true" signature="1822:1923" ph="SELECT &quot;loca... tbl_invStorage" />
-            <marker date="1499935334338" expanded="true" signature="2311:2609" ph="select &quot;stor... tbl_invStorage" />
-            <marker date="1499935334338" expanded="true" signature="3788:3817" ph="UPDATE \&quot;tbl... " />
-            <marker date="1499935334338" expanded="true" signature="4778:4806" ph="INSERT INTO \&quot;audit_logs\&quot;... " />
-            <marker date="1499935334338" expanded="true" signature="5290:5322" ph="INSERT INTO \&quot;tbl_invStorage\&quot;... " />
-            <marker date="1499935334338" expanded="true" signature="7604:7632" ph="INSERT INTO \&quot;audit_logs\&quot;... " />
-            <marker date="1499935334338" expanded="true" signature="8871:8899" ph="UPDATE \&quot;tbl... " />
-            <marker date="1499935334338" expanded="true" signature="9617:9654" ph="SELECT * FRO... tbl_inventory" />
-            <marker date="1499935334338" expanded="true" signature="10646:10684" ph="SELECT * FRO... tbl_invStorage" />
-            <marker date="1499935334338" expanded="true" signature="11374:11407" ph="INSERT INTO \&quot;tbl_log_updates\&quot;... " />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -746,7 +625,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="250">
           <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="29" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -754,7 +632,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1764">
           <caret line="98" column="28" lean-forward="false" selection-start-line="98" selection-start-column="28" selection-end-line="98" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -786,12 +663,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-450">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1496216565460" expanded="true" signature="121:179" ph="SELECT &quot;colo... tbl_color" />
-            <marker date="1496216565460" expanded="true" signature="395:454" ph="SELECT &quot;fabr... tbl_fabrics" />
-            <marker date="1496216565460" expanded="true" signature="671:735" ph="SELECT &quot;garm... tbl_garment" />
-            <marker date="1496216565460" expanded="true" signature="953:1008" ph="SELECT &quot;size... tbl_size" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -799,7 +670,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
           <caret line="674" column="16" lean-forward="true" selection-start-line="674" selection-start-column="16" selection-end-line="674" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -823,26 +693,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="615">
           <caret line="446" column="14" lean-forward="true" selection-start-line="396" selection-start-column="8" selection-end-line="446" selection-end-column="14" />
-          <folding>
-            <marker date="1497617751522" expanded="true" signature="1947:2092" ph="select &quot;styl... tbl_invStyle" />
-            <marker date="1497617751522" expanded="true" signature="2349:2394" ph="Select * fro... tbl_invColor" />
-            <marker date="1497617751522" expanded="true" signature="2743:2792" ph="Select * fro... tbl_invScaleName" />
-            <marker date="1497617751522" expanded="true" signature="3108:3320" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1497617751522" expanded="true" signature="3635:3843" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1497617751522" expanded="true" signature="4158:4365" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1497617751522" expanded="true" signature="4665:4724" ph="select disti... tbl_invStorage" />
-            <marker date="1497617751522" expanded="true" signature="5398:5501" ph="select &quot;inve... tbl_inventory" />
-            <marker date="1497617751522" expanded="true" signature="6586:6874" ph="select &quot;upda... tbl_inventory" />
-            <marker date="1497617751522" expanded="true" signature="7510:7556" ph="select * fro... tbl_garment" />
-            <marker date="1497617751522" expanded="true" signature="7791:7844" ph="select * fro... tbl_invLocation" />
-            <marker date="1497617751522" expanded="true" signature="8200:8236" ph="SELECT * FRO... clientDB" />
-            <marker date="1497617751522" expanded="true" signature="8543:8620" ph="SELECT \&quot;loc... tbl_invLocation" />
-            <marker date="1497617751522" expanded="true" signature="8823:8893" ph="SELECT * FRO... locationDetails" />
-            <marker date="1497617751522" expanded="true" signature="9383:9453" ph="select * fro... tbl_invStorage" />
-            <marker date="1497617751522" expanded="true" signature="10037:10083" ph="SELECT * FRO... employeeDB" />
-            <marker date="1497617751522" expanded="true" signature="17885:17891" ph=" " />
-            <marker date="1497617751522" expanded="true" signature="18776:18782" ph=" " />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -857,70 +707,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="131">
           <caret line="596" column="4" lean-forward="true" selection-start-line="596" selection-start-column="4" selection-end-line="644" selection-end-column="5" />
-          <folding>
-            <element signature="n#logCheckOStyle#0;n#!!top" expanded="false" />
-            <element signature="n#logCheckNStyle#0;n#!!top" expanded="false" />
-            <marker date="1499080233722" expanded="true" signature="785:836" ph="SELECT * fro... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="1115:1213" ph="SELECT * fro... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="1547:1644" ph="SELECT * fro... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="1978:2074" ph="SELECT * fro... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="2486:2564" ph="select * fro... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="2966:3044" ph="select * fro... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="3456:3568" ph="select &quot;inve... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="3817:3862" ph="delete from " />
-            <marker date="1499080233722" expanded="true" signature="5349:5494" ph="select &quot;styl... tbl_invStyle" />
-            <marker date="1499080233722" expanded="true" signature="5808:5853" ph="Select * fro... tbl_invColor" />
-            <marker date="1499080233722" expanded="true" signature="6202:6251" ph="Select * fro... tbl_invScaleName" />
-            <marker date="1499080233722" expanded="true" signature="6567:6779" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="7094:7302" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="7617:7824" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499080233722" expanded="true" signature="8136:8234" ph="select disti... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="9052:9155" ph="select &quot;inve... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="9594:9646" ph="update &quot;tbl_... " />
-            <marker date="1499080233722" expanded="true" signature="9958:10006" ph="Delete from " />
-            <marker date="1499080233722" expanded="true" signature="11455:11743" ph="select &quot;upda... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="12592:12683" ph="select disti... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="13301:13419" ph="select name,... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="13755:13846" ph="select disti... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="14446:14564" ph="select name,... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="14910:14999" ph="select disti... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="15596:15714" ph="select name,... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="16063:16116" ph="select * fro... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="16465:16555" ph="select &quot;loca... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="17036:17087" ph="SELECT * FRO... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="17621:17693" ph="select * fro... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="17993:18221" ph="select disti... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="18991:19024" ph="SELECT * fro... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="21820:21866" ph="select * fro... tbl_garment" />
-            <marker date="1499080233722" expanded="true" signature="22112:22148" ph="SELECT * FRO... clientDB" />
-            <marker date="1499080233722" expanded="true" signature="22752:22798" ph="SELECT * FRO... employeeDB" />
-            <marker date="1499080233722" expanded="true" signature="23117:23189" ph="SELECT type tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="23804:23850" ph="SELECT * FRO... employeeDB" />
-            <marker date="1499080233722" expanded="true" signature="24263:24321" ph="SELECT &quot;loca... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="24979:25010" ph="SELECT * FRO... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="25827:25904" ph="SELECT \&quot;loc... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="26135:26205" ph="SELECT * FRO... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="27309:27347" ph="SELECT * FRO... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="28755:28793" ph="SELECT * FRO... tbl_inventory" />
-            <marker date="1499080233722" expanded="true" signature="30024:30065" ph="select * fro... tbl_date_interval_setting" />
-            <marker date="1499080233722" expanded="true" signature="30529:30686" ph="select * fro... tbl_log_updates" />
-            <marker date="1499080233722" expanded="true" signature="30977:31052" ph="select * fro... employeeDB" />
-            <marker date="1499080233722" expanded="true" signature="31414:31606" ph="select str.&quot;... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="32178:32312" ph="select disti... tbl_invStorage" />
-            <marker date="1499080233722" expanded="true" signature="79732:79746" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="80182:80263" ph="SELECT \&quot;loc... tbl_invLocation" />
-            <marker date="1499080233722" expanded="true" signature="80666:80740" ph="SELECT * FRO... locationDetails" />
-            <marker date="1499080233722" expanded="true" signature="101198:101208" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="101485:101495" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="101795:101805" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="102494:102505" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="103020:103031" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="103402:103413" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="103664:103675" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="104499:104513" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="105404:105415" ph="..." />
-            <marker date="1499080233722" expanded="true" signature="105991:106002" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -935,52 +721,143 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="366">
           <caret line="266" column="37" lean-forward="true" selection-start-line="266" selection-start-column="37" selection-end-line="266" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/content/admin/project_mgm/project_mgm.list.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="356">
+          <caret line="555" column="9" lean-forward="false" selection-start-line="555" selection-start-column="9" selection-end-line="555" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/content/admin/inventory/inventory.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-750">
+          <caret line="22" column="2" lean-forward="false" selection-start-line="22" selection-start-column="2" selection-end-line="22" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/content/admin/inventory/newInventory/checkLog.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="310">
+          <caret line="31" column="50" lean-forward="false" selection-start-line="31" selection-start-column="50" selection-end-line="31" selection-end-column="64" />
           <folding>
-            <element signature="n#table#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <marker date="1499936589778" expanded="true" signature="1458:1707" ph="SELECT style... tbl_invStyle" />
-            <marker date="1499936589778" expanded="true" signature="2047:2257" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499936589778" expanded="true" signature="2556:2762" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499936589778" expanded="true" signature="3516:3621" ph="SELECT * FRO... tbl_invUnit" />
-            <marker date="1499936589778" expanded="true" signature="3968:4016" ph="SELECT unit.... tbl_invUnit" />
-            <marker date="1499936589778" expanded="true" signature="5100:5289" ph="SELECT * FRO... tbl_invUnit" />
-            <marker date="1499936589778" expanded="true" signature="5587:5843" ph="SELECT * FRO... tbl_invUnit" />
-            <marker date="1499936589778" expanded="true" signature="6558:6603" ph="SELECT * FRO... tbl_invColor" />
-            <marker date="1499936589778" expanded="true" signature="11647:11653" ph=" " />
-            <marker date="1499936589778" expanded="true" signature="12437:12443" ph=" " />
+            <marker date="1500289487158" expanded="true" signature="85:271" ph="SELECT * FRO... tbl_invUpdateLog" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/content/admin/inventory/newInventory/checkQuantityLog.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="30" column="64" lean-forward="false" selection-start-line="30" selection-start-column="64" selection-end-line="30" selection-end-column="64" />
+          <folding>
+            <marker date="1500289545750" expanded="true" signature="86:143" ph="SELECT * FRO... tbl_invUpdateLogQuantity" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/content/admin/project_mgm/project_mgm.add.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45900">
+          <caret line="3060" column="83" lean-forward="false" selection-start-line="3060" selection-start-column="83" selection-end-line="3060" selection-end-column="83" />
+          <folding>
+            <marker date="1500304619362" expanded="true" signature="3111:3323" ph="select tbl_p... tbl_prjorder_shipping" />
+            <marker date="1500304619362" expanded="true" signature="3909:4019" ph="select first... employeeDB" />
+            <marker date="1500304619362" expanded="true" signature="4564:4624" ph="select id fr... tbl_prj_sample" />
+            <marker date="1500304619362" expanded="true" signature="5022:5087" ph="select carri... tbl_carriers" />
+            <marker date="1500304619362" expanded="true" signature="5298:5356" ph="Select id fr... tbl_prj_sample" />
+            <marker date="1500304619362" expanded="true" signature="21729:21742" ph="..." />
+            <marker date="1500304619362" expanded="true" signature="41273:41279" ph=" " />
+            <marker date="1500304619362" expanded="true" signature="48297:48303" ph=" " />
+            <marker date="1500304619362" expanded="true" signature="48441:48447" ph=" " />
+            <marker date="1500304619362" expanded="true" signature="48804:48810" ph=" " />
+            <marker date="1500304619362" expanded="true" signature="48975:48981" ph=" " />
+            <marker date="1500304619362" expanded="true" signature="49391:49404" ph="..." />
+            <marker date="1500304619362" expanded="true" signature="49425:49431" ph=" " />
+            <marker date="1500304619362" expanded="true" signature="49577:49583" ph=" " />
+            <marker date="1500304619362" expanded="true" signature="67830:67836" ph=" " />
+            <marker date="1500304619362" expanded="true" signature="68021:68027" ph=" " />
+            <marker date="1500304619362" expanded="true" signature="68176:68182" ph=" " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/content/admin/project_mgm/proj_4.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="288" column="141" lean-forward="false" selection-start-line="288" selection-start-column="117" selection-end-line="288" selection-end-column="141" />
+          <folding>
+            <marker date="1500302785146" expanded="true" signature="975:1059" ph="select * fro... tbl_prj_style" />
+            <marker date="1500302785146" expanded="true" signature="1585:1643" ph="Select * fro... tbl_prjpricing" />
+            <marker date="1500302785146" expanded="true" signature="1951:2070" ph="Select est.*... projectEstimatedUnitCost" />
+            <marker date="1500302785146" expanded="true" signature="2457:2516" ph="Select shipo... tbl_newproject${$tx}" />
+            <marker date="1500302785146" expanded="true" signature="2771:2809" ph="SELECT * FRO... tbl_tax" />
+            <marker date="1500302785146" expanded="true" signature="3071:3360" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="3076:3360" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="3081:3360" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="3147:3360" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="3199:3360" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="3216:3360" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="3295:3360" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="3300:3360" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="3568:3620" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="3573:3620" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="4706:4748" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="5720:5768" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="5727:5768" ph="..." />
+            <marker date="1500302785146" expanded="false" signature="8509:8515" ph=" " />
+            <marker date="1500302785146" expanded="true" signature="9167:9245" ph="..." />
+            <marker date="1500302785146" expanded="false" signature="9235:9241" ph=" " />
+            <marker date="1500302785146" expanded="true" signature="10115:10406" ph="..." />
+            <marker date="1500302785146" expanded="false" signature="10198:10204" ph=" " />
+            <marker date="1500302785146" expanded="false" signature="10915:10921" ph=" " />
+            <marker date="1500302785146" expanded="false" signature="11627:11633" ph=" " />
+            <marker date="1500302785146" expanded="true" signature="11668:11860" ph="..." />
+            <marker date="1500302785146" expanded="false" signature="12050:12056" ph=" " />
+            <marker date="1500302785146" expanded="true" signature="12091:12456" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="12542:12991" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="12564:12991" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="12573:12991" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="12600:12991" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="12638:12681" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="12753:12991" ph="..." />
+            <marker date="1500302785146" expanded="true" signature="12771:12991" ph="..." />
+            <marker date="1500302785146" expanded="false" signature="12884:12890" ph=" " />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/content/admin/inventory/newInventory/inventoryViewEdit.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="559" column="302" lean-forward="false" selection-start-line="559" selection-start-column="302" selection-end-line="559" selection-end-column="302" />
+        <state relative-caret-position="475">
+          <caret line="1139" column="36" lean-forward="false" selection-start-line="1139" selection-start-column="36" selection-end-line="1139" selection-end-column="36" />
           <folding>
-            <marker date="1499937828010" expanded="true" signature="207:284" ph="SELECT * FRO... tbl_invStyle" />
-            <marker date="1499937828010" expanded="true" signature="587:632" ph="Select * fro... tbl_invColor" />
-            <marker date="1499937828010" expanded="true" signature="1017:1278" ph="SELECT style... tbl_invStyle" />
-            <marker date="1499937828010" expanded="true" signature="1659:1870" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499937828010" expanded="true" signature="2209:2416" ph="Select &quot;size... tbl_invScaleSize" />
-            <marker date="1499937828010" expanded="true" signature="3299:3517" ph="SELECT detai... locationDetails" />
-            <marker date="1499937828010" expanded="true" signature="4735:5025" ph="SELECT unit.... tbl_invUnit" />
-            <marker date="1499937828010" expanded="true" signature="5571:5778" ph="SELECT * FRO... tbl_invUnit" />
-            <marker date="1499937828010" expanded="true" signature="6116:6384" ph="SELECT * FRO... tbl_invUnit" />
-            <marker date="1499937828010" expanded="true" signature="7229:7307" ph="SELECT unit.... tbl_invUnit" />
-            <marker date="1499937828010" expanded="true" signature="9461:9871" ph="SELECT unit.... tbl_invUnit" />
-            <marker date="1499937828010" expanded="true" signature="42468:42478" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="42774:42784" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="43074:43084" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="43325:43336" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="44664:44675" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="46502:46513" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="47541:47552" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="48194:48206" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="48323:48334" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="48931:48942" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="50379:50389" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="50606:50617" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="52385:52397" ph="..." />
-            <marker date="1499937828010" expanded="true" signature="52861:52872" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="207:284" ph="SELECT * FRO... tbl_invStyle" />
+            <marker date="1500467607477" expanded="true" signature="587:632" ph="Select * fro... tbl_invColor" />
+            <marker date="1500467607477" expanded="true" signature="1017:1278" ph="SELECT style... tbl_invStyle" />
+            <marker date="1500467607477" expanded="true" signature="1659:1870" ph="Select &quot;size... tbl_invScaleSize" />
+            <marker date="1500467607477" expanded="true" signature="2209:2416" ph="Select &quot;size... tbl_invScaleSize" />
+            <marker date="1500467607477" expanded="true" signature="3299:3517" ph="SELECT detai... locationDetails" />
+            <marker date="1500467607477" expanded="true" signature="4735:5025" ph="SELECT unit.... tbl_invUnit" />
+            <marker date="1500467607477" expanded="true" signature="5571:5778" ph="SELECT * FRO... tbl_invUnit" />
+            <marker date="1500467607477" expanded="true" signature="6116:6384" ph="SELECT * FRO... tbl_invUnit" />
+            <marker date="1500467607477" expanded="true" signature="7229:7307" ph="SELECT unit.... tbl_invUnit" />
+            <marker date="1500467607477" expanded="true" signature="9640:10077" ph="SELECT unit.... tbl_invUnit" />
+            <marker date="1500467607477" expanded="true" signature="10410:10441" ph="SELECT * FRO... tbl_invLocation" />
+            <marker date="1500467607477" expanded="true" signature="47443:47453" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="47749:47759" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="48049:48059" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="48300:48311" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="50028:50039" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="51866:51877" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="54967:54978" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="56007:56018" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="56615:56626" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="58408:58418" ph="..." />
+            <marker date="1500467607477" expanded="true" signature="58635:58646" ph="..." />
           </folding>
         </state>
       </provider>

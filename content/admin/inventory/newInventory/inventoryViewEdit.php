@@ -1128,8 +1128,17 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                     $('#updateRow').val(row);
                     $('#updateRack').val(rack);
                     $('#updateShelf').val(shelf);
-                    $('#errorMessage').html('<h2 style="color: blue;">' + dataParse.message + '</h2>');
+                    swal({
+                        title: "Updated!",
+                        text: dataParse.message,
+                        type: "success"
+                    });
                 } else {
+                    swal({
+                        title: "Error!",
+                        text: dataParse.message,
+                        type: "error"
+                    });
                     $('#errorMessage').html('<h2 style="color: red;">' + dataParse.message + '</h2>');
                 }
             }
