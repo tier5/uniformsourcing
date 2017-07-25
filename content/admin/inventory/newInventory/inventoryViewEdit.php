@@ -116,7 +116,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         $sql .= ' and unit."colorId"=' . $dataColor[0]['colorId'];
     }
     $sql .= ' and unit.merged=0';
-    $sql .= ' ORDER BY unit.id';
+    $sql .= ' ORDER BY unit.box ASC';
     if (!($result = pg_query($connection, $sql))) {
         print("Failed location fetch Query: " . pg_last_error($connection));
         exit;
