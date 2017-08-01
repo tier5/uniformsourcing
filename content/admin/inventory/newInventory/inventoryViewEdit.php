@@ -311,16 +311,55 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             <div class="col-md-4">
                 <label for="allBoxSelect" class="col-md-2 control-label">Box#:</label>
                 <div class="col-md-10">
+                    <?php 
+                          
+                          $stylebox1 = array();
+                          //$stylebox = array();
+                          foreach ($allUnit as $unit) {
+                                 $stylebox1[$unit[0]] = $unit['box'];
+                            }
+                          natcasesort($stylebox1);  
+                          /*echo '<pre>';
+                          print_r($stylebox1);
+                          echo '</pre>';
+                          die; */
+                          //$last_names = array_column($allUnit, 'last_name');
+                          //$last_names = array_column($allUnit, 'last_name');
+                          //$stylebox = array_map("strtoupper", $fruits);
+                          //$stylebox1  = array('1223423','4564','5452','hello','LC048','LC409','LC410','LC411','LC412');
+
+                          //$stylebox = array_map("strtoupper", $stylebox1);
+                          /* if ( count( $stylebox1 ) === count( array_filter( $stylebox1, 'is_numeric' ) ) ) {
+                                natcasesort($stylebox1);
+                            }
+                            else{
+                               natcasesort($stylebox1);
+                            }*/
+
+                        /*foreach ($stylebox1 as $styleID => $styleval) {
+                            echo $styleID.' value '.$styleval.'<br>';}*/
+                            
+
+                    ?>
                     <select class="form-control" name="allBox" id="allBoxSelect">
                         <option value="0">------- All Box -------</option>
                         <?php
-                        foreach ($allUnit as $unit) {
+                        /*foreach ($allUnit as $unit) {
                             echo '<option value="' . $unit[0] . '" ';
                             if (isset($_GET['boxId']) && $_GET['boxId'] == $unit[0]) {
                                 echo ' selected="selected" ';
                             }
                             echo '>' . $unit['box'] . '</option>';
+                        }*/
+
+                       foreach ($stylebox1 as $styleID => $styleval) {
+                            echo '<option value="' . $styleID . '" ';
+                            if (isset($_GET['boxId']) && $_GET['boxId'] == $styleID) {
+                                echo ' selected="selected" ';
+                            }
+                            echo '>' . $styleval . '</option>';
                         }
+
                         ?>
                     </select>
                 </div>
