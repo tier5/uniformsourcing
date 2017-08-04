@@ -183,6 +183,8 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     }
     if (isset($_GET['colorId']) && $_GET['colorId'] != 0) {
         $sql .= ' and unit."colorId"=' . $_GET['colorId'];
+    } else {
+        $sql .= ' and unit."colorId"=' . $dataColor[0]['colorId'];    
     }
     if (!($result = pg_query($connection, $sql))) {
         print("Failed location fetch Query: " . pg_last_error($connection));
@@ -293,11 +295,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     <table width="100%" cellspacing="0" cellpadding="0" border="0">
         <tbody><tr>
           <td width="10" align="left">&nbsp;</td>
-          <?php if($_SERVER['SERVER_NAME'] == 'localhost'){?>
-          <td align="left"><input id="back" onclick="javascript:location.href='http://localhost/uniformsourcing/content/admin/inventory/reports.php';" class="button_text" name="back" value="Back" type="submit"></td>
-          <?php }else{?>
-          <td align="left"><input id="back" onclick="javascript:location.href='http://internal.uniformsourcing.com/content/admin/inventory/reports.php';" class="button_text" name="back" value="Back" type="submit"></td>
-          <?php }?>
+          <td align="left"><input id="back" onclick="javascript:location.href='../reports.php';" class="button_text" name="back" value="Back" type="submit"></td>
           <td align="right">&nbsp;</td>
         </tr>
         <tr>
@@ -315,7 +313,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         <div class="row">
             <div class="col-md-4 pull-left">
                 <div class="form-group">
-                    <label for="color" class="col-md-2 control-label"> Color90: </label>
+                    <label for="color" class="col-md-2 control-label"> Color: </label>
                     <div class="col-md-10">
                         <select class="form-control" name="color" id="color">
                             <?php
