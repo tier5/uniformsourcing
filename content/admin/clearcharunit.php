@@ -9,26 +9,21 @@ if (!($resultStyle = pg_query($connection, $sql))) {
     }
     while($dataStyle = pg_fetch_array($resultStyle)){
 
-    	if(is_numeric($dataStyle['box']))
-          echo $dataStyle['box'].'<br>';
+    	echo $dataStyle['styleId'].'  '.$dataStyle['colorId'].'<br>';
+    	$sql2 = 'SELECT * FROM "tbl_invColor" where "colorId"='.$dataStyle['colorId'].' and "styleId"='.$dataStyle['styleId'].'';
+    	//echo $sql2.'<br>';
+    	$resultStyle2 = pg_query($connection, $sql2);
+    	$dataStyle2 = pg_fetch_array($resultStyle2);
+    	//print_r($dataStyle2);
+    	if(!empty($dataStyle2))
+         echo " Found<br> ";
         else{
-
-        	if (preg_match('/[A-Za-z].*[0-9]|[0-9].*[A-Za-z]/', $dataStyle['box']))
-			{
-			    echo 'Contains at least one letter and one number  '.$dataStyle['box'].' '.$dataStyle['id'].'<br>';
-			    $box = preg_replace('/\D/', '', $dataStyle['box']);
-			    $sql = "UPDATE \"tbl_invUnit\" SET \"box\" = '" .$box."' WHERE \"id\" = '".$dataStyle['id']."'";
-			    echo $sql.'<br>';
-	    		//pg_query($connection, $sql);
-			}
-			else{
-				echo 'Contains only letter  '.$dataStyle['box'].' '.$dataStyle['id'].'<br>';
-				$sql = "DELETE FROM \"tbl_invUnit\" WHERE \"id\" = '".$dataStyle['id']."'";
-				echo $sql.'<br>';
-	    		//pg_query($connection, $sql);
-			}
-
-        }
-    
+          echo " Not Found<br> ";
+          $sql3 = 'INSERT INTO "tbl_invColor" ("colorId","styleId","name","image")VALUES ('.$dataStyle['colorId'].', '.$dataStyle['styleId'].', \'Unknown\',\'unknown.png\')';
+          if (!($resultStyle3 = pg_query($connection, $sql3))) {
+	        echo 'Failed style Query: ' . pg_last_error($connection) . '';
+	        exit;
+    		} 
+         }	
     }
 ?>

@@ -122,3 +122,6 @@ Inventory V4.1 Stable Released
 	Fixed issue with delete box
 	Added back button into inventory view details page
 	Fixed issue with box into inventory reports page
+
+Inventory V4.2 Stable Released
+	Created a standalone script for assign a unknow color with an unknown image
