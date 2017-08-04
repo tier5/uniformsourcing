@@ -5,11 +5,15 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     //Select all data for Style
     $sql = '';
     $sql = "SELECT * FROM \"tbl_invStyle\" WHERE \"styleId\" = '" . $_GET['styleId'] . "'";
+    //echo $sql;
     if (!($resultStyle = pg_query($connection, $sql))) {
         echo '<h1> Failed style Query: </h1><h2>' . pg_last_error($connection) . '</h2>';
         exit;
     }
     $dataStyle = pg_fetch_array($resultStyle);
+    /*echo '<pre>';
+    print_r($dataStyle);
+    echo '</pre>';*/
     pg_free_result($resultStyle);
     //GET COLOR DATA
     $query = '';
@@ -52,6 +56,8 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             print("Failed OptionQuery: " . pg_last_error($connection));
             exit;
         }
+
+
         while ($row2 = pg_fetch_array($result2)) {
             $dataOptSize[] = $row2;
         }
@@ -117,6 +123,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     }
     $sql .= ' and unit.merged=0';
     $sql .= ' ORDER BY unit.box ASC';
+
     if (!($result = pg_query($connection, $sql))) {
         print("Failed location fetch Query: " . pg_last_error($connection));
         exit;
@@ -283,6 +290,22 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
 </style>
 <div class="container">
     <div class="page-header">
+    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tbody><tr>
+          <td width="10" align="left">&nbsp;</td>
+          <?php if($_SERVER['SERVER_NAME'] == 'localhost'){?>
+          <td align="left"><input id="back" onclick="javascript:location.href='http://localhost/uniformsourcing/content/admin/inventory/reports.php';" class="button_text" name="back" value="Back" type="submit"></td>
+          <?php }else{?>
+          <td align="left"><input id="back" onclick="javascript:location.href='http://internal.uniformsourcing.com/content/admin/inventory/reports.php';" class="button_text" name="back" value="Back" type="submit"></td>
+          <?php }?>
+          <td align="right">&nbsp;</td>
+        </tr>
+        <tr>
+          <td align="left">&nbsp;</td>
+          <td align="left">&nbsp;</td>
+          <td align="right">&nbsp;</td>
+        </tr>
+</tbody></table>
         <h1 class="text-center">Report View / Edit (
             <small> <?php echo $dataStyle['styleNumber'] ?></small>
             )
@@ -292,7 +315,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         <div class="row">
             <div class="col-md-4 pull-left">
                 <div class="form-group">
-                    <label for="color" class="col-md-2 control-label"> Color: </label>
+                    <label for="color" class="col-md-2 control-label"> Color90: </label>
                     <div class="col-md-10">
                         <select class="form-control" name="color" id="color">
                             <?php
@@ -312,7 +335,9 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                 <label for="allBoxSelect" class="col-md-2 control-label">Box#:</label>
                 <div class="col-md-10">
                     <?php 
-                          
+                          /*echo '<pre>';
+                          print_r($allUnit);
+                          echo '</pre>';*/
                           $stylebox1 = array();
                           //$stylebox = array();
                           foreach ($allUnit as $unit) {
@@ -617,17 +642,20 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                         <?php
                         $element = '';
                         $element .= '<tr><th>#</th>';
+
                         foreach ($dataMainSizeId as $key => $value) {
                             ;
                             $element .= '<th class="text-center">' . $value . '</th>';
                         }
                         $element .= '</tr>';
+                        $abcd =0;
                         if (count($dataOptSizeId) > 0) {
                             foreach ($dataOptSizeId as $key1 => $value1) {
                                 $element .= '<tr>';
                                 $element .= '<td class="text-left">' . $value1 . '</td>';
                                 foreach ($dataMainSizeId as $key2 => $value2) {
                                     if (isset($dataQuantity[$key2][$key1]) && $dataQuantity[$key2][$key1] > 0) {
+                                        $abcd++;
                                         $element .= '<td class="text-center"><span class="tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="' . $dataQuantity[$key2][$key1] . '"> <p class="tooltext">'.$dataToolTip[$key2][$key1].'</p></span>      ';
                                         $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                         $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
@@ -660,6 +688,10 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                             $element .= '</tr>';
                         }
                         echo $element;
+                        /*echo '<br>';
+                        foreach ($dataMainSizeId as $key2 => $value2) {
+                            echo $dataQuantity[$key2][0] .' '.$dataToolTip[$key2][0];
+                        }    */
                         ?>
                     </table>
                 </form>
@@ -797,10 +829,11 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                     $element = '';
                                     $element .= '<tr><th>#</th>';
                                     foreach ($dataMainSizeId as $key => $value) {
-                                        ;
+                                        
                                         $element .= '<th class="text-center">' . $value . '</th>';
                                     }
                                     $element .= '</tr>';
+
                                     if (count($dataOptSizeId) > 0) {
                                         foreach ($dataOptSizeId as $key1 => $value1) {
                                             $element .= '<tr>';
@@ -828,8 +861,10 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                         $element .= '</tr>';
                                     }
                                     echo $element;
+
                                     ?>
                                 </table>
+                                ?>
                             </form>
                         </div>
                         <span id="newError"></span>
@@ -1195,13 +1230,16 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             cancelButtonText: 'No, keep it'
         }).then(function() {
             var boxId = "<?php echo $_GET['boxId'] ?>";
+            var delCount = "<?php echo $abcd; ?>";
+            //alert(delCount);
+            //alert(boxId);
             if (boxId == '' || boxId == undefined) {
                 $('#errorMessage').html('<h2 style="color: red;">Error !! please Select a Box..</h2>');
                 return false;
             }
             var color = $('#color').val();
             var style = "<?php echo $_GET['styleId']; ?>";
-            var dataString = 'styleId=' + style + '&colorId=' + color + '&boxId=' + boxId;
+            var dataString = 'styleId=' + style + '&colorId=' + color + '&boxId=' + boxId+'&deleteCount='+delCount;
             $.ajax({
                 type: "POST",
                 url: "deleteUnit.php",

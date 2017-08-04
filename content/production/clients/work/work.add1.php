@@ -25,7 +25,8 @@ if($debug == "on"){
 	echo "conyear IS $comyear<br>";
 	echo "jobnotes IS $jobnotes<br>";
 }
-$comdate="$comyear-$commonth-$comday";
+//$comdate="$comyear-$commonth-$comday";
+$comdate=mktime(0, 0, 0, $commonth, $comday, $comyear);
 $query1=("SELECT * ".
 		 "FROM \"billingcodes\" ".
 		 "WHERE \"ID\" = '$workid'");
@@ -59,11 +60,13 @@ while($row3 = pg_fetch_array($result3)){
 $whoassigned=$_SESSION['employeeID'];
 $total = 60 * $hours;
 $completiondate=$comdate;
-$dateassigned=date("Y-m-d");
+//$dateassigned=date("Y-m-d");
+$dateassigned=mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 $open = "no";
 $query4=("INSERT INTO \"work1\" ".
-		 "(\"clientID\", \"employeeID\", \"itemID\", \"hours\", \"total\", \"whoassigned\", \"dateassigned\", \"completiondate\", \"jobnotes\", \"open\") ".
+		 "(\"clientID\", \"employeeID\", \"itemid\", \"hours\", \"total\", \"whoassigned\", \"dateassigned\", \"completiondate\", \"jobnotes\", \"open\") ".
 		 "VALUES ('$clientnum', '$employee', '$workid', '$hours', '$total', '$whoassigned', '$dateassigned', '$completiondate', '$jobnotes', '$open')");
+//echo $query4; die;
 if(!($result4=pg_query($connection,$query4))){
 	print("Failed query4: " . pg_last_error($connection));
 	exit;

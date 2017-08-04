@@ -2,10 +2,10 @@
 require('Application.php');
 $returnArray['name'] = '';
 extract($_POST);
-/*echo '<pre>';
+echo '<pre>';
 print_r($_POST);
 echo '</pre>';
-echo 'deletecount = '.$deleteCount;*/
+echo 'deletecount = '.$deleteCount;
 $sql = '';
 $sql = 'SELECT * FROM "tbl_invUnit" WHERE id='.$boxId.' and "colorId"='.$colorId.' and "styleId"='.$styleId;
 if(!($result=pg_query($connection,$sql))){
@@ -40,7 +40,7 @@ if($unit != ''){
         $total = $total + $value['qty'];
     }
     //echo $total; die;
-    if($deleteCount > 0){
+    if($total > 0){
         echo json_encode([
             'message' => 'Box is not empty ! Please empty the box First..',
             'success' => false,

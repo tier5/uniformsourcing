@@ -117,3 +117,8 @@ Inventory 3.2 Stable Released
 
 Inventory V4.0 stable released
 	Modify box dropdown shorting in each style
+
+Inventory V4.1 Stable Released
+	Fixed issue with delete box
+	Added back button into inventory view details page
+	Fixed issue with box into inventory reports page

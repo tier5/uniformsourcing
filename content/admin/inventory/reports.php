@@ -275,7 +275,7 @@ if(isset($_REQUEST['notes']) && $_REQUEST['notes']!="") {
 if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']!="") {
 	//echo $_REQUEST['box_num'];
 	//exit();
-    $search_sql .= ' and unit.box LIKE \'%'.$_REQUEST['box_num'].'%\' ';
+    $search_sql .= ' and unit."box"=\''.$_REQUEST['box_num'].'\' ';
 
 	//$search_sql .=' and storage."unit" LIKE \'%' .$_REQUEST['box_num'].'%\' ';
 	if($search_uri)  {
@@ -284,6 +284,8 @@ if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']!="") {
 		$search_uri.="?box_num=".$_REQUEST['box_num'];
 	}
 }
+
+
 //$sql='select DISTINCT st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" '.
   //      ' left join "tbl_invStorage" as storage  on storage."styleId"=st."styleId" where st."isActive"=1'.$search_sql.' order by st."styleId" desc';
 
@@ -291,7 +293,7 @@ if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']!="") {
 $sql='select DISTINCT st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" '.
     ' left join "tbl_invUnit" as unit  on unit."styleId"=st."styleId" where st."isActive"=1'.$search_sql.' order by st."styleId" desc';
 
-
+//echo $sql;
 /* if($search_sql != '')
  {
      echo $search_sql;
@@ -303,6 +305,7 @@ if(!($result=pg_query($connection,$sql))){
 	print("Failed queryd: " . pg_last_error($connection));
 	exit;
 }
+
 $items= pg_num_rows($result);
 if($items > 0) {
 	$p = new pagination;
