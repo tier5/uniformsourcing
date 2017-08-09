@@ -47,7 +47,7 @@ pg_free_result($result);
     <div class="page-header">
         <div class="row">
             <div class="col-md-12">
-                <div class="col-md-2 pull-left">
+                <div class="col-md-1 pull-left">
                     <button class="btn btn-success btn-xs" onclick="javascript:location.href='../inventory.php';" type="button">
                         Back
                     </button>
@@ -61,7 +61,7 @@ pg_free_result($result);
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <div class="col-md-8">
+                <div class="col-md-10">
                     <form class="form-horizontal">
                         <div class="form-group">
                             <label class="control-label col-sm-4" for="styleNumber">Style Number:</label>
@@ -163,7 +163,7 @@ pg_free_result($result);
                         </div>
                     </form>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <div id="barcodeImage"></div>
                     <br/><br/>
                     <div id="colorsPreview"></div>
@@ -351,7 +351,7 @@ pg_free_result($result);
         if(data.length > 0) {
             html += '<label class="col-md-12 control-label center-block">Available Colors:</label>';
             $.each(data, function (index, value) {
-                html += '<div class="col-md-3"><span>' + value.name + '</span><img src="../../../uploadFiles/inventory/images/' + value.path + '" height="50" width="50"><span><a href="javascript:void(0)" onclick="deleteColor(' + index + ')">delete</a></div>'
+                html += '<div class="col-md-6"><span>' + value.name + '</span><img src="../../../uploadFiles/inventory/images/' + value.path + '" height="50" width="50"><span><a href="javascript:void(0)" onclick="deleteColor(' + index + ')">delete</a></div>'
             });
         }
         $('#colorsPreview').html(html);
