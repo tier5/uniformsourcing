@@ -80,7 +80,7 @@ foreach ($colorArray as $color){
 
     $sql = '';
     $sql = "INSERT INTO \"tbl_invColor\" (\"styleId\",name,image) VALUES ('".$styleInformation['styleId'].
-        "','".$colorData['name']."','".$colorData['path']."')";
+        "','".$colorData['name']."','".$colorData['path']."'    )";
     if(!($result=pg_query($connection,$sql))){
         echo json_encode([
             'status' => false,
@@ -89,6 +89,40 @@ foreach ($colorArray as $color){
         ]);
         return;
     }
+    $sql1 = '';
+    $sql1 = "INSERT INTO \"audit_logs\" (";
+    $sql1 .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
+    $sql1 .= " \"log\") VALUES (";
+    $sql1 .= " '" . $styleInformation['styleId'] . "' ";
+    $sql1 .= ", '". $_SESSION['employeeID'] ."'";
+    $sql1 .= ", '". date('U') ."'";
+    $sql1 .= ", 'Add New Style :  ".$styleNumber ." '";
+    $sql1 .= ")";
+    if(!($audit = pg_query($connection,$sql1))){
+        echo json_encode([
+            'message' => pg_last_error($connection),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    pg_free_result($audit);
+
+    $sql = '';
+    $sql = 'INSERT INTO "tbl_invUpdateLog" ('.
+        '"styleId","createdBy","createdAt",type ) VALUES ('.
+        "'".$styleInformation['styleId']."','".$_SESSION['employeeID']."','".date('Y-m-d G:i:s')."','Add Style' ) RETURNING *";
+    if(!($result=pg_query($connection,$sql))){
+        echo json_encode([
+            'message' => pg_last_error($connection),
+            'success' => false,
+            'code' => 500
+        ]);
+        return;
+    }
+    $log = pg_fetch_array($result);
+    pg_free_result($result);
+
 }
 echo json_encode([
     'status' => true,
