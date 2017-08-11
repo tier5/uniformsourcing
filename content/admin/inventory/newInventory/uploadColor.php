@@ -5,7 +5,7 @@ try {
     $temp = explode(".", $_FILES["file"]["name"]);
     if( $temp[1] == 'gif' || $temp[1] == 'png' || $temp[1] == 'jpg' ){
         $newfilename = round(microtime(true)) . '.' . end($temp);
-        move_uploaded_file($_FILES["file"]["tmp_name"], "../../../uploadFiles/inventory/images/ " . $newfilename);
+        move_uploaded_file($_FILES["file"]["tmp_name"], "../../../uploadFiles/inventory/images/" . $newfilename);
         $sql = '';
         $sql = 'INSERT INTO "tbl_colorTemp" ('.
             'name, path ) VALUES (\''.$name.'\',\''.$newfilename.'\') RETURNING *';
