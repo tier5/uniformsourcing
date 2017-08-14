@@ -48,7 +48,7 @@ require('../../jsonwrapper/jsonwrapper.php');
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
           <td width="10" align="left">&nbsp;</td>
-          <td align="left"><input id="back" onclick="javascript:location.href='inventory.php';" class="button_text" type="submit" name="back" value="Back" /></td>
+          <td align="left"><input id="back" onclick="javascript:location.href='newInventory/inventoryManagement.php';" class="button_text" type="submit" name="back" value="Back" /></td>
           <td align="right">&nbsp;</td>
         </tr>
         <tr>

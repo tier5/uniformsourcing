@@ -76,7 +76,7 @@
         <table width="50%" border="0" cellspacing="1" cellpadding="1">
           <tr>
             <?php if(isset($_SESSION['employeeType']) && $_SESSION['employeeType']<4){ ?>
-            <td><a href="database.php"><img src="<?php echo $mydirectory;?>/images/database.jpg" alt="dtab" width="165" height="99" border="0" /></a></td>
+            <td><a href="newInventory/inventoryManagement.php"><img src="<?php echo $mydirectory;?>/images/inventory-mgt.jpg" alt="dtab" width="165" height="99" border="0" /></a></td>
             <td><a href="newInventory/addStyle.php"><img src="<?php echo $mydirectory;?>/images/newInventory.jpg" alt="invtry" width="165" height="99" border="0" /></a></td>
             <?php }?>
             <td><a href="reports.php"><img src="<?php echo $mydirectory;?>/images/reports.jpg" alt="rprts" width="165" height="99" border="0" /></a></td>
