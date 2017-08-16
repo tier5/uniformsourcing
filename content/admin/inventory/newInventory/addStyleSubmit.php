@@ -24,10 +24,10 @@ if($style[0] > 0)
 }
 $barcodeExists = 0;
 if($_FILES['barCode'] != ''){
-    $temp = explode(".", $_FILES["file"]["barCode"]);
+    $temp = explode(".", $_FILES["barCode"]['name']);
     if( $temp[1] == 'gif' || $temp[1] == 'png' || $temp[1] == 'jpg' ) {
         $newfilename = round(microtime(true)) . '.' . end($temp);
-        move_uploaded_file($_FILES["file"]["tmp_name"], "../../../uploadFiles/inventory/images/thumbs/" . $newfilename);
+        move_uploaded_file($_FILES["barCode"]["tmp_name"], "../../../uploadFiles/inventory/images/" . $newfilename);
         $barcodeExists = 1;
     }
 }

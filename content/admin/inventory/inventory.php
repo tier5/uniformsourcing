@@ -83,7 +83,7 @@
             <?php if(isset($_SESSION['employeeType']) && $_SESSION['employeeType'] != 5){ ?>
             <td><a href="location.php"><img src="<?php echo $mydirectory;?>/images/Locations.jpg" alt="location" width="165" height="99" border="0"></a></td>
             <td><a href="auditLog.php"><img src="<?php echo $mydirectory;?>/images/button.jpg" alt="rprts" width="165" height="99" border="0" /></a> </td>
-            <td><a href="setting.php"><img src="<?php echo $mydirectory;?>/images/button_update.jpg" alt="rprts" width="165" height="99" border="0" /></a> </td>
+            <td><a href="newInventory/logColorSettings.php"><img src="<?php echo $mydirectory;?>/images/button_update.jpg" alt="rprts" width="165" height="99" border="0" /></a> </td>
             <td><a href="javascript:void(0);" id="myBtn"><img src="<?php echo $mydirectory;?>/images/button_location_update.jpg" alt="rprts" width="165" height="99" border="0" /></a> </td>
             <?php }?>
           </tr>
