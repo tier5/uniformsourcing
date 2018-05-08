@@ -11,7 +11,7 @@ $JSONLIB=$PHPLIBDIR."jsonwrapper/";
 //$db = mysql_select_db($db_name, $connection)
 //or die(mysql_error());
 $isMailServer ="false";
-$mailServerAddress = "colomx.i2net.com";// if isMailServer is false please specify the mail server address (ex. mail.i2net.com)
+$mailServerAddress = "mx01.i2net.com";// if isMailServer is false please specify the mail server address (ex. mail.i2net.com)
 $account_emailid="accounting@uniforms.net";
 try{
 	$connection = pg_connect("host = $db_server ".
