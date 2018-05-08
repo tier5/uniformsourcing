@@ -541,20 +541,79 @@ if ($is_session != 1) {
                 </tr>
             </thead><tbody> 
                     <?php
+                    $color ="grid001B";
                     if (count($datalist)) {
+
                         for ($i = 0; $i < count($datalist); $i++) {
+
+                            $orderedData = array();
+                            $shippedData = array();
+
+                            $query_ordered="SELECT \"garments\", \"prj_style_id\" from tbl_prj_style where \"pid\" =".$datalist[$i]['pid'];
+                            if(!($result_ordered=pg_query($connection,$query_ordered))){
+                                print("Failed result_ordered: " . pg_last_error($connection));
+                                exit;
+                            }
+                            while($row_ordered= pg_fetch_array($result_ordered, NULL, PGSQL_NUM)){
+                                $orderedData[]=$row_ordered;
+                            }
+
+                            pg_free_result($result_ordered);
+                            
+                            //print_r($orderedData);
+                            
+                            
+                            if(!empty($orderedData) && is_array($orderedData)){
+
+
+                                $query_shipped="SELECT qty_ship from tbl_qty_shipped where pid=".$datalist[$i]['pid'];
+                                
+                                if(!($result_shipped=pg_query($connection,$query_shipped))){
+                                    print("Failed result_shipped: " . pg_last_error($connection));
+                                    exit;
+                                }
+                                while($row_shipped= pg_fetch_array($result_shipped, NULL, PGSQL_NUM)){
+                                    $shippedData[]=$row_shipped;
+                                }                                
+
+                                pg_free_result($result_shipped);
+                            }
+
+                            $color ="grid001B";
+
+                            if( (!empty($shippedData)) && (!empty($orderedData)) ){
+                                 
+                                $left_to_shipped = array();
+                                foreach ($orderedData as $key => $value) {
+                                    $left_to_shipped[] = ( $orderedData[$key][0] - $shippedData[$key][0]);
+                                }
+                                //echo $datalist[$i]['pid'];
+                                //print_r($left_to_shipped);
+
+                                $checkZero =  array_filter($left_to_shipped);
+
+                                
+                                if (empty($checkZero)) {
+                                    $color = "gridgreen";
+
+                                } else {
+                                    $color ="grid001B";
+                                }
+
+                            }
+                            
                             echo "<tr>";
-                            echo '<td class="grid001B" width="75px">CSR<input type="checkbox" name="csr[]" value="' . $datalist[$i]['pid'] . '"><br />VSR<input type="checkbox" name="vsr[]" value="' . $datalist[$i]['pid'] . '"></td>';
-                            echo '<td class="grid001B">' . $datalist[$i]['client'] . '<input type="hidden" id="project_name" value="' . $datalist[$i]['projectname'] . '" /><input type="hidden" id="project_pid" value="' . $datalist[$i]['pid'] . '" /></td>';
-                            echo '<td class="grid001B">' . $datalist[$i]['firstname'] . $datalist[$i]['lastname'] . '</td>';
-                            echo '<td class="grid001B">' . $datalist[$i]['projectname'] . '</td>';
+                            echo '<td class="'.$color.'" width="75px" >CSR<input type="checkbox" name="csr[]" value="' . $datalist[$i]['pid'] . '"><br />VSR<input type="checkbox" name="vsr[]" value="' . $datalist[$i]['pid'] . '"></td>';
+                            echo '<td class="'.$color.'">' . $datalist[$i]['client'] . '<input type="hidden" id="project_name" value="' . $datalist[$i]['projectname'] . '" /><input type="hidden" id="project_pid" value="' . $datalist[$i]['pid'] . '" /></td>';
+                            echo '<td class="'.$color.'">' . $datalist[$i]['firstname'] . $datalist[$i]['lastname'] . '</td>';
+                            echo '<td class="'.$color.'">' . $datalist[$i]['projectname'] . '</td>';
                           
                             //echo '<td class="grid001B">$' . $datalist[$i]['prj_estimatecost'] . '</td>';
-                              echo '<td class="grid001B">$' . $datalist[$i]['prj_est_profit'] . '</td>';
-                            echo '<td class="grid001B">' . $datalist[$i]['bid_number'] . '</td>';
+                              echo '<td class="'.$color.'">$' . $datalist[$i]['prj_est_profit'] . '</td>';
+                            echo '<td class="'.$color.'">' . $datalist[$i]['bid_number'] . '</td>';
  if ($datalist[$i]['tracking_number'] != '' && $datalist[$i]['tracking_number'] != 'Array')
         {
-     echo '<td class="grid001B">';
+     echo '<td class="'.$color.'">';
  if(isset($datalist[$i]['carrier_id']) && $datalist[$i]['carrier_id']==49)
  {
      echo 'Hand Delivered';
@@ -565,7 +624,7 @@ if ($is_session != 1) {
 }
 else
 {
- echo '<td class="grid001B">';
+ echo '<td class="'.$color.'">';
  if(isset($datalist[$i]['carrier_id']) && $datalist[$i]['carrier_id']==49)
  {
      echo 'Hand Delivered';
@@ -577,21 +636,21 @@ else
   //  echo '<td class="grid001B" onclick="javascript:popupWindow(\''.$datalist[$i]['weblink'].$datalist[$i]['tracking_number'].'\');">' . $datalist[$i]['tracking_number'] . '</td>';
                            // if ($is_session != 1) 
                                 {
-                               echo '<td class="grid001B">' . $datalist[$i]['prdtntrgtdelvry'] . '</td>';
+                               echo '<td class="'.$color.'">' . $datalist[$i]['prdtntrgtdelvry'] . '</td>';
                                 ;
                                
-                                echo '<td class="grid001B"><a style="cursor:hand;cursor:pointer;"  onclick="javascript:popOpen(' . $datalist[$i]['pid'] . ');"><img src="' . $mydirectory . '/images/email.png" alt="send" /></a></td>';
+                                echo '<td class="'.$color.'"><a style="cursor:hand;cursor:pointer;"  onclick="javascript:popOpen(' . $datalist[$i]['pid'] . ');"><img src="' . $mydirectory . '/images/email.png" alt="send" /></a></td>';
                             }
-  echo '<td class="grid001B"><a style="cursor:hand;cursor:pointer;"  onclick="javascript:pushPO(' . $datalist[$i]['pid'] . ');"><img src="' . $mydirectory . '/images/push.png" alt="Push" /></a></td>';                           
-                            echo '<td class="grid001B"><a href="project_mgm.add.php?id=' . $datalist[$i]['pid'] . '&' . $paging . '"><img src="' . $mydirectory . '/images/edit.png"  
+  echo '<td class="'.$color.'"><a style="cursor:hand;cursor:pointer;"  onclick="javascript:pushPO(' . $datalist[$i]['pid'] . ');"><img src="' . $mydirectory . '/images/push.png" alt="Push" /></a></td>';                           
+                            echo '<td class="'.$color.'"><a href="project_mgm.add.php?id=' . $datalist[$i]['pid'] . '&' . $paging . '"><img src="' . $mydirectory . '/images/edit.png"  
    alt="edit" /></a></td>';
                             if ($is_session != 1) {
-                                echo '<td class="grid001B"><a href="project_mgm.list.php?close=' . $datalist[$i]['pid'] . '" onclick="javascript: if(confirm(\'Are you sure you want to close the project\')) { return true; } else { return false; }"><img src="' . $mydirectory . '/images/close.png" border="0"></a></td>';
+                                echo '<td class="'.$color.'"><a href="project_mgm.list.php?close=' . $datalist[$i]['pid'] . '" onclick="javascript: if(confirm(\'Are you sure you want to close the project\')) { return true; } else { return false; }"><img src="' . $mydirectory . '/images/close.png" border="0"></a></td>';
                             }
                             echo "</tr>";
                         }
                         echo '</tbody><tr>
-			<td width="100%" class="grid001B" colspan="13">' . $p->show() . '</td>			
+			<td width="100%" class="'.$color.'" colspan="13">' . $p->show() . '</td>			
 		  </tr>';
                     } else {
                         echo "</tbody><tr>";

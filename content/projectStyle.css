@@ -72,3 +72,15 @@ line-height:25px;
 border-left:#FFF 1px solid;
 border-bottom:#FFF 1px solid;}
 
+.gridgreen{
+background-color:#008000a6;
+height:25px;
+text-align:left;
+font-family:Tahoma, Verdana, Arial, Helvetica;
+font-size:12px;
+color:#000000;
+padding-left:10px;
+line-height:25px;
+border-left:#FFF 1px solid;
+border-bottom:#FFF 1px solid;	
+}
