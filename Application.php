@@ -13,6 +13,7 @@ $JSONLIB=$PHPLIBDIR."jsonwrapper/";
 $isMailServer ="false";
 $mailServerAddress = "mx01.i2net.com";// if isMailServer is false please specify the mail server address (ex. mail.i2net.com)
 $account_emailid="accounting@uniforms.net";
+date_default_timezone_set('America/Los_Angeles');               // Time zone for Pacific
 try{
 	$connection = pg_connect("host = $db_server ".
 						 "dbname = $db_name ".

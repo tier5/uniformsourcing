@@ -135,3 +135,6 @@ Style Add V1.1 stable released
 
 Purchase Order V1.0 stable released to dev
 	Fix issue with i2net mail server
+
+Purchase Order V2.0 stable released to dev
+	Marked green color to those rows where ordre and shipping is not pending
