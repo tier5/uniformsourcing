@@ -50,6 +50,7 @@ if (isset($_POST['pid']) && $_POST['pid'] != 0)
     pg_free_result($result);
     $sql      = "select tbl_prjorder_shipping$tx.*,tbl_carriers.weblink from  tbl_prjorder_shipping$tx left join tbl_carriers on tbl_carriers.carrier_id = tbl_prjorder_shipping$tx.carrier_id where tbl_prjorder_shipping$tx.status=1 and pid = $pid";
     //echo $sql;
+    //$queryTester = $sql;
     if (!($result   = pg_query($connection, $sql)))
     {
         print("Failed query1: " . pg_last_error($connection));
@@ -495,6 +496,7 @@ $html .= '<textarea id="txt_cnt" style="display:none;">'.$script.'</textarea>';
 //echo $html;
 
 $return_arr['html'] = $html;
+//$return_arr['queryTester'] = $queryTester;
 echo json_encode($return_arr);
 return;
 ?>

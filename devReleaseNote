@@ -138,3 +138,6 @@ Purchase Order V1.0 stable released to dev
 
 Purchase Order V2.0 stable released to dev
 	Marked green color to those rows where ordre and shipping is not pending
+
+Purchase Order V3.0 stable released to dev
+	Fixed issue with order item and shipped item in purchased order
