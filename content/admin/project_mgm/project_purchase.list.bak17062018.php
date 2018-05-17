@@ -582,6 +582,10 @@ if(count($datalist))
                 }
 
                 pg_free_result($result_ordered);
+                /*print 'Order data<pre>';
+                print_r($orderedData);
+                print '</pre>';*/
+
 
                 if(!empty($orderedData) && is_array($orderedData)){
 
@@ -597,16 +601,37 @@ if(count($datalist))
                     }                                
 
                     pg_free_result($result_shipped);
+                    /*print 'Shipped data<pre>';
+	                print_r($shippedData);
+	                print '</pre>';*/
 
                 }
 
 
-			    $sqlts0      = "select garments from tbl_prj_style where pid =".$datalist[$i]['pid'];
-			    
-			    if (!($resultts0   = pg_query($connection, $sqlts0)))
+                /*$sqlShipStatus = "select * from  tbl_prjorder_shipping where tbl_prjorder_shipping.status=1 and pid = " . $datalist[$i]['pid'];
+			    //echo $sqlShipStatus;
+			    if (!($resultShipStatus   = pg_query($connection, $sqlShipStatus)))
 			    {
 			        print("Failed query1: " . pg_last_error($connection));
 			        exit;
+			    }
+			    while ($rowShipStatus = pg_fetch_array($resultShipStatus))
+			    {
+			        $data_order_shipping_status[] = $rowShipStatus;
+			    }*/
+
+			    /*print '<pre>';
+			    print_r($data_order_shipping_status);
+			    print '</pre>';*/
+
+			    $sqlts0      = "select garments from tbl_prj_style where pid =".$datalist[$i]['pid'];
+			    //echo $sqlts0;
+
+			    //$queryTester = $sql;
+			    if (!($resultts0   = pg_query($connection, $sqlts0)))
+			    {
+			        print("Failed query1: " . pg_last_error($connection));
+			        //exit;
 			    }
 			    $data_order0 = array();
 			    while ($rowts0 = pg_fetch_array($resultts0))
@@ -618,18 +643,38 @@ if(count($datalist))
 			    foreach ($data_order0 as $obj) {
 			    	 $sum_all += $obj[0];
 			    }
-			    
+			    //echo $datalist[$i]['pid'];
+			    // echo "<pre>";
+			    // print_r($data_order0);
+			    //echo $sum_all;
+			    //exit;
+			    //echo 'pppppppppp'.$abc;
+
+
+
 			    $sqlts1      = "select sum(qty_ship) totalShippedItems from  tbl_prjorder_shipping inner join tbl_qty_shipped on tbl_prjorder_shipping.shipping_id = tbl_qty_shipped.shipping_id where tbl_prjorder_shipping.status=1 and tbl_qty_shipped.pid = ".$datalist[$i]['pid'];
-			    
+			    //echo $sqlts1;
+			    //$queryTester = $sql;
 			    if (!($resultts1   = pg_query($connection, $sqlts1)))
 			    {
 			        print("Failed query1: " . pg_last_error($connection));
 			        exit;
-			    }			    
+			    }
+			    $data_order_shippingts1 = array();
+			    while ($rowts1 = pg_fetch_array($resultts1))
+			    {
+			        $cntShip=$rowts1['totalShippedItems'];
+			    }
 
-			    $shipped = pg_fetch_array($resultts1);			    
+			    //$cntShip=$rowts1['totalShippedItems'];
 
-			    $cntShip = $shipped[0];
+			    //echo $cntShip;exit();
+
+			    /*print 'Shipped data details<pre>';
+			    print_r($data_order0);
+                print_r($data_order_shippingts1);
+                print '</pre>';*///die();
+
 
                 $color ="grid001B";
 
@@ -639,11 +684,17 @@ if(count($datalist))
                     foreach ($orderedData as $key => $value) {
                         $left_to_shipped[] = ( $orderedData[$key][0] - $shippedData[$key][0]);
                     }
-                    
+                    // echo $datalist[2]['pid'];
+                    // exit;
+                    //print_r($left_to_shipped);
 
                     $checkZero =  array_filter($left_to_shipped);
-                    
-                    if ($cntShip >= $sum_all) {
+                    echo "<br>";
+                    echo $sum_all;
+                    echo "----";
+                    echo $cntShip;
+                    echo "-----";
+                    if ($sum_all == $cntShip) {
                         $color = "gridgreen";
 
                     } else {

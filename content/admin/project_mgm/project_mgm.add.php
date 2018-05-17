@@ -2034,6 +2034,7 @@ function load_div(num){
 		   success:
 	function(data)
 	{
+		//alert(data.queryTester);
 		document.getElementById('processing').style.display= 'none';
 		if(data!=null)
 		{			
@@ -2978,7 +2979,7 @@ $.ajax({
 
 function left_ship(){    
     var qnty =0;
-
+    var rw = 0;
 	for(i=0;;i++)
 	{
 if($(".qty_order_"+i).length>0)
@@ -2999,7 +3000,16 @@ if(res<0 || $(".qty_order_"+i).val()=='') res=0;
 	}
 	else{
 
-	break;
+		//-------work done on 16052018 for putting same items to ship if not shipped-------//
+
+			//$('#proj_content8 > table:first > tr:nth-child(' + i + ') > td:nth-child(3)').html()
+			//alert(i);
+			rw=i+2;
+			//alert($('#proj_content8 > table:first tbody > tr:nth-child(' + rw + ')').html());
+			document.getElementById('left_ship_'+i).innerHTML = $('#proj_content8 > table:first tbody > tr:nth-child(' + rw + ') > td:nth-child(3)').text();
+			//break;
+
+		//-------end for work done on 16052018 for putting same items to ship if not shipped-------//
 	}
 	}
    
