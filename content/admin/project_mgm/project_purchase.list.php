@@ -503,13 +503,6 @@ if($is_session !=1)
                    ?>
     </select></td>
 </tr>
-<<<<<<< HEAD
-<!--		<tr>
-			<td width="110px" class="grid001">Purchase Order: </td>
-			<td width="110px" class="grid001" colspan="6"><input style="width:196px;" type="text" value="" name="purchaseorder"></td>
-		</tr>-->
-
-=======
 		<!--worked on purchase order drop down on 17052018-->
 		<tr>
 			<td width="110px" class="grid001">Purchase Order: </td>
@@ -523,7 +516,6 @@ if($is_session !=1)
 			</td>
 		</tr>
 		<!--worked on purchase order drop down on 17052018-->
->>>>>>> 038c29b... added po fill parameter in search parameter
 
 		<tr>           	<td>&nbsp;</td>
                         <td>&nbsp;</td>

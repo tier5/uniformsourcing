@@ -544,7 +544,7 @@ if ($is_session != 1) {
                     $color ="grid001B";
                     if (count($datalist)) {
 
-                        for ($i = 0; $i < count($datalist); $i++) {
+                            for ($i = 0; $i < count($datalist); $i++) {
 
                             $orderedData = array();
                             $shippedData = array();
@@ -559,15 +559,12 @@ if ($is_session != 1) {
                             }
 
                             pg_free_result($result_ordered);
-                            
-                            //print_r($orderedData);
-                            
-                            
+
                             if(!empty($orderedData) && is_array($orderedData)){
 
 
                                 $query_shipped="SELECT qty_ship from tbl_qty_shipped where pid=".$datalist[$i]['pid'];
-                                
+
                                 if(!($result_shipped=pg_query($connection,$query_shipped))){
                                     print("Failed result_shipped: " . pg_last_error($connection));
                                     exit;
@@ -577,23 +574,53 @@ if ($is_session != 1) {
                                 }                                
 
                                 pg_free_result($result_shipped);
+
                             }
+
+
+                            $sqlts0      = "select garments from tbl_prj_style where pid =".$datalist[$i]['pid'];
+
+                            if (!($resultts0   = pg_query($connection, $sqlts0)))
+                            {
+                                print("Failed query1: " . pg_last_error($connection));
+                                exit;
+                            }
+                            $data_order0 = array();
+                            while ($rowts0 = pg_fetch_array($resultts0))
+                            {
+                                $data_order0[] = $rowts0;
+                            }
+
+                            $sum_all = 0;
+                            foreach ($data_order0 as $obj) {
+                                 $sum_all += $obj[0];
+                            }
+
+                            $sqlts1      = "select sum(qty_ship) totalShippedItems from  tbl_prjorder_shipping inner join tbl_qty_shipped on tbl_prjorder_shipping.shipping_id = tbl_qty_shipped.shipping_id where tbl_prjorder_shipping.status=1 and tbl_qty_shipped.pid = ".$datalist[$i]['pid'];
+
+                            if (!($resultts1   = pg_query($connection, $sqlts1)))
+                            {
+                                print("Failed query1: " . pg_last_error($connection));
+                                exit;
+                            }			    
+
+                            $shipped = pg_fetch_array($resultts1);			    
+
+                            $cntShip = $shipped[0];
 
                             $color ="grid001B";
 
                             if( (!empty($shippedData)) && (!empty($orderedData)) ){
-                                 
+
                                 $left_to_shipped = array();
                                 foreach ($orderedData as $key => $value) {
                                     $left_to_shipped[] = ( $orderedData[$key][0] - $shippedData[$key][0]);
                                 }
-                                //echo $datalist[$i]['pid'];
-                                //print_r($left_to_shipped);
+
 
                                 $checkZero =  array_filter($left_to_shipped);
 
-                                
-                                if (empty($checkZero)) {
+                                if ($cntShip >= $sum_all) {
                                     $color = "gridgreen";
 
                                 } else {
