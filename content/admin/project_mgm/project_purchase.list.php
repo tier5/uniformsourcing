@@ -64,12 +64,6 @@ if(isset($_GET['close']))
     
 
     $pid=$_GET['close'];
-    
-    
-   
-      
-   
-  
 
   
   $qName='';  
@@ -258,7 +252,7 @@ while($row3 = pg_fetch_array($result3)){
 pg_free_result($result3);
 
 $prjname=array();
-$sql="select Distinct(p.projectname),p.pid from tbl_newproject as p  inner join \"clientDB\" as c on 
+$sql="select Distinct(p.projectname),prch.purchaseorder as po,p.pid from tbl_newproject as p  inner join \"clientDB\" as c on 
 		c.\"ID\"=p.client left join tbl_prjpurchase as prch on prch.pid = p.pid where  prch.purchaseorder!='' and p.status =1  order by p.projectname";
 		if(!($result=pg_query($connection,$sql))){
 			print("Failed query: " . pg_last_error($connection));
@@ -323,11 +317,26 @@ if (isset($_REQUEST['manager_id2']) && $_REQUEST['manager_id2'] != "") {
     $_SESSION['search_uri'] = $search_uri;
 }
 
-if (isset($_REQUEST['purchaseorder']) && $_REQUEST['purchaseorder'] != "") {
+/*if (isset($_REQUEST['purchaseorder']) && $_REQUEST['purchaseorder'] != "") {
     $search_sql .=' and prch.purchaseorder =' . $_REQUEST['purchaseorder'] . ' ';
     
     $_SESSION['search_uri'] = $search_uri;
 }
+*/
+
+
+	/*----worked on purchase order drop down on 17052018---*/
+if (isset($_REQUEST['purchaseorder']) && $_REQUEST['purchaseorder'] != "") {
+    $search_sql .=" and prch.purchaseorder ='" . $_REQUEST['purchaseorder'] . "'";
+    if ($search_uri) {
+        $search_uri.="&purchaseorder='" . $_REQUEST['purchaseorder'] . "'";
+    } else {
+        $search_uri.="?purchaseorder='" . $_REQUEST['purchaseorder'] . "'";
+    }
+    $_SESSION['search_uri'] = $search_uri;
+}
+	/*----end for worked on purchase order drop down on 17052018---*/
+
 
 if(isset($_REQUEST['vendorId']) && $_REQUEST['vendorId']!="") {
 		$search_sql .=' and pv.vid ='.$_REQUEST['vendorId'].' ';
@@ -494,11 +503,19 @@ if($is_session !=1)
                    ?>
     </select></td>
 </tr>
+		<!--worked on purchase order drop down on 17052018-->
 		<tr>
 			<td width="110px" class="grid001">Purchase Order: </td>
-			<td width="110px" class="grid001" colspan="6"><input style="width:196px;" type="text" value="" name="purchaseorder"></td>
+			<td width="110px" class="grid001" colspan="6">
+				<select name="purchaseorder" id="purchaseorder" class="purchaseorder" style="width:200px;">
+			    	<option value="">-----Select------</option>
+			       <?php foreach($prjname as $prj)
+				        { echo '<option value="'.$prj['po'].'">'.$prj['po'].'</option>';
+				   } ?>
+			    </select>
+			</td>
 		</tr>
-
+		<!--worked on purchase order drop down on 17052018-->
 
 		<tr>           	<td>&nbsp;</td>
                         <td>&nbsp;</td>
