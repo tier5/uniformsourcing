@@ -1,6 +1,7 @@
 <?php
 require('Application.php');
 require('../../header.php');
+//abc
 $back_page = "project_mgm.list.php";
 $paging = 'paging=1';
 $closed = 0;
@@ -261,9 +262,9 @@ if($emp_type != 2&&$emp_type != 1)
 ?>
 <?php if($emp_type != 5): ?>
 <li onClick="javascript:load_tab('2'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content2">Vendor</a></li>
-<li onClick="javascript:load_div('14'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content14">BID</a></li>
+<!-- <li onClick="javascript:load_div('14'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content14">BID</a></li> -->
 <?php endif; ?>
-<li onClick="javascript:load_tab('3'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content3">Samples</a></li>
+<!-- <li onClick="javascript:load_tab('3'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content3">Samples</a></li> -->
 <?php
 }
 ?>
@@ -305,8 +306,8 @@ if($emp_type != 2)
 if($emp_type != 1 && $emp_type != 2 && $emp_type != 5)
 {
 ?>
-<li onClick="javascript:load_tab('10'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content10">Notification</a></li>
-<li onClick="javascript:load_tab('11'); document.getElementById('message').innerHTML = '';"><a href="#" rel="proj_content11">CSR/VSR</a></li>
+<!-- <li onClick="javascript:load_tab('10'); document.getElementById('message').innerHTML = ''; "><a href="#" rel="proj_content10">Notification</a></li> -->
+<!-- <li onClick="javascript:load_tab('11'); document.getElementById('message').innerHTML = '';"><a href="#" rel="proj_content11">CSR/VSR</a></li> -->
 <?php
 }
 ?>
@@ -2034,7 +2035,7 @@ function load_div(num){
 		   success:
 	function(data)
 	{
-		//alert(data.queryTester);
+		//alert(data.jsonlib);
 		document.getElementById('processing').style.display= 'none';
 		if(data!=null)
 		{			

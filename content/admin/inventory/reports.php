@@ -22,6 +22,7 @@
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+#notes { width: 11%; }
 </style>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.min.css"
       rel="stylesheet">
@@ -292,7 +293,9 @@ if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']!="") {
 
 $sql='select DISTINCT st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" '.
     ' left join "tbl_invUnit" as unit  on unit."styleId"=st."styleId" where st."isActive"=1'.$search_sql.' order by st."styleId" desc';
-
+    
+$sqlNote='select DISTINCT st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garmentID",g."garmentName" from "tbl_invStyle" st left join tbl_garment g on g."garmentID"=st."garmentId" left join "tbl_invScaleName" sn on st."scaleNameId"= sn."scaleId" left join "tbl_invColor" col on col."styleId"=st."styleId" '.
+    ' left join "tbl_invUnit" as unit  on unit."styleId"=st."styleId" where st."isActive"=1 order by st."styleId" desc';
 //echo $sql;
 /* if($search_sql != '')
  {
@@ -300,6 +303,13 @@ $sql='select DISTINCT st."styleNumber", sn."scaleId",sn."scaleName",st.*,g."garm
      exit();
  }*/
 
+if(!($resultNote=pg_query($connection,$sqlNote))){
+	print("Failed queryNote: " . pg_last_error($connection));
+	exit;
+}
+while($rowNote = pg_fetch_array($resultNote)){
+	$datalistNote[]=$rowNote;
+}
 
 if(!($result=pg_query($connection,$sql))){
 	print("Failed queryd: " . pg_last_error($connection));
@@ -448,10 +458,13 @@ $(document).ready(function()
           <td align="right">&nbsp;</td>
         </tr>
 </table>
-
+<!-- ROW 1: Client Name - Garment
+ROW 2: Style number - Size Scale
+ROW 3: Color - Fabric
+ROW 4: Box # - Sex-->
 <form action="reports.php" method="post" name="validationForm">
 <table width="100%">
-<tr>
+<tr>  
   <td align="left" valign="top"><center>
     <table width="100%">
         <tr>
@@ -467,7 +480,36 @@ $(document).ready(function()
                 <td>&nbsp;</td>
               </tr>
               <tr>
-                <td class="grid001">Style Number  : </td>
+              	<td class="grid001">Client:</td>
+                <td class="grid001"><select name="client" id="client">
+                  <option value="">--- Select Client-----</option>
+                   <?php for($i=0; $i < count($data_client); $i++){
+                    echo '<option value="'.$data_client[$i]['ID'].'"';
+                  if(isset($_REQUEST['client']) && $_REQUEST['client']==$data_client[$i]['ID'])
+                  echo ' selected="selected" ';
+               echo '>'.$data_client[$i]['client'].'</option>';
+                    }
+                    ?>
+                </select>
+                </td>
+                
+                <td class="grid001">&nbsp;</td>
+                <td class="grid001">Garment:</td>
+                <td class="grid001"><select name="garment" id="garment">
+                  <option value="">---- Select Garment ----</option>
+                  <?php
+                  for($i=0; $i < count($data_garment); $i++){
+                  if($data_garment[$i]['garmentName']!="")
+                    echo '<option value="'.$data_garment[$i]['garmentID'].'"';
+                  if(isset($_REQUEST['garment']) && $_REQUEST['garment']==$data_garment[$i]['garmentID'])
+                  echo ' selected="selected" ';
+               echo '>'.$data_garment[$i]['garmentName'].'</option>';}
+                  ?>  </select>                          &nbsp;</td>
+
+                
+              </tr>
+              <tr>
+              	<td class="grid001">Style Number  : </td>
                 <td class="grid001">
                   <select name="styleNumber" id="styleNumber">
                       <option value="">---- Select Number ----</option>
@@ -478,6 +520,65 @@ $(document).ready(function()
                         if(isset($_REQUEST['styleNumber']) && $_REQUEST['styleNumber']==$data_style[$i]['styleId'])
                         echo ' selected="selected" ';
                           echo '>'.$data_style[$i]['styleNumber'].'</option>';}
+                      }
+                      ?> 
+                  </select>
+                </td>
+                
+                <td class="grid001">&nbsp;</td>
+                <td class="grid001">Size Scale:</td>
+                <td class="grid001"><select name="scale" id="scale">
+                  <option value="">--- Select Size Scale ----</option>
+                  <?php
+                  for($i=0; $i < count($data_scale); $i++){
+                  if($data_scale[$i]['scaleName']!=""){
+               echo '<option value="'.$data_scale[$i]['scaleId'].'"';
+                  if(isset($_REQUEST['scale']) && $_REQUEST['scale']==$data_scale[$i]['scaleId'])
+                  echo ' selected="selected" ';
+               echo '>'.$data_scale[$i]['scaleName'].'</option>';}
+                  }
+                  ?>
+                </select>                          &nbsp;</td>
+
+                
+              </tr>
+              <tr>
+                <td class="grid001">Color:</td>
+                <td class="grid001">
+                  <select name="color" id="color">
+                      <option value="">---- Select Color ----</option>
+                  </select>
+                </td>
+                <td class="grid001">&nbsp;</td>
+                <td class="grid001">Fabric:</td>
+                <td class="grid001">
+                  <select name="fabric" id="fabric">
+                    <option value="">---- Select Fabric ----</option>
+                     <?php
+                    for($i=0; $i < count($data_fab); $i++)
+                    {
+                      echo '<option value="'.$data_fab[$i]['fabricID'].'"';
+                      if(isset($_REQUEST['fabric']) && $_REQUEST['fabric']==$data_fab[$i]['fabricID'])
+                        echo ' selected="selected" ';
+                      echo '>'.$data_fab[$i]['fabName'].'</option>';
+                    }
+                    ?>
+                  </select>
+                </td>
+                
+                </tr>
+             <tr>
+                <td class="grid001">Box #:</td>
+                <td class="grid001">
+                  <select name="box_num" id="box_num">
+                      <option value="">---- Pick Box # ----</option>
+                       <?php
+                      for($i=0; $i < count($data_storage); $i++)
+                      {
+                        if($data_storage[$i]['box']!="")
+                        echo '<option value="'.$data_storage[$i]['box'].'"';
+                        if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']==$data_storage[$i]['box']) echo ' selected="selected" ';
+                        echo '>'.$data_storage[$i]['box'].'</option>';
                       }
                       ?>
                   </select>
@@ -500,86 +601,22 @@ $(document).ready(function()
                     if(isset($_REQUEST['sex']) && $_REQUEST['sex']=="unisex")
                     echo ' selected="selected" ';
                           ?>>Unisex</option>
-                </select>                          &nbsp;</td>
-              </tr>
-              <tr>
-                <td class="grid001">Size Scale:</td>
-                <td class="grid001"><select name="scale" id="scale">
-                  <option value="">--- Select Size Scale ----</option>
-                  <?php
-                  for($i=0; $i < count($data_scale); $i++){
-                  if($data_scale[$i]['scaleName']!=""){
-               echo '<option value="'.$data_scale[$i]['scaleId'].'"';
-                  if(isset($_REQUEST['scale']) && $_REQUEST['scale']==$data_scale[$i]['scaleId'])
-                  echo ' selected="selected" ';
-               echo '>'.$data_scale[$i]['scaleName'].'</option>';}
-                  }
-                  ?>
                 </select></td>
-                <td class="grid001">&nbsp;</td>
-                <td class="grid001">Garment:</td>
-                <td class="grid001"><select name="garment" id="garment">
-                  <option value="">---- Select Garment ----</option>
-                  <?php
-                  for($i=0; $i < count($data_garment); $i++){
-                  if($data_garment[$i]['garmentName']!="")
-                    echo '<option value="'.$data_garment[$i]['garmentID'].'"';
-                  if(isset($_REQUEST['garment']) && $_REQUEST['garment']==$data_garment[$i]['garmentID'])
-                  echo ' selected="selected" ';
-               echo '>'.$data_garment[$i]['garmentName'].'</option>';}
-                  ?>  </select>                          &nbsp;</td>
               </tr>
               <tr>
-                <td class="grid001">Color:</td>
-                <td class="grid001">
-                  <select name="color" id="color">
-                      <option value="">---- Select Color ----</option>
-                  </select>
-                </td>
-                <td class="grid001">&nbsp;</td>
-                <td class="grid001">Client:</td>
-                <td class="grid001"><select name="client" id="client">
-                  <option value="">--- Select Client-----</option>
-                   <?php for($i=0; $i < count($data_client); $i++){
-                    echo '<option value="'.$data_client[$i]['ID'].'"';
-                  if(isset($_REQUEST['client']) && $_REQUEST['client']==$data_client[$i]['ID'])
-                  echo ' selected="selected" ';
-               echo '>'.$data_client[$i]['client'].'</option>';
-                    }
-                    ?>
-                </select>
-                </td>
-                </tr>
-             <tr>
-                <td class="grid001">Box #:</td>
-                <td class="grid001">
-                  <select name="box_num" id="box_num">
-                      <option value="">---- Pick Box # ----</option>
+                <td class="grid001">Notes:</td>
+                <td colspan="4" class="grid001">
+                  <select name="notes" id="notes">
+                      <option value="">---- Select Notes ----</option>
                        <?php
-                      for($i=0; $i < count($data_storage); $i++)
+                      for($i=0; $i < count($datalistNote); $i++)
                       {
-                        if($data_storage[$i]['box']!="")
-                        echo '<option value="'.$data_storage[$i]['box'].'"';
-                        if(isset($_REQUEST['box_num']) && $_REQUEST['box_num']==$data_storage[$i]['box']) echo ' selected="selected" ';
-                        echo '>'.$data_storage[$i]['box'].'</option>';
+                        if($datalistNote[$i]['notes']!="")
+                        echo '<option value="'.$datalistNote[$i]['notes'].'"';
+                        if(isset($_REQUEST['notes']) && $_REQUEST['notes']==$datalistNote[$i]['notes']) echo ' selected="selected" ';
+                        echo '>'.$datalistNote[$i]['notes'].'</option>';
                       }
                       ?>
-                  </select>
-                </td>
-                <td class="grid001">&nbsp;</td>
-                <td class="grid001">Fabric:</td>
-                <td class="grid001">
-                  <select name="fabric" id="fabric">
-                    <option value="">---- Select Fabric ----</option>
-                     <?php
-                    for($i=0; $i < count($data_fab); $i++)
-                    {
-                      echo '<option value="'.$data_fab[$i]['fabricID'].'"';
-                      if(isset($_REQUEST['fabric']) && $_REQUEST['fabric']==$data_fab[$i]['fabricID'])
-                        echo ' selected="selected" ';
-                      echo '>'.$data_fab[$i]['fabName'].'</option>';
-                    }
-                    ?>
                   </select>
                 </td>
               </tr>
