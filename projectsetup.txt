@@ -1,0 +1,19 @@
+For setting up the unformsourcing project follow the steps
+============================================================================================
+Download it from the github using ssl with the url as git clone git@github.com:tier5/uniformsourcing
+create role globaluniformuser
+create a user set password
+create a password for the new user
+grant all the permission to the new user and the db
+change the config file settings for the dbname and username and password and the hostname if required and rename to config from config_local
+Also please checkout from dev branch
+and after all set, please login with cred: jon/1qaz2wsx
+Your project setup is ready!
+
+
+For creating roles and users and db and import please go through the links as follows:
+1.https://www.howtoforge.com/tutorial/ubuntu-postgresql-installation/
+2.https://www.digitalocean.com/community/tutorials/how-to-use-roles-and-manage-grant-permissions-in-postgresql-on-a-vps--2
+3.https://medium.com/coding-blocks/creating-user-database-and-adding-access-on-postgresql-8bfcd2f4a91e
+For the import follow this command:
+  sudo -u postgres psql db_name < 'file_path'
