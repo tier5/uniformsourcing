@@ -1299,6 +1299,84 @@ if($tbl_invQty['exists'] === 'f')
 
 }
 
+//adding order_eta_on to table tbl_newprj
+$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_newproject' and column_name='order_eta_on')";
+
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+    $sql = 'ALTER TABLE "tbl_newproject" ADD COLUMN 
+			"order_eta_on" character varying(30)';
+    // var_dump($sql);
+    // exit();
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+        print_r('successfully added column order_eta_on tbl_newproject');
+        exit();
+    }
+    pg_free_result($result);
+
+}
+//end for adding eta on tbl_newproj
+
+//adding order_eta on to table tbl prj sample
+$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_prj_sample' and column_name='order_eta_on')";
+
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed StyleQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+    $sql = 'ALTER TABLE "tbl_prj_sample" ADD COLUMN 
+			"order_eta_on" character varying(30)';
+    // var_dump($sql);
+    // exit();
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed StyleQuery: " . pg_last_error($connection));
+        exit();
+    }
+    else
+    {
+        print_r('successfully added column order_eta_on tbl_prj_sample');
+        exit();
+    }
+    pg_free_result($result);
+
+}
+//end for adding order_eta on tbl prj sample
+
 
 
 

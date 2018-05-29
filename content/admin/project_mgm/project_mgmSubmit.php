@@ -164,6 +164,11 @@ if (isset($_POST['pid']))
             $log_desc .=",order placed on";
             $query1.=", order_placeon ";
         }
+        if ($order_eta_on != "")
+        {
+            $log_desc .=",order eta on";
+            $query1.=", order_eta_on ";
+        }
         if ($confirmation_number != "")
         {
             //  $log_desc .=",confirmation number";
@@ -216,13 +221,15 @@ if (isset($_POST['pid']))
         if ($project_manager1 != 0)
             $query1.=" ,'$project_manager1'";
         else
-            $$query1.=", project_manager1 = '0'";
+            $query1.=", project_manager1 = '0'";
         if ($project_manager2 != 0)
             $query1.=" ,'$project_manager2'";
         else
-            $$query1.=", project_manager2 = '0'";
+            $query1.=", project_manager2 = '0'";
         if ($order_on != "")
             $query1.=" ,'" . pg_escape_string($order_on) . "' ";
+        if ($order_eta_on != "")
+            $query1.=" ,'" . pg_escape_string($order_eta_on) . "' ";
         if ($confirmation_number != "")
             $query1.=" ,'$confirmation_number' ";
         if ($bid_number != "")
@@ -298,6 +305,10 @@ if (isset($_POST['pid']))
                 $query_Name.=", order_placeon = '" . pg_escape_string($order_on) . "' ";
             else if (isset($order_on))
                 $query_Name.=", order_placeon = null ";
+            if (isset($order_eta_on) && $order_eta_on != "")
+                $query_Name.=", order_eta_on = '" . pg_escape_string($order_eta_on) . "' ";
+            else if (isset($order_eta_on))
+                $query_Name.=", order_eta_on = null ";
             if (isset($confirmation_number) && $confirmation_number != "")
                 $query_Name.=", confirmation_number = '$confirmation_number' ";
             else if (isset($confirmation_number))
@@ -1077,7 +1088,7 @@ if (isset($_POST['pid']))
                 $query_Name.=", customer_po  = '" . $customerpo . "' ";
             else
                 $query_Name.=",customer_po= null ";
-            if (nternalpo != "")
+            if ($internalpo != "")
                 $query_Name.=", internal_po  = '" . $internalpo . "' ";
             else
                 $query_Name.=",internal_po= null ";
@@ -1093,6 +1104,10 @@ if (isset($_POST['pid']))
                 $query_Name.=", order_on  = '" . $order_on . "' ";
             else
                 $query_Name.=",order_on= null ";
+            if ($order_eta_on != "")
+                $query_Name.=", order_eta_on  = '" . $order_eta_on . "' ";
+            else
+                $query_Name.=",order_eta_on= null ";
             if ($bid_number != "")
                 $query_Name.=", bid_number  = '" . pg_escape_string($bid_number) . "' ";
             else
@@ -1259,6 +1274,11 @@ if (isset($_POST['pid']))
                 //  $log_desc .="Order On,";
                 $query_Name.=", order_on ";
             }
+            if ($order_eta_on != "")
+            {
+                //  $log_desc .="Order On,";
+                $query_Name.=", order_eta_on ";
+            }
             if ($bid_number != "")
             {
                 // $log_desc .="Bid Number,";
@@ -1350,6 +1370,8 @@ if (isset($_POST['pid']))
                 $query_Name.=", '" . pg_escape_string($order_confirmation) . "'  ";
             if ($order_on != "")
                 $query_Name.=", '" . $order_on . "'  ";
+            if ($order_eta_on != "")
+                $query_Name.=", '" . $order_eta_on . "'  ";
             if ($bid_number != "")
                 $query_Name.=", '" . pg_escape_string($bid_number) . "'  ";
             if ($project_budget != "")

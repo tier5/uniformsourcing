@@ -148,3 +148,7 @@ Purchase Order V4.0 stable released to dev
 Inventory V5.0 stable released to dev
         Added one search filter 'notes' into inventory/reports
 	Rearranged search parameter as required in task lists in inventory/reports page
+
+Purchase Order V5.0 stable released to dev
+        Added one order eta field as text field with calender option on entering text
+        and including this field in tables tbl_newproject, tbl_prj_sample for update and insert programming

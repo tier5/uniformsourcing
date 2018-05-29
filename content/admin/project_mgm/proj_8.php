@@ -169,7 +169,18 @@ if ($emp_type > 0)
 $html .= 'name="order_on" value="' . $data_prj['order_placeon'] . '"/></td>
               <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
             </tr>
-              <tr>
+            <tr>
+              <td width="50%" height="25" align="right">Order ETA:</td>
+              <td>&nbsp;</td>
+              <td width="49%" align="left" valign="top"><input type="text" id="order_eta_on" onclick="javascript:showDate(this);" ';
+if ($emp_type > 0)
+{
+    $html .= 'disabled="disabled"';
+}
+$html .= 'name="order_eta_on" value="' . isset($data_prj['order_eta_on']) ? $data_prj['order_eta_on'] : '' . '"/></td>
+               <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
+            </tr>
+            <tr>
               <td width="50%" height="25" align="right">Bid Number:</td>
               <td width="1%">&nbsp;</td>
               <td width="49%" align="left" valign="top"><input type="text"';
