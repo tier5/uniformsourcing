@@ -604,7 +604,7 @@ ROW 4: Box # - Sex-->
                 </select></td>
               </tr>
               <tr>
-                <td class="grid001">Notes:</td>
+                <td class="grid001">Notes::</td>
                 <td colspan="4" class="grid001">
                   <select name="notes" id="notes">
                       <option value="">---- Select Notes ----</option>
