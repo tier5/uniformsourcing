@@ -37,7 +37,7 @@ if (isset($_POST['pid']) && $_POST['pid'] != 0)
 {
     $isEdit = 1;
     $sql    = "Select * from tbl_newproject$tx where  pid = $pid";
-    //echo $sql;
+    $sqlquery = $sql;
     if (!($result = pg_query($connection, $sql)))
     {
         print("Failed query1: " . pg_last_error($connection));
@@ -47,6 +47,7 @@ if (isset($_POST['pid']) && $_POST['pid'] != 0)
     {
         $data_prj = $row;
     }
+    $datum=$data_prj['order_eta_on'];
     pg_free_result($result);
     $sql      = "select tbl_prjorder_shipping$tx.*,tbl_carriers.weblink from  tbl_prjorder_shipping$tx left join tbl_carriers on tbl_carriers.carrier_id = tbl_prjorder_shipping$tx.carrier_id where tbl_prjorder_shipping$tx.status=1 and pid = $pid";
     //echo $sql;
@@ -172,12 +173,12 @@ $html .= 'name="order_on" value="' . $data_prj['order_placeon'] . '"/></td>
             <tr>
               <td width="50%" height="25" align="right">Order ETA:</td>
               <td>&nbsp;</td>
-              <td width="49%" align="left" valign="top"><input type="text" id="order_eta_on" onclick="javascript:showDate(this);" ';
+              <td width="49%" align="left" valign="top"><input type="text" id="order_eta_on" autocomplete="off" onclick="javascript:showDate(this);" ';
 if ($emp_type > 0)
 {
     $html .= 'disabled="disabled"';
 }
-$html .= 'name="order_eta_on" value="' . isset($data_prj['order_eta_on']) ? $data_prj['order_eta_on'] : '' . '"/></td>
+$html .= 'name="order_eta_on" value="' . $data_prj['order_eta_on'] . '"/></td>
                <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
             </tr>
             <tr>
@@ -507,7 +508,7 @@ $html .= '<textarea id="txt_cnt" style="display:none;">'.$script.'</textarea>';
 //echo $html;
 
 $return_arr['html'] = $html;
-//$return_arr['queryTester'] = $queryTester;
+//$return_arr['queryTester'] = $datum;
 echo json_encode($return_arr);
 return;
 ?>

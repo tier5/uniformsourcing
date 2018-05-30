@@ -152,3 +152,6 @@ Inventory V5.0 stable released to dev
 Purchase Order V5.0 stable released to dev
         Added one order eta field as text field with calender option on entering text
         and including this field in tables tbl_newproject, tbl_prj_sample for update and insert programming
+
+Purchase Order V6.0 stable released to dev
+	Pulled order eta date to purchase order list table

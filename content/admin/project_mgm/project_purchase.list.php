@@ -370,7 +370,7 @@ if (isset($_REQUEST['vendorId']) && $_REQUEST['vendorId'] != "") {
 if ($_SESSION['search_uri'] != "") {
     $_SESSION['page_type'] = $type;
 }
-$sql = 'select Distinct(prj.projectname),ship.carrier_id,track_nos.tracking_no, prj.is_billed, prj.bill_date, prj.updateddate, prch.createddate,note.*,prch.createdDate as date,c.client,prj.pid,prj.order_placeon,prj.status,emp.firstname,emp.lastname,prch.purchaseorder,prch.pt_invoice,tbl_carriers.weblink,
+$sql = 'select Distinct(prj.projectname),ship.carrier_id,track_nos.tracking_no, prj.is_billed, prj.bill_date, prj.updateddate,prj.order_eta_on, prch.createddate,note.*,prch.createdDate as date,c.client,prj.pid,prj.order_placeon,prj.status,emp.firstname,emp.lastname,prch.purchaseorder,prch.pt_invoice,tbl_carriers.weblink,
 prc.prjquote,prch.purchaseduedate,prc.prjcost,ship.tracking_number ,prc.prj_completioncost ,pro.prdtntrgtdelvry from tbl_newproject as prj inner join tbl_prjpurchase as prch on
  prch.pid = prj.pid ';
 if ($emp_join == "") $sql.= 'left join tbl_prjvendor pv on pv.pid=prj.pid ';
@@ -692,7 +692,7 @@ if (count($datalist)) {
         }
         /*echo '<td class="'.$color.'">'.$datalist[$i]['prdtntrgtdelvry'].'</td>';*/
         echo '<td class="' . $color . '">';
-        if ($datalist[$i]['updateddate'] != "") echo date('m/d/Y', $datalist[$i]['updateddate']);
+        if ($datalist[$i]['order_eta_on'] != "") echo $datalist[$i]['order_eta_on'];
         echo '</td>';
         if ($is_session != 1) {
             /*echo '<td class="'.$color.'" id="bill_'.$i.'" > <div style="cursor:pointer;cursor:hand;" onclick="javascript:editBilledinfo('.$datalist[$i]['pid'].', \'load\', '.$i.');" >';

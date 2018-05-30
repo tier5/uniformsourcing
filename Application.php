@@ -1308,7 +1308,7 @@ $column_exists;
 if(!($result=pg_query($connection,$sql)))
 {
     print_r('Application.php -- error ');
-    print("Failed StyleQuery: " . pg_last_error($connection));
+    print("Failed SchemaQuery: " . pg_last_error($connection));
     exit();
 }
 while($row = pg_fetch_array($result))
@@ -1325,16 +1325,32 @@ if($column_exists['exists'] === 'f')
     if(!($result=pg_query($connection,$sql)))
     {
         print_r('Application.php -- error ');
-        print("Failed StyleQuery: " . pg_last_error($connection));
-        exit();
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
     }
     else
     {
         print_r('successfully added column order_eta_on tbl_newproject');
-        exit();
+        //exit();
     }
     pg_free_result($result);
 
+}else{
+	
+	$sql = 'ALTER TABLE tbl_newproject ALTER COLUMN order_eta_on TYPE character varying(300)';
+    
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        /*print_r('successfully added column order_eta_on tbl_newproject');
+        exit();*/
+    }
+    pg_free_result($result);
 }
 //end for adding eta on tbl_newproj
 
@@ -1347,7 +1363,7 @@ $column_exists;
 if(!($result=pg_query($connection,$sql)))
 {
     print_r('Application.php -- error ');
-    print("Failed StyleQuery: " . pg_last_error($connection));
+    print("Failed SchemaQuery: " . pg_last_error($connection));
     exit();
 }
 while($row = pg_fetch_array($result))
@@ -1364,16 +1380,32 @@ if($column_exists['exists'] === 'f')
     if(!($result=pg_query($connection,$sql)))
     {
         print_r('Application.php -- error ');
-        print("Failed StyleQuery: " . pg_last_error($connection));
-        exit();
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
     }
     else
     {
         print_r('successfully added column order_eta_on tbl_prj_sample');
-        exit();
+        //exit();
     }
     pg_free_result($result);
 
+}else{	
+
+	$sql = 'ALTER TABLE tbl_prj_sample ALTER COLUMN order_eta_on TYPE character varying(300)';
+    
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        /*print_r('successfully added column order_eta_on tbl_newproject');
+        exit();*/
+    }
+    pg_free_result($result);
 }
 //end for adding order_eta on tbl prj sample
 
