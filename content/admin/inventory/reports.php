@@ -266,7 +266,9 @@ if(isset($_REQUEST['client']) && $_REQUEST['client']!="") {
 	}
 }
 if(isset($_REQUEST['notes']) && $_REQUEST['notes']!="") {
-	$search_sql .=' and st."notes" ILIKE \'%' .$_REQUEST['notes'].'%\' ';
+	/*$search_sql .=' and st."notes" = \'%' .addslashes(($_REQUEST['notes']).)'%\' ';*/
+	$getNotes=str_replace("'","''",$_REQUEST['notes']);
+	$search_sql.=' and st."notes" =\''.$getNotes.'\' ';
 	if($search_uri)  {
 		 $search_uri.="&notes=".$_REQUEST['notes'];
 	} else {
