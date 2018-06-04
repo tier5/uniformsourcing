@@ -155,3 +155,6 @@ Purchase Order V5.0 stable released to dev
 
 Purchase Order V6.0 stable released to dev
 	Pulled order eta date to purchase order list table
+
+Purchase Order V6.2 stable released to dev
+	Fix issue with purchase order addition

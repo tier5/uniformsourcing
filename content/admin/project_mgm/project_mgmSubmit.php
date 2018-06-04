@@ -149,16 +149,20 @@ if (isset($_POST['pid']))
             $log_desc .=",project_manager";
             $query1.=", project_manager ";
         }
-        if ($project_manager1 != 0)
-        {
-            $log_desc .=",project_manager1";
-            $query1.=", project_manager1";
-        }
-        if ($project_manager2 != 0)
-        {
-            $log_desc .=",project_manager2";
-            $query1.=", project_manager2";
-        }
+        $log_desc .=",project_manager1";
+        $query1.=", project_manager1";
+        $log_desc .=",project_manager2";
+        $query1.=", project_manager2";
+//        if ($project_manager1 != 0)
+//        {
+//            $log_desc .=",project_manager1";
+//            $query1.=", project_manager1";
+//        }
+//        if ($project_manager2 != 0)
+//        {
+//            $log_desc .=",project_manager2";
+//            $query1.=", project_manager2";
+//        }
         if ($order_on != "")
         {
             $log_desc .=",order placed on";
@@ -221,11 +225,11 @@ if (isset($_POST['pid']))
         if ($project_manager1 != 0)
             $query1.=" ,'$project_manager1'";
         else
-            $query1.=", project_manager1 = '0'";
+            $query1.=", '0'";
         if ($project_manager2 != 0)
             $query1.=" ,'$project_manager2'";
         else
-            $query1.=", project_manager2 = '0'";
+            $query1.=", '0'";
         if ($order_on != "")
             $query1.=" ,'" . pg_escape_string($order_on) . "' ";
         if ($order_eta_on != "")
@@ -253,7 +257,8 @@ if (isset($_POST['pid']))
         if (isset($element_pack) && $element_pack != "" && $element_pack != 0)
             $query1.=", '$element_pack' ";
         $query1.=" )";
-        // echo $query1;
+//         echo $query1;
+//         die();
         if (!($result = pg_query($connection, $query1)))
         {
             $return_arr['error'] = "Error while storing project information to database!";
@@ -348,12 +353,16 @@ if (isset($_POST['pid']))
         $query_Name.=", updateddate = " . date('U');
         $query_Name.=", createdby = " . $_SESSION["employeeID"];
         $query_Name.="  where pid='$pid'" . ";";
-
+//        echo $query_Name;
+//        die();
+        
         if ($query_Name != "")
         {
             //echo $query_Name;
+            
             if (!($result = pg_query($connection, $query_Name)))
             {
+                
                 $return_arr['error'] = pg_last_error($connection);
                 echo json_encode($return_arr);
                 return;
@@ -576,6 +585,7 @@ if (isset($_POST['pid']))
                     $query_Name.=" ,'" . pg_escape_string($ptinvoice) . "' ";
                 $query_Name.=" )" . ";";
                 $is_po = 1;
+//                die($query_Name);
             }
             if ($query_Name != "")
             {
@@ -3896,6 +3906,7 @@ if ($is_notes_mail == 1)
         }
     }
 }
+//die('dfgdf');
 echo json_encode($return_arr);
 return;
 ?>
