@@ -158,3 +158,6 @@ Purchase Order V6.0 stable released to dev
 
 Purchase Order V6.2 stable released to dev
 	Fix issue with purchase order addition
+
+Purchase Order V6.3 stable released to dev
+	Added order_eta_on into tbl_newproject_closed to fix the issue with close a PO

@@ -1354,6 +1354,62 @@ if($column_exists['exists'] === 'f')
 }
 //end for adding eta on tbl_newproj
 
+
+// add column order_eta_on to tbl_newproject_closed
+$sql = "SELECT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_newproject_closed' and column_name='order_eta_on')";
+
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed SchemaQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+    $sql = 'ALTER TABLE "tbl_newproject_closed" ADD COLUMN 
+			"order_eta_on" character varying(30)';
+    // var_dump($sql);
+    // exit();
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        print_r('successfully added column order_eta_on tbl_newproject_closed');
+        //exit();
+    }
+    pg_free_result($result);
+
+}else{
+	
+	$sql = 'ALTER TABLE tbl_newproject_closed ALTER COLUMN order_eta_on TYPE character varying(300)';
+    
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        /*print_r('successfully added column order_eta_on tbl_newproject');
+        exit();*/
+    }
+    pg_free_result($result);
+}
+// end of adding column to tbl_newproject_closed
+
 //adding order_eta on to table tbl prj sample
 $sql = "SELECT EXISTS (SELECT column_name 
 		FROM information_schema.columns 
