@@ -196,23 +196,34 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     pg_free_result($result);
     $dataQuantity = [];
     $dataToolTip = [];
+    $dataConveyor = [];
+
+    /*print '<pre>';
+    print_r($data);
+    print '</pre>';*/
+
     foreach ($data as $key => $value) {
         $total = 0;
         if (isset($dataQuantity[$value['mainSizeId']][$value['optSizeId']])) {
             $total = $dataQuantity[$value['mainSizeId']][$value['optSizeId']] + $value['qty'];
             $dataQuantity[$value['mainSizeId']][$value['optSizeId']] = $total;
             if($value['qty'] > 0){
-                $link = $dataToolTip[$value['mainSizeId']][$value['optSizeId']].'<br/>'.'<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].' : '.$value['qty'].'</a>';
+                $link = $dataToolTip[$value['mainSizeId']][$value['optSizeId']].'<br/>'.'<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].'_'.'&nbsp&nbspConveyor slot:'.$value['conveyor_slot'].' :- '.$value['qty'].'</a>';
                 $dataToolTip[$value['mainSizeId']][$value['optSizeId']] = $link;
             }
         } else {
             $dataQuantity[$value['mainSizeId']][$value['optSizeId']] = $value['qty'];
             if($value['qty'] > 0){
-                $link = '<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].' : '.$value['qty'].'</a>';
-                $dataToolTip[$value['mainSizeId']][$value['optSizeId']] = $link ;
+                $link = '<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].'_'.'&nbsp&nbspConveyor slot:'.$value['conveyor_slot'].' :- '.$value['qty'].'</a>';
+                $dataToolTip[$value['mainSizeId']][$value['optSizeId']] = $link;
             }
         }
+
+        $dataConveyor[$value['mainSizeId']][$value['optSizeId']] = $value['conveyor_slot'];
     }
+    /* print '<pre>-------';
+    print_r($dataConveyor);
+    print '</pre>--------';*/
     if (isset($_GET['boxId']) && $_GET['boxId'] != 0) {
         if(isset($_GET['colorId']) && $_GET['colorId'] != 0){
             $colorId = $_GET['colorId'];
@@ -244,8 +255,18 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     }
     pg_free_result($result);
     $stylebox1 = array();
+
+    /*print '===<pre>';
+    print_r($allUnit);
+    print '</pre>====';*/
+    //exit();
+
     foreach ($allUnit as $unit) {
-        $stylebox1[$unit[0]] = $unit['box'];
+        //$stylebox1[$unit[0]] = $unit['box'];
+        $stylebox1[$unit[0]] = array(
+                                    'box' => $unit['box'],
+                                    'type' => $unit['type']
+                                );
     }
     natcasesort($stylebox1);
 } else {
@@ -294,6 +315,8 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         text-decoration: none;
     }
     a:focus, a:hover{color: #337ab7; text-decoration: underline;}
+    .slot { padding-bottom: 5%; !important; }
+    .slotBody { background-color: #fcf8e3;padding-bottom: 11%; }
 </style>
 <div class="container">
     <div class="page-header">
@@ -337,6 +360,18 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             <div class="col-md-4">
                 <label for="allBoxSelect" class="col-md-2 control-label">Box#:</label>
                 <div class="col-md-10">
+
+
+                    <?php
+
+                   /* print '<pre>';
+                    print_r($stylebox1);
+                    print '</pre>';*/
+
+                    ?>
+
+
+
                     <select class="form-control" name="allBox" id="allBoxSelect">
                         <option value="0">------- All Box -------</option>
                         <?php
@@ -348,12 +383,20 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                             echo '>' . $unit['box'] . '</option>';
                         }*/
 
-                       foreach ($stylebox1 as $styleID => $styleval) {
+                       /*foreach ($stylebox1 as $styleID => $styleval) {
                             echo '<option value="' . $styleID . '" ';
                             if (isset($_GET['boxId']) && $_GET['boxId'] == $styleID) {
                                 echo ' selected="selected" ';
                             }
                             echo '>' . $styleval . '</option>';
+                        }*/
+
+                        foreach ($stylebox1 as $styleID => $styleval) {
+                            echo '<option data-type="' . $styleval['type'] . '" value="' . $styleID . '" ';
+                            if (isset($_GET['boxId']) && $_GET['boxId'] == $styleID) {
+                                echo ' selected="selected" ';
+                            }
+                            echo '>' . $styleval['box'] . '</option>';
                         }
 
                         ?>
@@ -627,15 +670,41 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                 foreach ($dataMainSizeId as $key2 => $value2) {
                                     if (isset($dataQuantity[$key2][$key1]) && $dataQuantity[$key2][$key1] > 0) {
                                         $abcd++;
-                                        $element .= '<td class="text-center"><span class="tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="' . $dataQuantity[$key2][$key1] . '"> <p class="tooltext">'.$dataToolTip[$key2][$key1].'</p></span>      ';
+                                        $element .= '<td title="'.$dataConveyor[$key2][$key1].'" class="text-center"><span class="tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="' . $dataQuantity[$key2][$key1] . '"> <p data-id="'.$dataConveyor[$key2][$key1].'" class="tooltext">'.$dataToolTip[$key2][$key1].'</p></span>      ';
+                                        
+
+                                        if(isset($dataConveyor[$key2][$key1]) && !empty($dataConveyor[$key2][$key1])){
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to edit the conveyor</a>';
+                                        }else{
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to add the conveyor</a>';
+                                        }
+
+
+                                        $element .= '<input type="hidden" id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv_hid_inv" class="setConveyorLinkHid" name="conveyorSlotHid[]" value="" />';
+                                        
+
+
                                         $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                         $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
-                                        $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . $key1 . '" value="0" /></td>';
+                                        $element .= '<input type="hidden" class="setConveyorLink_' . $key2 . '_' . $key1 . '_inv_ischange_inv" name="is_change[]" id="update_' . $key2 . '_' . $key1 . '" value="0" /></td>';
                                     } else {
-                                        $element .= '<td class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="0" width="80%">';
+                                        $element .= '<td title="'.$dataConveyor[$key2][$key1].'" class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . $key1 . '" name="qty[]" value="0" width="80%"><p data-id="'.$dataConveyor[$key2][$key1].'" class="tooltext">'.$dataToolTip[$key2][$key1].'</p></span>      ';
+
+                                        
+                                        if(isset($dataConveyor[$key2][$key1]) && !empty($dataConveyor[$key2][$key1])){
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to edit the conveyor</a>';
+                                        }else{
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to add the conveyor</a>';
+                                        }
+                                        
+
+
+                                        $element .= '<input type="hidden" id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv_hid_inv" class="setConveyorLinkHid" name="conveyorSlotHid[]" value="" />';
+                                        
+
                                         $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                         $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
-                                        $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . $key1 . '" value="0" /></td>';
+                                        $element .= '<input type="hidden" class="setConveyorLink_' . $key2 . '_' . $key1 . '_inv_ischange_inv" name="is_change[]" id="update_' . $key2 . '_' . $key1 . '" value="0" /></td>';
                                     }
                                 }
                                 $element .= '</tr>';
@@ -645,15 +714,42 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                             $element .= '<td class="text-left">Qty</td>';
                             foreach ($dataMainSizeId as $key2 => $value2) {
                                 if (isset($dataQuantity[$key2][0]) && $dataQuantity[$key2][0] > 0) {
-                                    $element .= '<td class="text-center"><span class="tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="' . $dataQuantity[$key2][0] . '"> <p class="tooltext">'.$dataToolTip[$key2][0].'</p></span>';
+                                    $element .= '<td title="'.$dataConveyor[$key2][0].'" class="text-center"><span class="tool"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="' . $dataQuantity[$key2][0] . '"> <p class="tooltext">'.$dataToolTip[$key2][0].'</p></span>';
+
+
+
+                                    if(isset($dataConveyor[$key2][0]) && !empty($dataConveyor[$key2][0])){
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to edit the conveyor</a>';
+                                    }else{
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to add the conveyor</a>';
+                                    }
+
+                                    
+
+                                    $element .= '<input type="hidden" id="setConveyorLink_' . $key2 . '_' . 0 . '_inv_hid_inv" class="setConveyorLinkHid" name="conveyorSlotHid[]" value="" />';
+                                    
+
+
                                     $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                     $element .= '<input type="hidden" name="optSizeId[]" value="' . 0 . '" />';
-                                    $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . 0 . '" value="0" /></td>';
+                                    $element .= '<input type="hidden" class="setConveyorLink_' . $key2 . '_' . 0 . '_inv_ischange_inv" name="is_change[]" id="update_' . $key2 . '_' . 0 . '" value="0" /></td>';
                                 } else {
-                                    $element .= '<td class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="0" width="80%">';
+                                    $element .= '<td title="'.$dataConveyor[$key2][0].'" class="text-center"><input type="text" class="inputQty click" id="updateInput_' . $key2 . '_' . 0 . '" name="qty[]" value="0" width="80%"><p data-id="'.$dataConveyor[$key2][0].'" class="tooltext">'.$dataToolTip[$key2][$key1].'</p></span>      ';
+
+                                    
+                                    if(isset($dataConveyor[$key2][0]) && !empty($dataConveyor[$key2][0])){
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink" name="convyrhd[]">Click here to edit the conveyor</a>';
+                                    }else{
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink" name="convyrhd[]">Click here to add the conveyor</a>';
+                                    }                                    
+
+
+                                    $element .= '<input type="hidden" id="setConveyorLink_' . $key2 . '_' . 0 . '_inv_hid_inv" class="setConveyorLinkHid" name="conveyorSlotHid[]" value="" />';
+                                    
+
                                     $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                     $element .= '<input type="hidden" name="optSizeId[]" value="' . 0 . '" />';
-                                    $element .= '<input type="hidden" name="is_change[]" id="update_' . $key2 . '_' . 0 . '" value="0" /></td>';
+                                    $element .= '<input type="hidden" class="setConveyorLink_' . $key2 . '_' . 0 . '_inv_ischange_inv" name="is_change[]" id="update_' . $key2 . '_' . 0 . '" value="0" /></td>';
                                 }
                             }
                             $element .= '</tr>';
@@ -812,9 +908,15 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                             foreach ($dataMainSizeId as $key2 => $value2) {
                                                 ;
                                                 $element .= '<td><input type="text" class="inputQty clickNew" name="qty[]" id="input_' . $key2 . '_' . $key1 . '" value="0"/>';
+
+
+                                                $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '" href="javascript:void(0)" style="cursor:pointer;" title="Click here to add the conveyor"  class="setConveyorLink" name="convyrhd[]">Click here to add the conveyor</a>';
+                                                $element .= '<input type="hidden" id="setConveyorLink_' . $key2 . '_' . $key1 . '_hid" class="setConveyorLinkHid" name="conveyorSlotHid[]" value="" />';
+                                                
+
                                                 $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                                 $element .= '<input type="hidden" name="optSizeId[]" value="' . $key1 . '" />';
-                                                $element .= '<input type="hidden" name="is_change_new[]" id="new_' . $key2 . '_' . $key1 . '" value="0" /></td>';
+                                                $element .= '<input type="hidden" class="setConveyorLink_' . $key2 . '_' . $key1 . '_ischange" name="is_change_new[]" id="new_' . $key2 . '_' . $key1 . '" value="0" /></td>';
                                                 $count++;
                                             }
                                             $element .= '</tr>';
@@ -824,9 +926,15 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                         $element .= '<td class="text-left">Qty</td>';
                                         foreach ($dataMainSizeId as $key2 => $value2) {
                                             $element .= '<td><input type="text" class="inputQty clickNew" name="qty[]" id="input_' . $key2 . '_' . 0 . '" value="0"/>';
+
+                                            
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '" href="javascript:void(0)" style="cursor:pointer;" title="Click here to add the conveyor"  class="setConveyorLink" name="convyrhd[]">Click here to add the conveyor</a>';
+                                            $element .= '<input type="hidden" id="setConveyorLink_' . $key2 . '_' . $key1 . '_hid" class="setConveyorLinkHid" name="conveyorSlotHid[]" value="" />';                                            
+
+
                                             $element .= '<input type="hidden" name="mainSizeId[]" value="' . $key2 . '" />';
                                             $element .= '<input type="hidden" name="optSizeId[]" value="0" />';
-                                            $element .= '<input type="hidden" name="is_change_new[]" id="new_' . $key2 . '_0" value="0" /></td>';
+                                            $element .= '<input type="hidden" class="setConveyorLink_' . $key2 . '_' . $key1 . '_ischange" name="is_change_new[]" id="new_' . $key2 . '_0" value="0" /></td>';
                                             $count++;
                                         }
                                         $element .= '</tr>';
@@ -916,6 +1024,56 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         </div>
     </div>
 </div>
+
+
+<!-- The Modal for setting conveyor slot -->
+  <div class="modal fade" id="conveyorSlot">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title col-sm-11">Set Slot</h4>
+          <button type="button" class="close col-sm-1" id="closeSlot" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body slotBody">
+          
+            <div id="login" class="tab-pane fade in active show">
+                 
+                 <form action="action_page.php">
+                                           
+                      <div class="container col-sm-12">                               
+                                
+                                <div class="row">
+                                            <label for="slot" class="col-sm-4"><b>Set Conveyor Slot</b></label>
+                                            <input type="text" id="setSlot" class="col-sm-8" placeholder="Enter Slot" name="slot" required>
+                                </div>                                    
+                                
+                      </div>
+                          
+                 </form>
+                
+            </div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer slot">
+          <button type="button" data-id="" class="btn btn-secondary saveSlot" data-dismiss="modal">Save Slot</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+<!-- End for The Modal for setting conveyor slot -->
+
+ <input type="hidden" name="mode" class="mode" value="">
+ <input type="hidden" name="editSlot" class="editSlot" value=""> 
+ <input type="hidden" name="currentSlot" id="currentSlot" class="currentSlot" value="">
+ <input type="hidden" name="slotElem" id="slotElem" class="slotElem" value="">
+
+
 <?php require('../../../trailer.php'); ?>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
@@ -1331,3 +1489,193 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         });
     });
 </script>
+
+
+ <!-- conveyorSlotHidCurrentInv -->
+  <script type="text/javascript">
+    $(function(){
+        if($('#allBoxSelect').val() == '0'){
+            $('#tableUpdate td').removeAttr("title");
+            $('#tableUpdate td > a').remove("a");
+        }
+        $('.mode').val('');
+        $('.editSlot').val('');
+        $('.saveSlot').attr('data-id','0');
+        $(document).on('click','.setConveyorLink',function(e){
+            $('.mode').val('add');
+            $('#setSlot').val('');
+            $('.saveSlot').attr('data-id','0');   
+            if($("#newLocation").find(':selected').data('type') == 'conveyor'){
+                
+                
+                //setting the current DOM to modal button data-id
+                $('.saveSlot').attr('data-id',$(this).attr('id'));
+                $('.saveSlot').attr('id',$(this).attr('id'));
+
+                $('#currentSlot').val($(this).attr('id'));
+
+                //getting the value of conveyor slot if present there before
+                var slotVal=$(this).closest('td').attr('title');
+                if(slotVal){
+                    slotVal=$(this).closest('td').attr('title');
+                }else{
+                    slotVal=$('#setSlot').val();
+                }
+                $('#setSlot').val(slotVal);
+                
+                $('#conveyorSlot').modal('show');
+            }else{
+                alert('Please select location type conveyor.');                
+                /*return false;
+                e.stopPropagation();*/                
+            }
+        });
+       
+
+         $(document).on('click','.saveSlot',function(){            
+
+            if($("#setSlot").val() == ''){
+                swal({
+                        title: "Error! No slot",
+                        text: "Please enter Conveyor slot",
+                        type: "error"
+                    });
+            }else{
+
+                if($('.editSlot').val() != $("#setSlot").val()){
+                    $.ajax({
+                        url: "checkConveyorSlot.php",
+                        type: "POST",
+                        data: {
+                            conveyorSlot:$("#setSlot").val(),
+                            mode:$('.mode').val(),
+                            editSlot:$('.editSlot').val()
+                        },
+                        success: function (data) {
+                            //alert($("#setSlot").val());
+                            
+                            //JSON.stringify(data);
+                            var data = $.parseJSON(data);
+                            //JSON.stringify(data);                        
+                            if (data.success) {                                
+
+                                var setBox=$('#currentSlot').val();
+
+                                //Checking for entering duplicate conveyor slots
+                                if($('.slotElem').val() != ''){                                    
+                                    
+                                    var value = $('.slotElem').val(); //retrieve array
+                                    value = JSON.parse(value);
+
+                                    if($.inArray($("#setSlot").val(), value) != -1) {
+                                        
+                                        swal({
+                                            title: "Error! Cannot add",
+                                            text: "This Conveyor slot, you have entered.",
+                                            type: "error"
+                                        });
+                                        return false;
+                                    }
+
+
+                                    value.push($("#setSlot").val());
+                                    $('.slotElem').val(JSON.stringify(value)); //store array
+                                }else{                                                                        
+                                    var elems = [];
+                                    elems.push($("#setSlot").val());
+                                    $('.slotElem').val(JSON.stringify(elems)); //store array
+                                }
+                                //End for Checking for entering duplicate conveyor slots
+
+
+                                $('#'+setBox+'_hid').val('');
+                                $('#'+setBox+'_ischange').val('');
+
+                                //alert('set box: '+setBox);
+                                $('#'+setBox).closest('td').css('cursor','pointer');
+                                $('#'+setBox).closest('td').find('.inputQty').css('cursor','pointer');
+                                $('#'+setBox).closest('td').attr('title',$("#setSlot").val());
+                                
+                                if($('.mode').val() == 'edit'){
+
+                                    /*alert($('.editSlot').val());
+                                    alert($("#setSlot").val());
+                                    alert('#'+setBox+'_hid_inv');*/
+                                    
+                                    $('#'+setBox+'_hid_inv').val($("#setSlot").val());
+                                    
+                                    if($('.editSlot').val() != $("#setSlot").val()){
+                                        $('.'+setBox+'_ischange_inv').val('1');
+                                    }else{
+                                        $('.'+setBox+'_ischange_inv').val('0');
+                                    }
+
+                                }else{
+                                    /*alert('#'+setBox+'_hid');
+                                    alert('.'+setBox+'_ischange');*/
+                                    $('#'+setBox+'_hid').val($("#setSlot").val());
+                                    $('.'+setBox+'_ischange').val('1');
+                                }                           
+                                
+
+                                $('#'+setBox).closest('td').css('font-weight','bold');
+                                $('#'+setBox).closest('td').css('text-decoration','underline');
+                            } else {
+                                
+                                swal({
+                                    title: "Error!",
+                                    text: data.message,
+                                    type: "error"
+                                });
+                            }
+                        }
+                    });
+                }else{
+                    swal({
+                        title: "Warning! Update cannot be happen.",
+                        text: "Saving same data. Please enter different to update.",
+                        type: "error"
+                    });
+                }
+
+                
+            }
+            
+        });
+
+
+        //for front end inv
+
+        $(document).on('click','.setConveyorLink_inv',function(e){
+            $('.mode').val('edit');
+            $('#setSlot').val('');
+            $('.saveSlot').attr('data-id','0');
+
+            if($("#allBoxSelect").find(':selected').data('type') == 'conveyor'){
+            
+                $('.saveSlot').attr('data-id',$(this).attr('id'));
+                $('.saveSlot').attr('id',$(this).attr('id'));
+                $('#currentSlot').val($(this).attr('id'));
+
+                var slotVal = $(this).parent().find('p').data('id');
+            
+                if(!slotVal){
+                    var slotVal = $(this).parent().attr('title');
+                }
+                $('#setSlot').val(slotVal); 
+                $('.editSlot').val(slotVal); 
+
+                $('#conveyorSlot').modal('show');
+
+            }else{
+                alert('Please select location type conveyor.');                
+                /*return false;
+                e.stopPropagation();*/                
+            }
+            
+        });
+    })
+  </script>
+
+
+<!--end for adding convey slot -->

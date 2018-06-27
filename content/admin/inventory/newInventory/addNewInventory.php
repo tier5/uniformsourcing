@@ -15,8 +15,9 @@ if(!($result=pg_query($connection,$sql))){
 }
 $oldUnit= pg_fetch_array($result);
 pg_free_result($result);
+//echo $sql;//exit();
 if(!$oldUnit){
-    //Insert into unit table
+    //echo "Insert into unit table";exit();
     $sql = "";
     $sql = "INSERT INTO \"tbl_invUnit\" ( ";
     $sql .=" \"styleId\",\"colorId\",type ,";
@@ -94,8 +95,8 @@ if(!$oldUnit){
         if($change == '1'){
             $sql = "";
             $sql = "INSERT INTO \"tbl_invQuantity\" ( ";
-            $sql .= " \"boxId\",\"mainSizeId\",\"optSizeId\",\"qty\" ) VALUES (";
-            $sql .= "'".$unit['id']."','".$mainSizeId[$key]."','".$optSizeId[$key]."','".$qty[$key]."' )";
+            $sql .= " \"boxId\",\"mainSizeId\",\"optSizeId\",\"qty\",\"conveyor_slot\") VALUES (";
+            $sql .= "'".$unit['id']."','".$mainSizeId[$key]."','".$optSizeId[$key]."','".$qty[$key]."','".$conveyorSlotHid[$key]."' )";
             if(!($result=pg_query($connection,$sql))){
                 echo json_encode([
                     'message' => pg_last_error($connection),
@@ -108,8 +109,8 @@ if(!$oldUnit){
 
             $sql = '';
             $sql = 'INSERT INTO "tbl_invUpdateLogQuantity" ('.
-                '"mainSize","optSize","logId","oldValue","newValue","log" ) VALUES ( '.
-                "'".$mainSizeId[$key]."','".$optSizeId[$key]."','".$log['id']."','0','".$qty[$key]."','Add Box' )";
+                '"mainSize","optSize","logId","oldValue","newValue","log","conveyor_slot" ) VALUES ( '.
+                "'".$mainSizeId[$key]."','".$optSizeId[$key]."','".$log['id']."','0','".$qty[$key]."','Add Box','".$conveyorSlotHid[$key]."' )";
             if(!($audit = pg_query($connection,$sql))){
                 echo json_encode([
                     'message' => pg_last_error($connection),
@@ -127,12 +128,12 @@ if(!$oldUnit){
             $sql = '';
             $sql = "INSERT INTO \"audit_logs\" (";
             $sql .= " \"inventory_id\", \"employee_id\", \"updated_time\",";
-            $sql .= " \"log\") VALUES (";
+            $sql .= " \"log\", \"conveyor_slot\") VALUES (";
             $sql .= " '" . $styleId . "' ";
             $sql .= ", '". $_SESSION['employeeID'] ."'";
             $sql .= ", '". date('U') ."'";
             $sql .= ", 'Added ".$qty[$key]." for Scale ".$mainSize." - ".$optSize." in box: ".$box." '";
-            $sql .= ")";
+            $sql .= ",'".$conveyorSlotHid[$key]."')";
             if(!($audit = pg_query($connection,$sql))){
                 echo json_encode([
                     'message' => pg_last_error($connection),
