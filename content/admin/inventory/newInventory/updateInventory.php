@@ -121,7 +121,7 @@ if($unit != ''){
                     $sql2 = '';
                     $sql2 = 'INSERT INTO "tbl_invUpdateLogQuantity" ('.
                         '"mainSize","optSize","logId","oldValue","newValue","log","conveyor_slot" ) VALUES ( '.
-                        "'".$mainSize."','".$optSize."','".$log['id']."','".$quantity['qty']."','".$qty[$key]."','Update Box' , ".$conveyorSlotHid[$key].")";
+                        "'".$mainSize."','".$optSize."','".$log['id']."','".$quantity['qty']."','".$qty[$key]."','Update Box' , '".$conveyorSlotHid[$key]."')";
                         //echo 'part1: '.$sql2;
                     if(!($audit = pg_query($connection,$sql2))){
                         echo json_encode([
@@ -168,7 +168,7 @@ if($unit != ''){
                 $sql2 = '';
                 $sql2 = 'INSERT INTO "tbl_invUpdateLogQuantity" ('.
                     '"mainSize","optSize","logId","oldValue","newValue","log","conveyor_slot" ) VALUES ( '.
-                    "'".$mainSize."','".$optSize."','".$log['id']."','0','".$qty[$key]."','Update Box',".$conveyorSlotHid[$key]." )";
+                    "'".$mainSize."','".$optSize."','".$log['id']."','0','".$qty[$key]."','Update Box','".$conveyorSlotHid[$key]."' )";
                     
                 if(!($audit = pg_query($connection,$sql2))){
                     echo json_encode([
