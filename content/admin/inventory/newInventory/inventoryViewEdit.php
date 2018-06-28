@@ -1399,6 +1399,10 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         $('#update' + change).val(1);
     });
     $('#UpdateInventoryButton').on('click', function () {
+        
+        //hiding the link while opening the pop up for adding quantities or conveyor slot
+        $('.setConveyorLink').css('display','none');
+        
         var dataString = $('#tableUpdate').serialize();
         var style = "<?php echo $_GET['styleId']; ?>";
         dataString += '&styleId=' + style;
@@ -1491,9 +1495,24 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
 </script>
 
 
- <!-- conveyorSlotHidCurrentInv -->
-  <script type="text/javascript">
+<!-- conveyorSlotHidCurrentInv -->
+<script type="text/javascript">
     $(function(){
+
+        //hiding the link if no conveyor type is selected
+        $('#newLocation').on('change', function () {
+            if(($("#newLocation").find(':selected').data('type') != 'conveyor')){
+                //alert('uiui');
+                $('.setConveyorLink').css('display','none');
+            }else{
+                //alert('uiui22');
+                $('.setConveyorLink').css('display','block');
+            }
+
+        });
+
+
+
         if($('#allBoxSelect').val() == '0'){
             $('#tableUpdate td').removeAttr("title");
             $('#tableUpdate td > a').remove("a");
@@ -1501,6 +1520,18 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         $('.mode').val('');
         $('.editSlot').val('');
         $('.saveSlot').attr('data-id','0');
+
+        //for hiding text for adding conveyor line
+        if(($("#allBoxSelect").find(':selected').data('type') != 'conveyor')){
+            //alert('uiui');
+            $('.setConveyorLink_inv').css('display','none');
+        }else{
+            //alert('uiui22');
+            $('.setConveyorLink_inv').css('display','block');
+        }
+
+
+        // $('.setConveyorLink_inv')
         $(document).on('click','.setConveyorLink',function(e){
             $('.mode').val('add');
             $('#setSlot').val('');
