@@ -674,9 +674,9 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                         
 
                                         if(isset($dataConveyor[$key2][$key1]) && !empty($dataConveyor[$key2][$key1])){
-                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to edit the conveyor</a>';
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title="Click here to edit the conveyor"  class="setConveyorLink_inv" name="convyrhd[]">Edit conveyor slot</a>';
                                         }else{
-                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to add the conveyor</a>';
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title="Click here to add the conveyor"  class="setConveyorLink_inv" name="convyrhd[]">Add conveyor slot</a>';
                                         }
 
 
@@ -692,9 +692,9 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
 
                                         
                                         if(isset($dataConveyor[$key2][$key1]) && !empty($dataConveyor[$key2][$key1])){
-                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to edit the conveyor</a>';
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title="Click here to add the conveyor"  class="setConveyorLink_inv" name="convyrhd[]">Edit conveyor slot</a>';
                                         }else{
-                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to add the conveyor</a>';
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title="Click here to edit the conveyor"  class="setConveyorLink_inv" name="convyrhd[]">Add conveyor slot</a>';
                                         }
                                         
 
@@ -719,9 +719,9 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
 
 
                                     if(isset($dataConveyor[$key2][0]) && !empty($dataConveyor[$key2][0])){
-                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to edit the conveyor</a>';
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Edit conveyor slot</a>';
                                     }else{
-                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Click here to add the conveyor</a>';
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink_inv" name="convyrhd[]">Add conveyor slot</a>';
                                     }
 
                                     
@@ -738,9 +738,9 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
 
                                     
                                     if(isset($dataConveyor[$key2][0]) && !empty($dataConveyor[$key2][0])){
-                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink" name="convyrhd[]">Click here to edit the conveyor</a>';
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink" name="convyrhd[]">Edit conveyor slot</a>';
                                     }else{
-                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink" name="convyrhd[]">Click here to add the conveyor</a>';
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . 0 . '_inv" href="javascript:void(0)" style="cursor:pointer;" title=""  class="setConveyorLink" name="convyrhd[]">Add conveyor slot</a>';
                                     }                                    
 
 
@@ -910,7 +910,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                                 $element .= '<td><input type="text" class="inputQty clickNew" name="qty[]" id="input_' . $key2 . '_' . $key1 . '" value="0"/>';
 
 
-                                                $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '" href="javascript:void(0)" style="cursor:pointer;" title="Click here to add the conveyor"  class="setConveyorLink" name="convyrhd[]">Click here to add the conveyor</a>';
+                                                $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '" href="javascript:void(0)" style="cursor:pointer;" title="Click here to add the conveyor"  class="setConveyorLink" name="convyrhd[]">Add conveyor slot</a>';
                                                 $element .= '<input type="hidden" id="setConveyorLink_' . $key2 . '_' . $key1 . '_hid" class="setConveyorLinkHid" name="conveyorSlotHid[]" value="" />';
                                                 
 
@@ -928,7 +928,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                             $element .= '<td><input type="text" class="inputQty clickNew" name="qty[]" id="input_' . $key2 . '_' . 0 . '" value="0"/>';
 
                                             
-                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '" href="javascript:void(0)" style="cursor:pointer;" title="Click here to add the conveyor"  class="setConveyorLink" name="convyrhd[]">Click here to add the conveyor</a>';
+                                            $element .= '<a id="setConveyorLink_' . $key2 . '_' . $key1 . '" href="javascript:void(0)" style="cursor:pointer;" title="Click here to add the conveyor"  class="setConveyorLink" name="convyrhd[]">Add conveyor slot</a>';
                                             $element .= '<input type="hidden" id="setConveyorLink_' . $key2 . '_' . $key1 . '_hid" class="setConveyorLinkHid" name="conveyorSlotHid[]" value="" />';                                            
 
 
@@ -1048,7 +1048,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                 
                                 <div class="row">
                                             <label for="slot" class="col-sm-4"><b>Set Conveyor Slot</b></label>
-                                            <input type="text" id="setSlot" class="col-sm-8" placeholder="Enter Slot" name="slot" required>
+                                            <input type="text" id="setSlot" class="col-sm-8" placeholder="Enter Slot" name="slot" pattern="^[a-zA-Z0-9]+$" required>
                                 </div>                                    
                                 
                       </div>
@@ -1060,7 +1060,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         
         <!-- Modal footer -->
         <div class="modal-footer slot">
-          <button type="button" data-id="" class="btn btn-secondary saveSlot" data-dismiss="modal">Save Slot</button>
+          <button type="button" data-id="" class="btn btn-secondary saveSlot">Save Slot</button>
         </div>
         
       </div>
@@ -1530,17 +1530,34 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                 e.stopPropagation();*/                
             }
         });
+
+
+
+        $('#setSlot').keyup(function (event) {          
+
+            var $th = $(this);
+            $th.val($th.val().replace(/(^\s+|[^a-zA-Z0-9 ]+|\s+$)/g,
+            function (str) {
+                showError('','Special characters are not allowed.','');
+                return '';
+            }));
+
+            $th.val($th.val().replace(/\s+/g,
+            function (str) {
+                showError('','Special characters are not allowed.','');
+                return '';
+            }));     
+
+
+        });
        
 
-         $(document).on('click','.saveSlot',function(){            
+         $(document).on('click','.saveSlot',function(event){
 
             if($("#setSlot").val() == ''){
-                swal({
-                        title: "Error! No slot",
-                        text: "Please enter Conveyor slot",
-                        type: "error"
-                    });
-            }else{
+                showError("","Conveyor slot cannot be blank.",""); 
+                return false;               
+            }else{             
 
                 if($('.editSlot').val() != $("#setSlot").val()){
                     $.ajax({
@@ -1553,7 +1570,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                         },
                         success: function (data) {
                             //alert($("#setSlot").val());
-                            
+                            $('#conveyorSlot').modal('hide');
                             //JSON.stringify(data);
                             var data = $.parseJSON(data);
                             //JSON.stringify(data);                        
@@ -1568,15 +1585,9 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                                     value = JSON.parse(value);
 
                                     if($.inArray($("#setSlot").val(), value) != -1) {
-                                        
-                                        swal({
-                                            title: "Error! Cannot add",
-                                            text: "This Conveyor slot, you have entered.",
-                                            type: "error"
-                                        });
+                                        showError('',' Cannot add the conveyor slot as it is already taken.','');
                                         return false;
                                     }
-
 
                                     value.push($("#setSlot").val());
                                     $('.slotElem').val(JSON.stringify(value)); //store array
@@ -1662,9 +1673,8 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                 if(!slotVal){
                     var slotVal = $(this).parent().attr('title');
                 }
-                $('#setSlot').val(slotVal); 
-                $('.editSlot').val(slotVal); 
-
+                $('#setSlot').val(slotVal);
+                $('.editSlot').val(slotVal);
                 $('#conveyorSlot').modal('show');
 
             }else{
@@ -1675,7 +1685,24 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
             
         });
     })
-  </script>
 
+function showError(title='Error!', msg='Something went wrong!', type='error'){
+    if(title == ''){
+        title = 'Error!';
+    }if(msg == ''){
+        msg = 'Something went wrong!';
+    }if(type == ''){
+        type = 'error';
+    }
+    swal({
+            title: title,
+            text: msg,
+            type: type
+        });
+
+    return false;
+  
+}
+</script>
 
 <!--end for adding convey slot -->

@@ -1467,6 +1467,173 @@ if($column_exists['exists'] === 'f')
 
 
 
+//adding conveyor slot on to table tbl_invUpdateLogQuantity
+$sql = "SELECT EXISTS (SELECT 'conveyor_slot' 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_invUpdateLogQuantity' and column_name='conveyor_slot')";
+
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed SchemaQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+    $sql = 'ALTER TABLE "tbl_invUpdateLogQuantity" ADD COLUMN 
+			"conveyor_slot" character varying(300)';
+    // var_dump($sql);
+    // exit();
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        print_r('successfully added column conveyor_slot tbl_invUpdateLogQuantity');
+        //exit();
+    }
+    pg_free_result($result);
+
+}else{	
+
+	$sql = 'ALTER TABLE "tbl_invUpdateLogQuantity" ALTER COLUMN "conveyor_slot" TYPE character varying(300)';
+    
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        /*print_r('successfully added column conveyor_slot tbl_invUpdateLogQuantity');
+        exit();*/
+    }
+    pg_free_result($result);
+}
+//end for adding conveyor_slot on tbl_invUpdateLogQuantity
+
+
+
+//adding conveyor slot on to table tbl_invQuantity
+$sql = "SELECT EXISTS (SELECT 'conveyor_slot' 
+		FROM information_schema.columns 
+		WHERE table_name='tbl_invQuantity' and column_name='conveyor_slot')";
+
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed SchemaQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+    $sql = 'ALTER TABLE "tbl_invQuantity" ADD COLUMN 
+			"conveyor_slot" character varying(300)';
+    // var_dump($sql);
+    // exit();
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        print_r('successfully added column conveyor_slot tbl_invQuantity');
+        //exit();
+    }
+    pg_free_result($result);
+
+}else{	
+
+	$sql = 'ALTER TABLE "tbl_invQuantity" ALTER COLUMN "conveyor_slot" TYPE character varying(300)';
+    
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        /*print_r('successfully added column conveyor_slot tbl_invUpdateLogQuantity');
+        exit();*/
+    }
+    pg_free_result($result);
+}
+//end for adding conveyor_slot on tbl_invQuantity
+
+
+//adding conveyor slot on to table audit_logs
+$sql = "SELECT EXISTS (SELECT 'conveyor_slot' 
+		FROM information_schema.columns 
+		WHERE table_name='audit_logs' and column_name='conveyor_slot')";
+
+$column_exists;
+if(!($result=pg_query($connection,$sql)))
+{
+    print_r('Application.php -- error ');
+    print("Failed SchemaQuery: " . pg_last_error($connection));
+    exit();
+}
+while($row = pg_fetch_array($result))
+{
+    $column_exists=$row;
+}
+pg_free_result($row);
+if($column_exists['exists'] === 'f')
+{
+    $sql = 'ALTER TABLE "audit_logs" ADD COLUMN 
+			"conveyor_slot" character varying(300)';
+    // var_dump($sql);
+    // exit();
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        print_r('successfully added column conveyor_slot audit_logs');
+        //exit();
+    }
+    pg_free_result($result);
+
+}else{	
+
+	$sql = 'ALTER TABLE "audit_logs" ALTER COLUMN "conveyor_slot" TYPE character varying(300)';
+    
+    if(!($result=pg_query($connection,$sql)))
+    {
+        print_r('Application.php -- error ');
+        print("Failed SchemaQuery: " . pg_last_error($connection));
+        //exit();
+    }
+    else
+    {
+        /*print_r('successfully added column conveyor_slot tbl_invUpdateLogQuantity');
+        exit();*/
+    }
+    pg_free_result($result);
+}
+//end for adding conveyor_slot on tbl_invQuantity
 
 // CREATE TABLE "tbl_invLocation" (
 //     "locationId" bigint DEFAULT nextval(('tbl_invLocation_locationId_seq'::text)::regclass) NOT NULL,
