@@ -28,7 +28,7 @@ try {
         return;
     } else {
         echo json_encode([
-            'message' => 'Please Upload a Image',
+            'message' => 'Please upload a proper gif/png/jpg/jpeg type image.',
             'status' => false,
             'statusCode' => 400
         ]);
