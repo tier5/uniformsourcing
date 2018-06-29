@@ -207,14 +207,14 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
         if (isset($dataQuantity[$value['mainSizeId']][$value['optSizeId']])) {
             $total = $dataQuantity[$value['mainSizeId']][$value['optSizeId']] + $value['qty'];
             $dataQuantity[$value['mainSizeId']][$value['optSizeId']] = $total;
-            if($value['qty'] > 0){
-                $link = $dataToolTip[$value['mainSizeId']][$value['optSizeId']].'<br/>'.'<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].'_'.'&nbsp&nbspConveyor slot:'.$value['conveyor_slot'].' :- '.$value['qty'].'</a>';
+        if($value['qty'] > 0){
+                $link = (!empty($value['conveyor_slot'])) ? $dataToolTip[$value['mainSizeId']][$value['optSizeId']].'<br/>'.'<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].'_'.'&nbsp&nbspConveyor slot: '.$value['conveyor_slot'] . '&nbsp&nbsp_'.$value['qty'].'</a>' : $dataToolTip[$value['mainSizeId']][$value['optSizeId']].'<br/>'.'<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].'_'.$value['qty'].'</a>'   ;
                 $dataToolTip[$value['mainSizeId']][$value['optSizeId']] = $link;
             }
         } else {
             $dataQuantity[$value['mainSizeId']][$value['optSizeId']] = $value['qty'];
             if($value['qty'] > 0){
-                $link = '<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].'_'.'&nbsp&nbspConveyor slot:'.$value['conveyor_slot'].' :- '.$value['qty'].'</a>';
+                $link = (!empty($value['conveyor_slot'])) ? '<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].'_'.'&nbsp&nbspConveyor slot: '.$value['conveyor_slot'].'&nbsp&nbsp_'.$value['qty'].'</a>' : '<a href="http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'].'&boxId='.$value[0].'">'.$value['identifier'].'_'.$value[$value['type']].'_'.$value['box'].'_'.$value['qty'].'</a>';
                 $dataToolTip[$value['mainSizeId']][$value['optSizeId']] = $link;
             }
         }
@@ -294,12 +294,14 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     .tooltext {
         /*visibility: hidden;*/
         display: none;
-        width: 120px;
+        /*width: 120px;*/
+        width: auto;
         background-color: black;
         color: #fff;
         text-align: center;
         border-radius: 6px;
-        padding: 5px 0;
+        /*padding: 5px 0;*/
+        padding: 5px 5px;
 
         /* Position the tooltip */
         position: absolute;

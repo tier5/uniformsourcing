@@ -3,7 +3,7 @@ require('Application.php');
 extract($_POST);
 try {
     $temp = explode(".", $_FILES["file"]["name"]);
-    if( $temp[1] == 'gif' || $temp[1] == 'png' || $temp[1] == 'jpg' ){
+    if( $temp[1] == 'gif' || $temp[1] == 'png' || $temp[1] == 'jpg' || $temp[1] == 'jpeg' ){
         $newfilename = round(microtime(true)) . '.' . end($temp);
         move_uploaded_file($_FILES["file"]["tmp_name"], "../../../uploadFiles/inventory/images/" . $newfilename);
         $sql = '';
