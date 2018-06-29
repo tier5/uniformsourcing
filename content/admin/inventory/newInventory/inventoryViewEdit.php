@@ -1603,7 +1603,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
                         },
                         success: function (data) {
                             //alert($("#setSlot").val());
-                            $('#conveyorSlot').modal('hide');
+                            //$('#conveyorSlot').modal('hide');
                             //JSON.stringify(data);
                             var data = $.parseJSON(data);
                             //JSON.stringify(data);                        
@@ -1664,6 +1664,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
 
                                 $('#'+setBox).closest('td').css('font-weight','bold');
                                 $('#'+setBox).closest('td').css('text-decoration','underline');
+                                $('#conveyorSlot').modal('hide');
                             } else {
                                 
                                 swal({
@@ -1733,9 +1734,9 @@ function showError(title='Error!', msg='Something went wrong!', type='error'){
             type: type
         });
 
-    return false;
-  
+    return false;  
 }
+
 </script>
 
 <!--end for adding convey slot -->
