@@ -341,7 +341,7 @@ if (isset($_GET['styleId']) && $_GET['styleId'] != '' && $_GET['styleId'] != 0) 
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-md-4 pull-left">
+            <div class="col-md-4">
                 <div class="form-group">
                     <label for="color" class="col-md-2 control-label"> Color: </label>
                     <div class="col-md-10">

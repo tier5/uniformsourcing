@@ -165,7 +165,7 @@ $html .= '<table width="100%" border="0" cellspacing="0" cellpadding="0">
               <td width="49%" align="left" valign="top"><input type="text" id="order_on" onclick="javascript:showDate(this);" ';
 if ($emp_type > 0)
 {
-    $html .= 'disabled="disabled"';
+    //$html .= 'disabled="disabled"';
 }
 $html .= 'name="order_on" value="' . $data_prj['order_placeon'] . '"/></td>
               <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
@@ -176,7 +176,7 @@ $html .= 'name="order_on" value="' . $data_prj['order_placeon'] . '"/></td>
               <td width="49%" align="left" valign="top"><input type="text" id="order_eta_on" autocomplete="off" onclick="javascript:showDate(this);" ';
 if ($emp_type > 0)
 {
-    $html .= 'disabled="disabled"';
+    //$html .= 'disabled="disabled"';
 }
 $html .= 'name="order_eta_on" value="' . $data_prj['order_eta_on'] . '"/></td>
                <td width="50"><img src="../../images/spacer.gif" width="50" height="30" alt="spacer" /></td>
@@ -187,7 +187,7 @@ $html .= 'name="order_eta_on" value="' . $data_prj['order_eta_on'] . '"/></td>
               <td width="49%" align="left" valign="top"><input type="text"';
 if ($emp_type > 0)
 {
-    $html .= 'disabled="disabled"';
+    //$html .= 'disabled="disabled"';
 }
 $html .= 'name="bid_number" value="';
 $html .= $data_prj['bid_number'];
@@ -495,7 +495,7 @@ $html .= '</table>
                 <td width="49%" align="center" valign="top"><input type="button" value="Add new tracking info" onclick="javascript:addRow(\'dataTable\');"';
 if ($emp_type > 0)
 {
-    $html .= ' disabled="disabled"';
+    //$html .= ' disabled="disabled"';
 }
 $html .= ' /></td>
               </tr>
