@@ -187,7 +187,7 @@ $html .= 'name="order_eta_on" value="' . $data_prj['order_eta_on'] . '"/></td>
               <td width="49%" align="left" valign="top"><input type="text"';
 if ($emp_type > 0)
 {
-    //$html .= 'disabled="disabled"';
+    //$html .= 'disabled="disabled"';  
 }
 $html .= 'name="bid_number" value="';
 $html .= $data_prj['bid_number'];
