@@ -521,8 +521,15 @@ for ($i = 0; $i < count($data2); $i++) {
                     <th class="sortableB" height="10">Project Manager</th>
                     <th class="sortableB">Project Name</th>
                     <!--<th class="sortable-numericB">Project Estimated Unit Cost</th>-->
-                    <th class="sortable-numericB">Project Estimated Profit</th>
-                    <th class="sortable-numericB">Bid Number</th>
+                    <?php
+                    if ($is_session != 1) 
+                    {
+                    ?>
+                        <th class="sortable-numericB">Project Estimated Profit</th>
+                        <th class="sortable-numericB">Bid Number</th>
+                    <?php
+                    }
+                    ?>
                     <th class="sortable-numericB">Tracking Number</th>
                      <th class="sortable-numericB">Target Delivery</th>
 
@@ -636,8 +643,11 @@ if ($is_session != 1) {
                             echo '<td class="'.$color.'">' . $datalist[$i]['projectname'] . '</td>';
                           
                             //echo '<td class="grid001B">$' . $datalist[$i]['prj_estimatecost'] . '</td>';
+                             if ($is_session != 1) 
+                             {
                               echo '<td class="'.$color.'">$' . $datalist[$i]['prj_est_profit'] . '</td>';
-                            echo '<td class="'.$color.'">' . $datalist[$i]['bid_number'] . '</td>';
+                              echo '<td class="'.$color.'">' . $datalist[$i]['bid_number'] . '</td>';
+                             }
  if ($datalist[$i]['tracking_number'] != '' && $datalist[$i]['tracking_number'] != 'Array')
         {
      echo '<td class="'.$color.'">';
