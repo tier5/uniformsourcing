@@ -1,6 +1,6 @@
 <?php
 require ('Application.php');
-//abc
+
 $current_page = "project_purchase.list.php";
 $type = "project_purchase";
 $paging = 'paging=';
@@ -576,7 +576,14 @@ for ($i = 0; $i < count($data2); $i++) {
             <th class="sortable-numericB" style="width:150px;">Purchase Order</th>
             <th class="sortable-numericB" style="width:100px;">PT Invoice</th>
             <th class="sortable-numericB" style="width:100px;">PO Due Date</th>
-            <th class="sortable-numericB" style="width:100px;">PO Total</th>
+            <?php
+            if ($is_session != 1) 
+            {
+            ?>
+                <th class="sortable-numericB" style="width:100px;">PO Total</th>
+            <?php
+            }
+            ?>
             <th class="sortable-numericB" style="width:100px;">Order Placed On</th>
             <th class="sortable-numericB" style="width:200px;">Tracking Number</th>
             <!--<th class="sortable-numericB" style="width:100px;">Target Delivery</th>-->
@@ -672,7 +679,10 @@ if (count($datalist)) {
         echo '<td class="' . $color . '">' . $datalist[$i]['purchaseorder'] . '</td>';
         echo '<td class="' . $color . '">' . $datalist[$i]['pt_invoice'] . '</td>';
         echo '<td class="' . $color . '" ' . $po_style . '>' . $datalist[$i]['purchaseduedate'] . '</td>';
-        echo '<td class="' . $color . '">$' . $datalist[$i]['prjquote'] . '</td>';
+        if ($is_session != 1) 
+        {
+            echo '<td class="' . $color . '">$' . $datalist[$i]['prjquote'] . '</td>';
+        }
         echo '<td class="' . $color . '">' . $datalist[$i]['order_placeon'] . '</td>';
         if ($datalist[$i]['tracking_number'] != '' && $datalist[$i]['tracking_number'] != 'Array') {
             echo '<td class="' . $color . '">';
