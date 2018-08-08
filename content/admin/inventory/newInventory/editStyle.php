@@ -215,7 +215,7 @@
                       ?>
                     </div>
                     <br/><br/>
-                    <div id="colorsPreview">
+                    <div >
                       <label class="col-md-12 control-label center-block">Available Colors:</label>
                     <?php
                         foreach ($data_color as $key => $color) {
@@ -224,6 +224,9 @@
                           echo '<a href="javascript:void(0)" onclick="deleteColor('. $key .')">delete</a></div>';
                         }
                      ?>
+                    </div>
+                    <div id="colorsPreview">
+                      
                     </div>
                 </div>
             </div>
@@ -287,6 +290,7 @@
         $('#error').hide();
     });
     //Click event on Add Color Button
+    var colordata = [];
     $('#addColorButton').on('click',function () {
         var dataNew = new FormData();
         var name = $('#colorName').val();
@@ -312,8 +316,10 @@
             processData : false,
             data: dataNew,
             success: function (response) {
+
                 var responseData = JSON.parse(response);
                 if(responseData.status == true) {
+                    console.log(responseData.data);
                     $('#addColorForm')[0].reset();
                     $('#addColor').modal('hide');
                     colordata.push(responseData.data);
@@ -409,14 +415,16 @@
         });
     });
 
-    function previewImages(data) {
+   function previewImages(data) {
         var html = '';
+        
         if(data.length > 0) {
+           // html += '<label class="col-md-12 control-label center-block">Available Colors:</label>';
             $.each(data, function (index, value) {
                 html += '<div class="col-md-6"><span>' + value.name + '</span><img src="../../../uploadFiles/inventory/images/' + value.path + '" height="50" width="50"><span><a href="javascript:void(0)" onclick="deleteColor(' + index + ')">delete</a></div>'
             });
         }
-        $('#colorsPreview').append(html);
+        $('#colorsPreview').html(html);
     }
     function deleteColor(key) {
         console.log(colordata);
