@@ -91,6 +91,7 @@
             <div class="col-md-12">
                 <div class="col-md-10">
                     <form class="form-horizontal">
+                        <input type="hidden" name="styleId" value = "<?php echo $_REQUEST['styleId']; ?>" />
                         <div class="form-group">
                             <label class="control-label col-sm-4" for="styleNumber">Style Number:</label>
                             <div class="col-sm-8">
@@ -397,13 +398,14 @@
         formData.append('notes',note);
         $.ajax({
             type: "POST",
-            url: "addStyleSubmit.php",
+            url: "editStyleSubmit.php",
             cache : false,
             contentType : false,
             processType : false,
             processData : false,
             data: formData,
             success: function (response) {
+               // alert(response);
                 var responseData = JSON.parse(response);
                 if(responseData.status == true) {
                     window.location = 'inventoryViewEdit.php?styleId='+responseData.data
