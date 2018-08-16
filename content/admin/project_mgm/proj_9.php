@@ -37,7 +37,7 @@ if(isset($_POST['pid']) && $_POST['pid']!=0){
 	
 	
 	$isEdit = 1;
-	$sql = "Select * from tbl_prjimage_file$tx where status =1 and pid =$pid ";
+    $sql = "Select * from tbl_prjimage_file$tx where status =1 and pid =$pid ";
 	if(!($result=pg_query($connection,$sql))){
 		print("Failed query1: " . pg_last_error($connection));
 		exit;
@@ -187,14 +187,17 @@ $html .='<tr>
 <td align="left">
 <input type="file" name="file2" id="file2" onchange="javascript:ajaxFileUpload(2, \'I\', 960,720);"/>
 </td>
-</tr>
-<tr>
+</tr>';
+if ($is_session != 1) 
+{
+$html .='<tr>
 <td align="right">File:</td>
 <td align="left">
 <input type="file" name="file3" id="file3" onchange="javascript:ajaxFileUpload(3, \'F\', 960,720);"/>
 </td>
-</tr>
-</table>';
+</tr>';
+}
+$html .='</table>';
 $html.='</td>'; 
 
 
@@ -468,6 +471,8 @@ $html .= '</div>';
 	}
        $html .= ' </td></tr>';
 }
+if ($is_session != 1) 
+{
 if(count($fileArr))
 {
     $html .= '<tr><td>Files:</td></tr>';
@@ -508,6 +513,7 @@ $html .= '<tr id="tr_id'.$count.'">
       </tr>';
       
 	}
+}
 }
 $html.= '<tr align="right"> <td >&nbsp;</td><td ><table  border="0" cellspacing="0" cellpadding="0" id="image_view" width="100%"/></td></tr>';
 
