@@ -216,13 +216,16 @@
                       ?>
                     </div>
                     <br/><br/>
-                    <div >
+                    <div id="avail_color">
                       <label class="col-md-12 control-label center-block">Available Colors:</label>
                     <?php
                         foreach ($data_color as $key => $color) {
+
+                          $colorId = $color['colorId'];  
+
                           echo '<div class="col-md-6"><span>'. $color['name'] .'</span>';
                           echo '<img src="../../../uploadFiles/inventory/images/'. $color['image'] .'" height="50" width="50"><span>';
-                          echo '<a href="javascript:void(0)" onclick="deleteColor('. $key .')">delete</a></div>';
+                          echo '<a href="javascript:void(0)" onclick="deleteStyleColor('. $colorId .')">delete</a></div>';
                         }
                      ?>
                     </div>
@@ -339,11 +342,20 @@
         $.each(colordata, function (index, value) {
             colors[index] = value.id;
         });
-        if(colors.length == 0){
-            $('#main_error_text').text('Please add at-least one color');
-            $('#main_error').show();
-            return false;
-        }
+        <?php
+        if(count($data_color) == 0)
+        {
+        ?>
+            if(colors.length == 0)
+            {
+                $('#main_error_text').text('Please add at-least one color');
+                $('#main_error').show();
+                return false;
+            }
+
+        <?php
+         }
+        ?>
         formData.append('colors',colors);
         var styleNumber = $('#styleNumber').val();
         if(styleNumber == ''){
@@ -405,7 +417,7 @@
             processData : false,
             data: formData,
             success: function (response) {
-               // alert(response);
+                //alert(response);
                 var responseData = JSON.parse(response);
                 if(responseData.status == true) {
                     window.location = 'inventoryViewEdit.php?styleId='+responseData.data
@@ -446,4 +458,25 @@
     function hideMainError() {
         $('#main_error').hide();
     }
+
+    function deleteStyleColor(val)
+    {
+       
+        var tr = document.getElementById('avail_color');
+        $.ajax({
+            url: "deleteStyleColor.php",
+            type: "POST",
+            data: 'colorId='+val+'&styleId='+'<?php echo $_GET['styleId']; ?>',
+            success: function (data) {
+                
+                var dataStream = $.parseJSON(data);
+                if (dataStream.success) {
+                    //tr.innerHTML = dataStream.htmlStruct;
+                    window.location = 'editStyle.php?styleId='+dataStream.styleId;
+                } else {
+                    tr.innerHTML = 'Failed to load the stream. Refresh again.';
+                }
+            }
+        }); 
+   }
 </script>

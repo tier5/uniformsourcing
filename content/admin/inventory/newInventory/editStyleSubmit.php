@@ -73,8 +73,22 @@ if(!($result=pg_query($connection,$query1))){
 //die;
 //$styleInformation = pg_fetch_array($result);
 //pg_free_result($result);
-$colorArray = explode(',',$colors);
-foreach ($colorArray as $color){
+ $colorArray = explode(',',$colors);
+ 
+ foreach($colorArray as $reValue)
+ {
+    if($reValue!='')
+    {
+        $colorArr[] = $reValue;
+    }
+ }
+
+//  echo count($colorArr).'&&';
+// return;
+
+if(count($colorArray) > 0)
+{
+foreach ($colorArr as $color){
     $sql = '';
     $sql = "SELECT * FROM \"tbl_colorTemp\" WHERE id='".$color."'";
     if(!($result=pg_query($connection,$sql))){
@@ -99,6 +113,7 @@ foreach ($colorArray as $color){
         ]);
         return;
     }
+}
 }
 $sql1 = '';
 $sql1 = "INSERT INTO \"audit_logs\" (";
