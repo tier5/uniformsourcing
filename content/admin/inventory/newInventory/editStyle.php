@@ -70,6 +70,22 @@
 <!--load Bootstrap -->
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"
       integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.css" />      
+<style type="text/css">
+.thumbContainer{
+    display: flex;
+    flex-wrap: wrap;
+}
+.thumb{
+    width: 50%;
+    text-align: center;
+    padding: 5px;
+}
+.thumb p{
+    margin-bottom: 3px;
+    margin-top: 5px;
+}
+</style>
 <!-- Main Page Container -->
 <div class="container">
     <div class="page-header">
@@ -218,16 +234,19 @@
                     <br/><br/>
                     <div id="avail_color">
                       <label class="col-md-12 control-label center-block">Available Colors:</label>
+                      <div style="clear:both;"></div>
+                      <div class="thumbContainer">
                     <?php
                         foreach ($data_color as $key => $color) {
 
                           $colorId = $color['colorId'];  
 
-                          echo '<div class="col-md-6"><span>'. $color['name'] .'</span>';
-                          echo '<img src="../../../uploadFiles/inventory/images/'. $color['image'] .'" height="50" width="50"><span>';
-                          echo '<a href="javascript:void(0)" onclick="deleteStyleColor('. $colorId .')">delete</a></div>';
+                          echo '<div class="thumb">';
+                          echo '<img src="../../../uploadFiles/inventory/images/'. $color['image'] .'" height="50" width="50"><p>'. $color['name'] .'</p><span>';
+                          echo '<a href="javascript:void(0)" onclick="deleteStyleColor('. $colorId .')">delete</a></span></div>';
                         }
                      ?>
+                 </div>
                     </div>
                     <div id="colorsPreview">
                       
@@ -287,6 +306,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.js"></script>        
 <!--All Js Scripts -->
 <script>
     // Hide Error message
@@ -433,10 +453,12 @@
         var html = '';
         
         if(data.length > 0) {
-           // html += '<label class="col-md-12 control-label center-block">Available Colors:</label>';
+            html += '<div id="avail_color"><label class="col-md-12 control-label center-block">Newly Added Colors:</label><div style="clear:both;"></div>';
+            html += '<div class="thumbContainer">';
             $.each(data, function (index, value) {
-                html += '<div class="col-md-6"><span>' + value.name + '</span><img src="../../../uploadFiles/inventory/images/' + value.path + '" height="50" width="50"><span><a href="javascript:void(0)" onclick="deleteColor(' + index + ')">delete</a></div>'
+                html += '<div class="thumb"><img src="../../../uploadFiles/inventory/images/' + value.path + '" height="50" width="50"><p>' + value.name + '</p><span><a href="javascript:void(0)" onclick="deleteColor(' + index + ')">delete</a></span></div>'
             });
+            html += '</div></div>';
         }
         $('#colorsPreview').html(html);
     }
@@ -463,6 +485,16 @@
     {
        
         var tr = document.getElementById('avail_color');
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        })
+        .then(function () {
         $.ajax({
             url: "deleteStyleColor.php",
             type: "POST",
@@ -472,11 +504,14 @@
                 var dataStream = $.parseJSON(data);
                 if (dataStream.success) {
                     //tr.innerHTML = dataStream.htmlStruct;
-                    window.location = 'editStyle.php?styleId='+dataStream.styleId;
+                    //window.location = 'editStyle.php?styleId='+dataStream.styleId;
+                    window.location.reload();
                 } else {
                     tr.innerHTML = 'Failed to load the stream. Refresh again.';
                 }
             }
         }); 
+
+        })
    }
 </script>

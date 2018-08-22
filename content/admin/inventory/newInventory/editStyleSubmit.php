@@ -55,7 +55,7 @@ $query1.=" , \"garmentId\" = '$garment' ";
 $query1.=" , \"fabricId\" = '$fabric' ";
 $query1.=" , \"sex\" = '$sex' ";
 $query1.=" , \"clientId\" = '$client' ";
-$query1.=" , \"notes\" = '$notes' ";
+$query1.=" , \"notes\" = '".pg_escape_string($notes)."' ";
 
 
 $query1.="WHERE \"styleId\" = $styleId";
