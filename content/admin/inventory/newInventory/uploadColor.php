@@ -9,6 +9,17 @@ try {
     $bytes = $_FILES["file"]['size'] / 1024;
     $imageSize = round($bytes, 0);
 
+    if($_FILES["file"]['size'] == '')
+    {
+         echo json_encode([
+            'message' => " Image size cannot be more than 2MB ",
+            'status' => false,
+            'statusCode' => 400
+        ]);
+        return;
+
+    }
+
     if($imageSize > 2052)
     {
          echo json_encode([
