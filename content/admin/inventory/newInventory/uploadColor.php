@@ -4,6 +4,23 @@ extract($_POST);
 try {
     //$temp = explode(".", $_FILES["file"]["name"]);
     $temp = explode("/", $_FILES["file"]["type"]);
+  
+
+    $bytes = $_FILES["file"]['size'] / 1024;
+    $imageSize = round($bytes, 0);
+
+    if($imageSize > 2052)
+    {
+         echo json_encode([
+            'message' => " Image size cannot be more than 2MB ",
+            'status' => false,
+            'statusCode' => 400
+        ]);
+        return;
+
+    }
+    
+    //return;
     if( $temp[1] == 'gif' || $temp[1] == 'png' || $temp[1] == 'jpg' || $temp[1] == 'jpeg' ){
         $newfilename = round(microtime(true)) . '.' . end($temp);
         move_uploaded_file($_FILES["file"]["tmp_name"], "../../../uploadFiles/inventory/images/" . $newfilename);
